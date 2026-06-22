@@ -1,0 +1,28 @@
+# Archivos XLS del MEF (fuentes originales — no se suben a GitHub)
+xls/
+*.xls
+*.xlsx
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+env/
+venv/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+*.swp
+*~
+
+# Logs
+*.log
+
+# El JSON SÍ se sube (es el que alimenta el dashboard)
+# data/ejecucion.json  ← NO ignorar esto

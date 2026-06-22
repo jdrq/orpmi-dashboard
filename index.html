@@ -1,0 +1,2609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ORPMI · Ejecución Financiera del Pliego — GORE Lambayeque</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --vino:#5a1414; --vino2:#7a1f1f; --naranja-h:#e8821e; --azul:#1f4e79;
+    --dorado:#D4A373; --oro:#FFD166;
+    --verde:#22c55e; --amber:#e8a020; --rojo:#ef4444;
+    --fondo:#F4F6F9; --texto:#0B0C0C; --gris:#5b6470; --linea:#e4e7ec; --blanco:#fff;
+    --cert:#2f6b34; --cert-bg:#d3e6cc;
+    --dev:#7a1f1f;  --dev-bg:#efe1da;
+    --comp:#f4b32c; --comp-bg:#fbe6ad;
+    --sombra:0 1px 2px rgba(11,12,12,.06), 0 6px 24px rgba(11,12,12,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:"Barlow",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--texto);background:var(--fondo);line-height:1.45;-webkit-font-smoothing:antialiased;font-weight:600}
+  h1,h2,h3,.cond{font-family:"Barlow Condensed",system-ui,sans-serif;letter-spacing:.01em}
+  .wrap{max-width:1260px;margin:0 auto;padding:0 20px}
+
+  /* ── Cabecera ── */
+  .topbar{background:var(--blanco);border-bottom:1px solid var(--linea)}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 20px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .escudo{width:44px;height:44px;flex:0 0 auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15))}
+  .brand .t1{font-family:"Barlow Condensed";font-weight:700;font-size:13px;color:var(--gris);line-height:1;text-transform:uppercase}
+  .brand .t2{font-family:"Barlow Condensed";font-weight:800;font-size:22px;line-height:1;color:var(--vino);text-transform:uppercase}
+  .orpmi{text-align:right;flex:0 0 auto}
+  .orpmi .o1{font-family:"Barlow Condensed";font-weight:800;font-size:24px;color:var(--vino);letter-spacing:.06em;line-height:1}
+  .orpmi .o2{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.04em;font-weight:700}
+  .titleband{background:var(--vino);color:#fff}
+  .titleband .wrap{padding:16px 20px 14px}
+  .titleband h1{margin:0;font-weight:800;font-size:30px;text-transform:uppercase;letter-spacing:.02em}
+  .update-pill{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 14px;font-size:12.5px;color:#fff;font-weight:700;white-space:nowrap}
+  .update-pill span{color:#FFD166;font-weight:800}
+  .subband{background:var(--naranja-h);color:#3a1107}
+  .subband .wrap{padding:7px 20px;font-family:"Barlow Condensed";font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.05em}
+  .greca{height:18px;background-repeat:repeat-x;background-size:auto 18px}
+
+  main{padding:26px 0 60px}
+  .eyebrow{font-family:"Barlow Condensed";font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--vino2);display:flex;align-items:center;gap:10px;margin:0 0 12px}
+  .eyebrow::before{content:"";width:22px;height:3px;background:var(--naranja-h);display:inline-block}
+
+  /* ── Panel de carga ── */
+  .card{background:var(--blanco);border:1px solid var(--linea);border-radius:14px;box-shadow:var(--sombra)}
+  .loader{display:grid;grid-template-columns:300px 1fr;gap:0;overflow:hidden;margin-bottom:26px}
+  .drop{padding:22px;border-right:1px solid var(--linea);display:flex;flex-direction:column;gap:12px;background:linear-gradient(180deg,#fff,#fbfbfc)}
+  .dropzone{border:2px dashed #cdd5df;border-radius:12px;padding:22px 14px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+  .dropzone:hover,.dropzone.drag{border-color:var(--naranja-h);background:#fff7ef}
+  .dropzone .ic{font-size:26px}
+  .dropzone .hint{font-size:13px;color:var(--gris);margin-top:6px}
+  .btn{appearance:none;border:0;border-radius:9px;padding:10px 14px;font-family:"Barlow";font-weight:600;font-size:14px;cursor:pointer;background:var(--vino);color:#fff;transition:background .15s}
+  .btn:hover{background:var(--vino2)}
+  .btn.ghost{background:#fff;color:var(--vino);border:1px solid var(--linea)}
+  .btn.ghost:hover{background:#faf6f6}
+  .btn.btn-pdf{background:#1f4e79;color:#fff;font-weight:700}
+  .btn.btn-pdf:hover{background:#163d5f}
+  .btn.btn-pdf:disabled{background:#9bb3c8;cursor:not-allowed;opacity:.7}
+  .btn.ghost:hover{background:#faf6f6}
+  .invnote{font-size:12px;color:var(--vino2);background:#f7ecec;border:1px solid #ecd6d6;border-radius:8px;padding:7px 11px;font-weight:600}
+  .invnote small{color:var(--gris);font-weight:600}
+  .files{padding:0;min-width:0}
+  .files .scroll{max-height:264px;overflow:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  thead th{position:sticky;top:0;background:#fbf7f3;color:var(--vino2);font-family:"Barlow Condensed";font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:11.5px;text-align:left;padding:10px 12px;border-bottom:1px solid var(--linea);white-space:nowrap}
+  tbody td{padding:9px 12px;border-bottom:1px solid #f0f2f5;vertical-align:middle}
+  tbody tr:hover{background:#fcfbfa}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .fam{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.03em}
+  .fam.HTML{background:#eaf1fb;color:#1f4e79}
+  .fam.BINARIO{background:#f3eafc;color:#6b21a8}
+  .fam.FLAT{background:#eafaf0;color:#15803d}
+  .badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .badge.ok{background:#e7f8ee;color:#157a3a}
+  .badge.warn{background:#fdf1e3;color:#b3600c}
+  .badge.none{background:#eef0f3;color:#5b6470}
+  .files .empty{padding:40px 24px;text-align:center;color:var(--gris)}
+  .files .empty b{color:var(--texto)}
+  input[type=checkbox].inc{width:16px;height:16px;accent-color:var(--vino);cursor:pointer}
+  .scopecell{max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--gris)}
+  .filename{font-weight:600}
+  .note{font-size:12px;color:var(--gris);margin-top:10px;display:flex;gap:8px;align-items:flex-start}
+  .note .dot{color:var(--naranja-h);font-weight:800}
+
+  /* ── KPI strip ── */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:22px 0 26px}
+  .kpi{background:var(--blanco);border:1px solid var(--linea);border-radius:12px;padding:14px 16px;box-shadow:var(--sombra)}
+  .kpi .k-l{font-family:"Barlow Condensed";font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:12px;color:var(--gris)}
+  .kpi .k-v{font-family:"Barlow Condensed";font-weight:800;font-size:25px;line-height:1.15;color:var(--vino)}
+  .kpi .k-s{font-size:11.5px;color:var(--gris)}
+  .kpi.accent{border-top:3px solid var(--naranja-h)}
+
+  /* ── Cabecera Bloque 1 (estilo PDF) ── */
+  #b1wrap{border-radius:12px;overflow:hidden;box-shadow:var(--sombra)}
+  .b1-header{text-align:center}
+  .b1-title{background:#2c0b0b;color:#fff;font-family:"Barlow Condensed";font-weight:800;font-size:26px;text-transform:uppercase;letter-spacing:.08em;padding:14px 20px 12px}
+  .b1-subtitle{background:var(--naranja-h);color:#3a0f00;font-family:"Barlow Condensed";font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.08em;padding:9px 20px}
+  .b1-donuts-wrap{background:#fff;padding:16px 24px 24px}
+  .b1-dev-label{font-family:"Barlow Condensed";font-weight:800;font-size:24px;text-transform:uppercase;letter-spacing:.06em;color:var(--vino);text-align:center;margin:16px 0 10px}
+
+  /* ── Donas (Bloque 1) ── */
+  .donuts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .donut{background:var(--blanco);border:1px solid var(--linea);border-radius:16px;padding:18px 18px 16px;box-shadow:var(--sombra);text-align:center}
+  .donut h3{margin:0 0 4px;font-weight:800;font-size:18px;text-transform:uppercase;letter-spacing:.04em}
+  .donut.cert h3{color:var(--cert)} .donut.dev h3{color:var(--dev)} .donut.comp h3{color:#b9831a}
+  .canvas-wrap{position:relative;height:200px;margin:6px 0 10px}
+  .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .donut-center .dc-pct{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:38px;line-height:1;color:#999}
+  .donut-center .dc-lab{font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#7a818c;margin-top:3px}
+  .leg{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+  .leg .row{display:flex;justify-content:space-between;align-items:center;font-size:13.5px}
+  .leg .row .lab{display:flex;align-items:center;gap:8px;color:var(--gris)}
+  .leg .row .sw{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+  .leg .row .val{font-weight:700;font-variant-numeric:tabular-nums}
+
+  /* ── Bloque 2 y 3: tabla tipo PDF ── */
+  /* cabecera de sección estilo PDF */
+  .pdf-section{margin-top:36px;break-inside:avoid}
+  .pdf-header{background:var(--vino);padding:12px 18px 10px;border-radius:10px 10px 0 0}
+  .pdf-header h2{margin:0;color:#fff;font-family:"Barlow Condensed";font-weight:800;font-size:22px;text-transform:uppercase;letter-spacing:.04em}
+  .pdf-header .sub{color:var(--naranja-h);font-family:"Barlow Condensed";font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+  .pdf-body{background:var(--blanco);border:1px solid var(--linea);border-top:0;border-radius:0 0 10px 10px;overflow:hidden}
+
+  /* tabla sin scroll — toda la data visible */
+  .pdf-table{width:100%;border-collapse:collapse;font-size:12.5px}
+  .pdf-table thead tr{background:#f4a623} /* franja amarilla del PDF */
+  .pdf-table thead th{color:var(--vino);font-family:"Barlow Condensed";font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;border:1px solid #ddd;white-space:nowrap;text-align:center}
+  .pdf-table thead th.left{text-align:left}
+  .pdf-table tbody td{padding:6px 10px;border:1px solid #e8e8e8;vertical-align:middle;white-space:nowrap;font-weight:600}
+  .pdf-table tbody tr:nth-child(even){background:#fafafa}
+  .pdf-table tbody tr:hover{background:#fff7ef}
+  .pdf-table tbody tr.lamb-row td{background:#5a1414;color:#FFD166;font-weight:700}
+  .pdf-table tbody tr.lamb-row td.av-cell{color:#FFD166}
+  .pdf-table tfoot tr td{background:#3a3a3a;color:#FFD166;font-family:"Barlow Condensed";font-weight:700;font-size:12px;padding:7px 10px;border:1px solid #555}
+  .pdf-table td.num,
+  .pdf-table th.num{text-align:right;font-variant-numeric:tabular-nums}
+  .pdf-table td.center{text-align:center}
+
+  /* celda de avance % con barra inline */
+  .av-wrap{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+  .av-bar{width:60px;height:10px;background:#e0e0e0;border-radius:3px;overflow:hidden;flex:0 0 auto}
+  .av-bar span{display:block;height:100%;border-radius:3px}
+  .av-pct{font-family:"Barlow Condensed";font-weight:800;font-size:13px;min-width:42px;text-align:right}
+
+  /* franja de fecha/promedio estilo PDF */
+  .pdf-date-row{background:#fffbe6;display:flex;justify-content:space-between;align-items:center;padding:6px 12px;border-bottom:1px solid #ddd;font-size:12px;font-weight:600;color:var(--vino)}
+  .pdf-date-row .prom{font-family:"Barlow Condensed";font-weight:800;font-size:15px;color:var(--naranja-h)}
+
+  /* leyenda semáforo */
+  .pdf-legend{display:flex;gap:14px;align-items:center;padding:10px 14px;font-size:11.5px;color:var(--gris);flex-wrap:wrap}
+  .pdf-legend .litem{display:flex;align-items:center;gap:5px}
+  .pdf-legend .litem i{width:22px;height:12px;border-radius:3px;display:inline-block}
+
+  /* ── Bloque 3 gráfico de barras agrupadas ── */
+  .b3-chart-wrap{background:var(--blanco);border:1px solid var(--linea);border-radius:0 0 10px 10px;padding:20px}
+  .b3-chart-title-big{font-family:"Barlow Condensed";font-weight:800;font-size:16px;text-transform:uppercase;letter-spacing:.04em;color:var(--vino);margin-bottom:4px;text-align:center}
+  .b3-chart-subtitle{font-size:12px;color:var(--naranja-h);font-weight:700;text-align:center;margin-bottom:16px}
+  .b3-dona-row{display:flex;align-items:center;gap:32px;margin-top:20px;padding-top:16px;border-top:2px dashed #f4a623;flex-wrap:wrap}
+  .b3-left-kpis{flex:0 0 auto;min-width:200px}
+  .b3-kpi-item .b3-kpi-label{font-family:"Barlow Condensed";font-weight:800;font-size:13px;text-transform:uppercase;color:var(--gris);letter-spacing:.04em}
+  .b3-kpi-item .b3-kpi-val{font-family:"Barlow Condensed";font-weight:800;font-size:22px;background:var(--vino);color:#FFD166;padding:4px 14px;border-radius:4px;margin-top:4px;display:inline-block}
+  .b3-dona-item{flex:0 0 auto;text-align:center}
+  .b3-dona-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .b3-dona-pct{font-family:"Barlow Condensed";font-weight:800;font-size:30px;line-height:1}
+  .b3-dona-sub{font-family:"Barlow Condensed";font-weight:700;font-size:9px;text-transform:uppercase;color:var(--gris);letter-spacing:.04em;text-align:center;line-height:1.3;margin-top:2px}
+
+  /* ── Bloque 3: gráfico de barras HTML/CSS (sin overflow) ── */
+  .pdf-header-logo{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  .pdf-header-logo span{color:#fff;font-size:9px;font-weight:800;text-transform:uppercase;line-height:1.25;letter-spacing:.02em}
+  .pdf-header-logo span b{color:#FFD166;font-size:11px}
+  .ue-bars-grid{display:flex;align-items:flex-end;justify-content:center;gap:18px;min-height:300px;padding:30px 10px 10px;flex-wrap:nowrap;overflow-x:auto}
+  .ue-bar-col{display:flex;flex-direction:column;align-items:center;flex:1 1 0;min-width:74px;max-width:120px}
+  .ue-bar-col .ubc-pim{font-family:"Barlow Condensed";font-weight:800;font-size:11px;color:var(--vino);white-space:nowrap;margin-bottom:6px;text-align:center}
+  .ue-bar-col .ubc-bars{display:flex;align-items:flex-end;gap:4px;height:220px;width:100%;justify-content:center}
+  .ue-bar-col .ubc-bar-wrap{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;width:24px}
+  .ue-bar-col .ubc-pct{font-family:"Barlow Condensed";font-weight:800;font-size:11px;margin-bottom:3px;white-space:nowrap}
+  .ue-bar-col .ubc-bar{width:100%;border-radius:3px 3px 0 0;min-height:2px}
+  .ue-bar-col .ubc-bar.pim{background:linear-gradient(180deg,#f4c4c4,#fbe5e5);height:220px;opacity:.9}
+  .ue-bar-col .ubc-bar.dev{background:var(--naranja-h)}
+  .ue-bar-col .ubc-bar.cert{background:#90c97c}
+  .ue-bar-col .ubc-name{font-family:"Barlow Condensed";font-weight:800;font-size:11px;text-transform:uppercase;color:var(--gris);text-align:center;margin-top:8px;line-height:1.15}
+  .ue-bars-legend{display:flex;gap:20px;justify-content:center;margin-top:14px;font-size:12px}
+  .ue-bars-legend .li{display:flex;align-items:center;gap:6px;font-weight:700;color:var(--texto)}
+  .ue-bars-legend .li i{width:16px;height:12px;border-radius:3px;display:inline-block}
+
+  /* ── Bloque 6: donas Chart.js ── */
+  .b6-donuts-wrap{display:flex;align-items:flex-start;gap:0;padding:16px;flex-wrap:wrap}
+  .b6-rubro-donas{display:flex;gap:10px;flex:1;flex-wrap:wrap;justify-content:flex-start;align-items:flex-start}
+  .b6-dona-card{text-align:center;min-width:110px;max-width:140px}
+  .b6-dona-card h4{font-family:"Barlow Condensed";font-weight:800;font-size:11px;text-transform:uppercase;color:var(--vino);margin:0 0 1px;line-height:1.2}
+  .b6-dona-card .sub{font-size:9px;color:var(--gris);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+  .b6-dona-card .mc{position:relative;height:120px}
+  .b6-dona-card .mc-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .b6-dona-card .mc-pct{font-family:"Barlow Condensed";font-weight:800;font-size:24px;line-height:1}
+  .b6-dona-card .mc-rest{font-size:9px;color:var(--gris);font-weight:700}
+  .b6-dona-card .pim-lbl{font-size:10px;color:var(--gris);margin-top:2px;font-weight:700}
+  .b6-dona-card .pim-lbl b{color:var(--vino);font-family:"Barlow Condensed";font-size:11px}
+  .b6-total-card{min-width:160px;border-left:2px solid var(--linea);padding-left:16px;margin-left:8px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .b6-total-card .mc{position:relative;height:150px;width:150px}
+  .b6-total-card .mc-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .b6-total-card .big-pct{font-family:"Barlow Condensed";font-weight:800;font-size:42px;line-height:1;color:var(--dev)}
+  .b6-total-card .big-sub{font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:.04em;text-align:center;margin-top:2px}
+  .b6-total-card .montos{margin-top:8px;font-size:11px;text-align:center}
+  .b6-total-card .montos .ml{color:var(--naranja-h);font-weight:800;font-family:"Barlow Condensed"}
+
+  /* tabla completa del bloque 6 */
+  .b6-table-wrap{border-top:1px solid var(--linea)}
+
+  /* ── Bloque 6C: UEs adicionales ── */
+  .b6ue-panel{border-bottom:1px solid #e8e8e8;margin:0}
+  .b6ue-panel:last-child{border-bottom:0}
+  .b6ue-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#fff7ef;border-bottom:1px solid #f0e0c0}
+  .b6ue-etiqueta{background:#5a1414;color:#fff;font-family:"Barlow Condensed";font-weight:800;font-size:12px;padding:4px 12px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em;min-width:80px;text-align:center;line-height:1.3}
+  .b6ue-etiqueta.peot{background:#1f4e79}
+  .b6ue-etiqueta.agri{background:#2f6b34}
+  .b6ue-etiqueta.trans{background:#7a4200}
+  .b6ue-etiqueta.geresa{background:#5a1414}
+  .b6ue-etiqueta.hmercedes{background:#5a3080}
+  .b6ue-etiqueta.hbelen{background:#1a6060}
+  .b6ue-etiqueta.hregional{background:#334466}
+  .b6ue-prom-pill{font-family:"Barlow Condensed";font-weight:800;font-size:18px;color:var(--naranja-h);background:#5a1414;padding:4px 14px;border-radius:6px}
+  /* ── Bloque 9: proyección ── */
+
+  /* ── Footer ── */
+  footer{border-top:1px solid var(--linea);margin-top:36px;background:#fff}
+  footer .wrap{padding:14px 20px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--gris)}
+  footer b{color:var(--vino2)}
+
+  @media(max-width:900px){
+    .loader{grid-template-columns:1fr}
+    .drop{border-right:0;border-bottom:1px solid var(--linea)}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .donuts{grid-template-columns:1fr}
+    .titleband h1{font-size:23px}
+    .ue-grouped-chart{gap:8px}
+    .ue-col{min-width:50px}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  :focus-visible{outline:3px solid #f4b32c;outline-offset:2px;border-radius:6px}
+</style>
+</head>
+<body>
+
+  <!-- Cabecera -->
+  <div class="topbar">
+    <div class="wrap">
+      <div class="brand">
+        <img src="data:image/png;base64,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" class="escudo" alt="Escudo Gobierno Regional de Lambayeque" />
+        <div>
+          <div class="t1">Gobierno Regional de</div>
+          <div class="t2">Lambayeque</div>
+        </div>
+      </div>
+      <div class="orpmi">
+        <div class="o1">ORPMI</div>
+        <div class="o2">Oficina Regional de Programación Multianual de Inversiones</div>
+      </div>
+    </div>
+  </div>
+  <div class="titleband">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+      <h1>Ejecución Financiera</h1>
+      <div class="update-pill">Actualizado: <span id="fechaTop">—</span></div>
+    </div>
+  </div>
+  <div class="subband"><div class="wrap">Del Gobierno Regional de Lambayeque</div></div>
+  <div class="greca" id="greca" aria-hidden="true"></div>
+
+  <main>
+    <div class="wrap">
+
+      <!-- Panel de carga / consolidador -->
+      <p class="eyebrow">Paso 1 · Consolidar archivos del MEF</p>
+      <section class="card loader">
+        <div class="drop">
+          <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Cargar archivos .xls">
+            <div class="ic">📥</div>
+            <div><b>Arrastra aquí</b> tus archivos <b>.xls</b></div>
+            <div class="hint">o haz clic para elegirlos</div>
+          </div>
+          <input type="file" id="file" accept=".xls,.xlsx" multiple hidden />
+          <button class="btn" id="pick">Seleccionar archivos</button>
+          <button class="btn ghost" id="clear">Limpiar todo</button>
+          <button class="btn btn-pdf" id="btnPdf" title="Exporta cada sección como una página horizontal del PDF">⬇ Exportar a PDF</button>
+          <div class="invnote" title="El tablero muestra siempre proyectos de inversión">Mostrando <b>solo inversiones</b> <small>(proyectos)</small></div>
+          <input type="checkbox" id="soloInv" checked hidden />
+          <span hidden>Solo inversiones <small>(proyectos)</small></span>
+        </div>
+        <div class="files">
+          <div class="scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:34px"></th>
+                  <th>Archivo</th>
+                  <th>Tipo</th>
+                  <th>Alcance detectado</th>
+                  <th class="num">PIM (S/)</th>
+                  <th class="num">Avance</th>
+                  <th>Consistencia</th>
+                </tr>
+              </thead>
+              <tbody id="rows">
+                <tr><td colspan="7"><div class="empty">Aún no hay archivos. <b>Carga tus .xls</b> (gen_, proy_, RESUMEN o ReporteGasto) y el tablero los consolidará al instante.</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <div class="note"><span class="dot">▲</span><span id="scopeNote">Sugerencia: consolida archivos del <b>mismo nivel</b> (todas las Unidades Ejecutoras, o un solo Pliego) para no duplicar montos. Marca o desmarca cada archivo para incluirlo.</span></div>
+
+      <!-- KPIs + Donas Bloque 1 -->
+      <div id="b1wrap">
+
+      <!-- Cabecera tipo PDF del Bloque 1 -->
+      <div class="b1-header">
+        <div class="b1-title">Ejecución Financiera</div>
+        <div class="b1-subtitle">Del Gobierno Regional de Lambayeque</div>
+      </div>
+      <!-- Franja de fecha del Bloque 1 -->
+      <div class="pdf-date-row" style="border-radius:0;border-top:0">
+        <span id="b1fecha">—</span>
+        <span style="font-family:'Barlow Condensed';font-weight:700;font-size:12px;color:var(--gris)">Fuente: SIAF — Consulta Amigable MEF</span>
+      </div>
+      <div class="b1-donuts-wrap">
+      <div class="kpis">
+        <div class="kpi accent"><div class="k-l">PIM consolidado</div><div class="k-v" id="kPim">S/ 0</div><div class="k-s" id="kFiles">0 archivos · 0 registros</div></div>
+        <div class="kpi"><div class="k-l">Certificado</div><div class="k-v" id="kCert">S/ 0</div><div class="k-s" id="kCertP">0.0%</div></div>
+        <div class="kpi"><div class="k-l">Compromiso</div><div class="k-v" id="kComp">S/ 0</div><div class="k-s" id="kCompP">0.0%</div></div>
+        <div class="kpi"><div class="k-l">Devengado</div><div class="k-v" id="kDev">S/ 0</div><div class="k-s" id="kDevP">0.0%</div></div>
+        <div class="kpi"><div class="k-l">Por devengar</div><div class="k-v" id="kPend">S/ 0</div><div class="k-s">PIM − Devengado</div></div>
+      </div>
+
+      <div class="b1-dev-label">Devengado</div>
+
+      <!-- Donas -->
+      <div class="donuts">
+        <div class="donut cert">
+          <h3>Certificado</h3>
+          <div class="canvas-wrap"><canvas id="cCert"></canvas><div class="donut-center"><span class="dc-pct" id="pCert">0%</span><span class="dc-lab">Certificado</span></div></div>
+          <div class="leg">
+            <div class="row"><span class="lab"><span class="sw" style="background:var(--cert)"></span>Certificado</span><span class="val" id="lCert">S/ 0</span></div>
+            <div class="row"><span class="lab"><span class="sw" style="background:var(--cert-bg)"></span>Por certificar</span><span class="val" id="lCertR">S/ 0</span></div>
+          </div>
+        </div>
+        <div class="donut dev">
+          <h3>Devengado</h3>
+          <div class="canvas-wrap"><canvas id="cDev"></canvas><div class="donut-center"><span class="dc-pct" id="pDev">0%</span><span class="dc-lab">Devengado</span></div></div>
+          <div class="leg">
+            <div class="row"><span class="lab"><span class="sw" style="background:var(--dev)"></span>Devengado</span><span class="val" id="lDev">S/ 0</span></div>
+            <div class="row"><span class="lab"><span class="sw" style="background:var(--dev-bg)"></span>Por devengar</span><span class="val" id="lDevR">S/ 0</span></div>
+          </div>
+        </div>
+        <div class="donut comp">
+          <h3>Compromiso</h3>
+          <div class="canvas-wrap"><canvas id="cComp"></canvas><div class="donut-center"><span class="dc-pct" id="pComp">0%</span><span class="dc-lab">Compromiso</span></div></div>
+          <div class="leg">
+            <div class="row"><span class="lab"><span class="sw" style="background:var(--comp)"></span>Compromiso</span><span class="val" id="lComp">S/ 0</span></div>
+            <div class="row"><span class="lab"><span class="sw" style="background:var(--comp-bg)"></span>Por comprometer</span><span class="val" id="lCompR">S/ 0</span></div>
+          </div>
+        </div>
+      </div>
+      </div><!-- fin b1-donuts-wrap -->
+      </div><!-- fin b1wrap -->
+
+      <!-- ═══════════════ BLOQUE 2-A: Devengado % ═══════════════ -->
+      <div class="pdf-section" id="b2secDevP">
+        <div class="pdf-header">
+          <h2>Ejecución Presupuestal de Inversiones</h2>
+          <div class="sub">A Nivel Gobiernos Regionales — Por Devengado en %</div>
+        </div>
+        <div class="pdf-body">
+          <div class="pdf-date-row">
+            <span id="b2fechaA">—</span>
+            <span>PROMEDIO DE EJECUCIÓN: <span class="prom" id="b2promA">—</span></span>
+          </div>
+          <table class="pdf-table">
+            <thead><tr>
+              <th style="width:48px">N°</th>
+              <th class="left" style="width:auto">PLIEGO</th>
+              <th class="num">PIM</th>
+              <th class="num">DEVENGADO</th>
+              <th class="num" style="width:160px">AVANCE %</th>
+            </tr></thead>
+            <tbody id="goreRowsA">
+              <tr><td colspan="5" style="padding:32px;text-align:center;color:#888">Carga el archivo nacional de proyectos para ver el ranking.</td></tr>
+            </tbody>
+          </table>
+          <div class="pdf-legend">
+            <span class="litem"><i style="background:var(--rojo)"></i>GORE Por Debajo del Prom.</span>
+            <span class="litem"><i style="background:var(--amber)"></i>GORE Intermedio del Prom.</span>
+            <span class="litem"><i style="background:var(--verde)"></i>GORE Superior del Prom.</span>
+            <span class="litem"><i style="background:var(--vino)"></i>Lambayeque</span>
+            <span id="b2metaA" style="margin-left:auto;font-size:11px;color:var(--gris)"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ BLOQUE 2-B: Devengado S/ ═══════════════ -->
+      <div class="pdf-section" id="b2secDevS">
+        <div class="pdf-header">
+          <h2>Ejecución Presupuestal de Inversiones</h2>
+          <div class="sub">A Nivel Gobiernos Regionales — Por Devengado en Monto</div>
+        </div>
+        <div class="pdf-body">
+          <div class="pdf-date-row">
+            <span id="b2fechaB">—</span>
+            <span id="b2metaB"></span>
+          </div>
+          <table class="pdf-table">
+            <thead><tr>
+              <th style="width:48px">N°</th>
+              <th class="left">PLIEGO</th>
+              <th class="num">PIM</th>
+              <th class="num">DEVENGADO</th>
+              <th class="num" style="width:140px">GRÁFICO</th>
+            </tr></thead>
+            <tbody id="goreRowsB">
+              <tr><td colspan="5" style="padding:32px;text-align:center;color:#888">Carga el archivo nacional de proyectos para ver el ranking.</td></tr>
+            </tbody>
+          </table>
+          <div class="pdf-legend">
+            <span class="litem"><i style="background:var(--vino)"></i>Lambayeque</span>
+            <span class="litem"><i style="background:#8B6045"></i>Devengado S/</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ BLOQUE 2-C: Certificación % ═══════════════ -->
+      <div class="pdf-section" id="b2secCert">
+        <div class="pdf-header">
+          <h2>Ejecución Presupuestal de Inversiones</h2>
+          <div class="sub">A Nivel Gobiernos Regionales — Por Certificación en %</div>
+        </div>
+        <div class="pdf-body">
+          <div class="pdf-date-row">
+            <span id="b2fechaC">—</span>
+            <span>PROMEDIO DE CERTIFICACIÓN: <span class="prom" id="b2promC">—</span></span>
+          </div>
+          <table class="pdf-table">
+            <thead><tr>
+              <th style="width:48px">N°</th>
+              <th class="left">PLIEGO</th>
+              <th class="num">PIM</th>
+              <th class="num">CERTIFICADO</th>
+              <th class="num" style="width:160px">AVANCE % CERT.</th>
+            </tr></thead>
+            <tbody id="goreRowsC">
+              <tr><td colspan="5" style="padding:32px;text-align:center;color:#888">Carga el archivo nacional de proyectos para ver el ranking.</td></tr>
+            </tbody>
+          </table>
+          <div class="pdf-legend" id="b2metaC">
+            <span class="litem"><i style="background:var(--rojo)"></i>Por Debajo del Prom.</span>
+            <span class="litem"><i style="background:var(--naranja-h)"></i>Intermedio</span>
+            <span class="litem"><i style="background:var(--verde)"></i>Superior del Prom.</span>
+            <span class="litem"><i style="background:var(--vino)"></i>Lambayeque</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ BLOQUE 3: Tabla UE ═══════════════ -->
+      <div class="pdf-section" id="b3secTabla">
+        <div class="pdf-header">
+          <h2>Ejecución Presupuestal de Inversiones a Nivel UE</h2>
+          <div class="sub" style="color:#FFD166">Enero — Diciembre</div>
+        </div>
+        <div class="pdf-body">
+          <div class="pdf-date-row">
+            <span id="b3fecha">—</span>
+            <span>PROM. DE EJEC. A NIVEL DE UE: <span class="prom" id="b3prom">—</span></span>
+          </div>
+          <table class="pdf-table" id="ueTable">
+            <thead><tr>
+              <th style="width:44px">N°</th>
+              <th class="left">UNIDAD EJECUTORA</th>
+              <th class="num">PIM</th>
+              <th class="num">% PIM</th>
+              <th class="num">CERTIFICACIÓN</th>
+              <th class="num">% CERT</th>
+              <th class="num" style="background:#f4c8c8;color:var(--vino)">POR CERTIF.</th>
+              <th class="num">COMPROMISO</th>
+              <th class="num">% COMP.</th>
+              <th class="num" style="color:var(--naranja-h)">DEVENGADO</th>
+              <th class="num" style="background:#f4c8c8;color:var(--vino)">POR DEVENGAR</th>
+              <th class="num">AVANCE %</th>
+            </tr></thead>
+            <tbody id="ueRows">
+              <tr><td colspan="12" style="padding:32px;text-align:center;color:#888">Carga el pliego desglosado por Unidad Ejecutora para ver el detalle.</td></tr>
+            </tbody>
+            <tfoot id="ueFoot"></tfoot>
+          </table>
+          <div class="pdf-legend">
+            <span style="font-weight:700;color:var(--vino);font-size:12px">LEYENDA:</span>
+            <span class="litem"><i style="background:var(--rojo)"></i>BAJO 0.00% – 20.90%</span>
+            <span class="litem"><i style="background:var(--amber)"></i>INTERMEDIO 21.00% – 49.99%</span>
+            <span class="litem"><i style="background:var(--verde)"></i>ALTO 50.00% – 100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ BLOQUE 3: Gráfico de barras por UE ═══════════════ -->
+      <div class="pdf-section" id="b3secGrafico">
+        <div class="pdf-header" style="display:flex;align-items:center;justify-content:space-between">
+          <h2 style="margin:0">PIM Asignado según Unidad Ejecutora</h2>
+          <div class="pdf-header-logo">
+            <svg viewBox="0 0 100 100" aria-hidden="true" style="width:30px;height:30px">
+              <path d="M50 8 L92 26 V52 C92 74 73 90 50 96 C27 90 8 74 8 52 V26 Z" fill="#fff"/>
+              <path d="M50 14 L86 29 V52 C86 70 70 84 50 90 C30 84 14 70 14 52 V29 Z" fill="#FFD166"/>
+              <rect x="22" y="40" width="56" height="34" fill="#D4A373"/>
+            </svg>
+            <span>GOBIERNO REGIONAL DE<br><b>LAMBAYEQUE</b></span>
+          </div>
+        </div>
+        <div class="b3-chart-wrap">
+          <div class="b3-chart-title-big">Ejecución Presupuestal por Unidad Ejecutora</div>
+          <div class="b3-chart-subtitle">(PIM S/, Devengado % y Certificado %)</div>
+          <div class="ue-bars-grid" id="ueBarsGrid">
+            <div style="padding:40px;text-align:center;color:#888;width:100%">Carga el archivo de UE para ver el gráfico.</div>
+          </div>
+          <div class="ue-bars-legend">
+            <span class="li"><i style="background:#f4c4c4"></i>PIM</span>
+            <span class="li"><i style="background:var(--naranja-h)"></i>% Devengado</span>
+            <span class="li"><i style="background:#90c97c"></i>% Certificado</span>
+          </div>
+          <!-- Donas totales estilo PDF -->
+          <div class="b3-dona-row">
+            <div class="b3-left-kpis">
+              <div class="b3-kpi-item">
+                <div class="b3-kpi-label">PIM TOTAL :</div>
+                <div class="b3-kpi-val" id="b3pimTotal">—</div>
+              </div>
+              <div class="b3-kpi-item" style="margin-top:12px">
+                <div class="b3-kpi-label">CANT. INVERSIONES:</div>
+                <div class="b3-kpi-val" id="b3cantInv">—</div>
+              </div>
+            </div>
+            <div class="b3-dona-item">
+              <div style="position:relative;height:160px;width:160px">
+                <canvas id="cB3Dev"></canvas>
+                <div class="b3-dona-center"><span class="b3-dona-pct" id="b3DevPct" style="color:var(--naranja-h)">—</span><span class="b3-dona-sub">DEVENGADO<br>TOTAL %</span></div>
+              </div>
+            </div>
+            <div class="b3-dona-item">
+              <div style="position:relative;height:160px;width:160px">
+                <canvas id="cB3Cert"></canvas>
+                <div class="b3-dona-center"><span class="b3-dona-pct" id="b3CertPct" style="color:var(--cert)">—</span><span class="b3-dona-sub">CERTIFICADO<br>TOTAL %</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ═══════════════ BLOQUE 6A: Rubro / Fuente — Pliego ═══════════════ -->
+      <div class="pdf-section" id="b6secPliego">
+        <div class="pdf-header">
+          <h2>Ejecución Presupuestal por Rubro</h2>
+          <div class="sub">Ejecución Presupuestal de Inversiones por Rubro — <span id="b6subtitulo">Gobierno Regional de Lambayeque</span></div>
+        </div>
+        <div class="pdf-body">
+          <!-- Donas individuales por rubro + dona total -->
+          <div class="b6-donuts-wrap" id="b6Donuts">
+            <div style="padding:32px;text-align:center;color:#888;width:100%">Carga el archivo de rubros para ver la ejecución por fuente de financiamiento.</div>
+          </div>
+          <!-- Tabla completa -->
+          <div class="b6-table-wrap">
+            <div class="pdf-date-row">
+              <span id="b6fecha">—</span>
+              <span>PROM. DE EJEC.: <span class="prom" id="b6prom">—</span></span>
+            </div>
+            <table class="pdf-table">
+              <thead><tr>
+                <th style="width:40px">N°</th>
+                <th class="left">DESCRIPCIÓN</th>
+                <th class="num">PIM</th>
+                <th class="num">% PIM</th>
+                <th class="num">CERTIFICACIÓN</th>
+                <th class="num">% CERT</th>
+                <th class="num" style="background:#fce8e8;color:var(--vino)">POR CERTIF.</th>
+                <th class="num">COMPROMISO</th>
+                <th class="num">% COMP</th>
+                <th class="num" style="color:var(--naranja-h);font-weight:800">DEVENGADO</th>
+                <th class="num" style="background:#fce8e8;color:var(--vino)">POR DEVENGAR</th>
+                <th class="num" style="width:110px">AVANCE %</th>
+              </tr></thead>
+              <tbody id="rubroRows">
+                <tr><td colspan="12" style="padding:32px;text-align:center;color:#888">Carga el archivo de rubros del pliego.</td></tr>
+              </tbody>
+              <tfoot id="rubroFoot"></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ══════════════════════════════════════════════════════════════
+           BLOQUE 6 — SUB-SECCIÓN 1: Sede Central + PEOT
+      ══════════════════════════════════════════════════════════════ -->
+      <div class="pdf-section" id="b6rubro1">
+        <div class="pdf-header" style="background:#5a1414">
+          <h2>Ejecución Presupuestal por Rubro</h2>
+          <div class="sub" style="color:#FFD166">Sede Central / PEOT &nbsp;·&nbsp; <span id="b6rubro1fecha">—</span></div>
+        </div>
+        <div class="pdf-body" id="b6rubro1Paneles">
+          <div style="padding:40px;text-align:center;color:#888">
+            Carga los archivos XLS para ver la ejecución por rubro.
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           BLOQUE 6 — SUB-SECCIÓN 2: Agricultura + Transporte + GERESA
+      ══════════════════════════════════════════════════════════════ -->
+      <div class="pdf-section" id="b6rubro2">
+        <div class="pdf-header" style="background:#5a1414">
+          <h2>Ejecución Presupuestal por Rubro</h2>
+          <div class="sub" style="color:#FFD166">Agricultura / Transporte / GERESA &nbsp;·&nbsp; <span id="b6rubro2fecha">—</span></div>
+        </div>
+        <div class="pdf-body" id="b6rubro2Paneles">
+          <div style="padding:40px;text-align:center;color:#888">
+            Carga los archivos XLS para ver la ejecución por rubro.
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════════════
+           BLOQUE 6 — SUB-SECCIÓN 3: H. Mercedes + H. Belén + H. Regional
+      ══════════════════════════════════════════════════════════════ -->
+      <div class="pdf-section" id="b6rubro3">
+        <div class="pdf-header" style="background:#5a1414">
+          <h2>Ejecución Presupuestal por Rubro</h2>
+          <div class="sub" style="color:#FFD166">H. Mercedes / H. Belén / H. Regional &nbsp;·&nbsp; <span id="b6rubro3fecha">—</span></div>
+        </div>
+        <div class="pdf-body" id="b6rubro3Paneles">
+          <div style="padding:40px;text-align:center;color:#888">
+            Carga los archivos XLS para ver la ejecución por rubro.
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ BLOQUE 7: Funciones a nivel Pliego ═══════════════ -->
+      <div class="pdf-section" id="b7secFunciones">
+        <div class="pdf-header">
+          <h2>Funciones a Nivel Pliego</h2>
+          <div class="sub">Ejecución Presupuestal de Inversiones por Función — Gobierno Regional de Lambayeque</div>
+        </div>
+        <div class="pdf-body">
+          <div class="b6-table-wrap">
+            <div class="pdf-date-row">
+              <span id="b7fecha">—</span>
+              <span>PROM. DE EJEC.: <span class="prom" id="b7prom">—</span></span>
+            </div>
+            <table class="pdf-table">
+              <thead><tr>
+                <th class="left">FUNCIÓN</th>
+                <th class="num">PIM</th>
+                <th class="num">% PIM</th>
+                <th class="num">CERTIFICACIÓN</th>
+                <th class="num">% CERT</th>
+                <th class="num">COMPROMISO</th>
+                <th class="num">% COMP</th>
+                <th class="num" style="color:var(--naranja-h);font-weight:800">DEVENGADO</th>
+                <th class="num" style="background:#fce8e8;color:var(--vino)">POR DEVENGAR</th>
+                <th class="num" style="width:110px">AVANCE %</th>
+              </tr></thead>
+              <tbody id="funcionRows">
+                <tr><td colspan="10" style="padding:32px;text-align:center;color:#888">Carga el archivo de Funciones del Pliego.</td></tr>
+              </tbody>
+              <tfoot id="funcionFoot"></tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ BLOQUE 8: Histórico 2016-2026 (datos fijos del PDF institucional) ═══════════════ -->
+      <div class="pdf-section" id="b8secHistorico">
+        <div class="pdf-header">
+          <h2>Ejecución Presupuestal de Inversiones</h2>
+          <div class="sub">Comparativo Histórico de Enero — Diciembre — Gobierno Regional de Lambayeque &nbsp;·&nbsp; <span id="b8fecha">—</span></div>
+        </div>
+        <div class="pdf-body" style="padding:20px 24px 24px">
+          <!-- Etiqueta del año actual en vivo -->
+          <div id="b8vivo" style="font-family:'Barlow Condensed';font-weight:700;color:var(--gris);font-size:13px;margin-bottom:10px">
+            El año 2026 se actualiza en tiempo real con los archivos cargados. Los datos 2016–2025 provienen del informe institucional ORPMI.
+          </div>
+          <!-- GRÁFICO DEVENGADO -->
+          <div style="background:#fff;border:1px solid #e4e7ec;border-radius:10px;padding:16px 14px 10px;margin-bottom:20px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="background:#5a1414;color:#fff;font-family:'Barlow Condensed';font-weight:800;font-size:13px;padding:5px 14px;border-radius:6px;text-transform:uppercase;letter-spacing:.06em">DEVENGADO</div>
+            </div>
+            <div style="position:relative;height:280px;width:100%">
+              <canvas id="b8ChartDev"></canvas>
+            </div>
+          </div>
+          <!-- GRÁFICO PIM -->
+          <div style="background:#fff;border:1px solid #e4e7ec;border-radius:10px;padding:16px 14px 10px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="background:#7a4200;color:#fff;font-family:'Barlow Condensed';font-weight:800;font-size:13px;padding:5px 14px;border-radius:6px;text-transform:uppercase;letter-spacing:.06em">PIM</div>
+            </div>
+            <div style="position:relative;height:280px;width:100%">
+              <canvas id="b8ChartPim"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════ BLOQUE 9: PROYECCIÓN ACUMULADA AL 31/12/2026 ═══════════════ -->
+      <div class="pdf-section" id="b9secProyeccion">
+        <div class="pdf-header" style="background:#3a1a00">
+          <h2>Proyección Acumulada al 31/12/2026</h2>
+          <div class="sub" style="color:#FFD166">Junio — Diciembre · Gobierno Regional de Lambayeque &nbsp;·&nbsp; <span id="b9fechaSub">—</span></div>
+        </div>
+        <div class="pdf-body" style="padding:20px 24px 28px">
+          <!-- KPIs ejecutado a la fecha -->
+          <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:18px">
+            <div style="background:#5a1414;color:#fff;border-radius:10px;padding:14px 22px;flex:0 0 auto">
+              <div style="font-family:'Barlow Condensed';font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#ffcba0;margin-bottom:4px">Ejecutado a la fecha</div>
+              <div style="font-family:'Barlow Condensed';font-weight:800;font-size:26px;color:#FFD166" id="b9devActual">S/ 178,369,785</div>
+              <div style="font-family:'Barlow Condensed';font-weight:700;font-size:15px;color:#e8c17a" id="b9pctActual">22.5%</div>
+            </div>
+            <div style="background:#fff;border:2px solid #e8821e;border-radius:10px;padding:14px 22px;flex:0 0 auto">
+              <div style="font-family:'Barlow Condensed';font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-bottom:4px">Proyección Dic 2026</div>
+              <div style="font-family:'Barlow Condensed';font-weight:800;font-size:26px;color:var(--naranja-h)" id="b9devProy">S/ 772,173,813</div>
+              <div style="font-family:'Barlow Condensed';font-weight:700;font-size:15px;color:var(--vino)" id="b9pctProy">97.3%</div>
+            </div>
+            <div style="background:#fff;border:1px solid var(--linea);border-radius:10px;padding:14px 22px;flex:0 0 auto">
+              <div style="font-family:'Barlow Condensed';font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-bottom:4px">PIM 2026</div>
+              <div style="font-family:'Barlow Condensed';font-weight:800;font-size:26px;color:var(--vino)">S/ 793,371,105</div>
+            </div>
+          </div>
+          <!-- Gráfico de proyección -->
+          <div style="background:#fff;border:1px solid #e4e7ec;border-radius:10px;padding:16px 14px 10px">
+            <div style="font-family:'Barlow Condensed';font-weight:800;font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--naranja-h);text-align:center;margin-bottom:12px">
+              PROYECCIÓN ACUMULADA ENERO – DICIEMBRE 2026
+            </div>
+            <div style="position:relative;height:320px;width:100%">
+              <canvas id="b9Chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <footer><div class="wrap">
+      <span><b>Fuente:</b> SIAF — Consulta Amigable / Gasto Diario BI — MEF · apps5.mineco.gob.pe</span>
+      <span><b>Elaborado por:</b> ORPMI — GORE Lambayeque · <span id="fecha"></span></span>
+    </div></footer>
+  </main>
+
+<!-- ====== LECTOR UNIVERSAL (validado) — se inyecta aquí ====== -->
+<script id="mef-reader">/* ============================================================================
+ *  LECTOR UNIVERSAL DE ARCHIVOS .XLS DEL MEF  (Consulta Amigable / SIAF)
+ *  ORPMI - Gobierno Regional de Lambayeque
+ *
+ *  Problema que resuelve:
+ *   Las descargas del MEF que tienen extensión .xls NO son homogéneas.
+ *     - Familia "HTML"     -> Consulta Amigable. En realidad es HTML con varias
+ *                             <table>. SheetJS las reparte en varias hojas:
+ *                             cabecera basura + contexto + encabezados + datos.
+ *                             Esquema de 9 columnas FIJO y posicional.
+ *     - Familia "BINARIO"  -> Excel real antiguo (OLE2/CDFV2). Formato de
+ *                             reporte: título arriba, encabezado en una fila
+ *                             intermedia, columnas variables.
+ *
+ *  Este módulo detecta la familia por los bytes del archivo y devuelve SIEMPRE
+ *  la misma estructura normalizada, sin importar el origen.
+ *
+ *  Uso en NAVEGADOR (con xlsx.full.min.js ya cargado):
+ *     const res = MEFReader.readMef(uint8Array, "proy_salud.xls");
+ *
+ *  Uso en NODE:
+ *     global.XLSX = require('xlsx');
+ *     const { readMef } = require('./mef-reader.js');
+ * ==========================================================================*/
+(function (global) {
+  "use strict";
+
+  function getXLSX() {
+    if (global.XLSX) return global.XLSX;
+    if (typeof require !== "undefined") return require("xlsx");
+    throw new Error("SheetJS (XLSX) no está disponible en el entorno.");
+  }
+
+  // --- utilidades -----------------------------------------------------------
+
+  // Normaliza texto: mayúsculas, sin acentos, sin espacios extra. Para comparar.
+  function norm(s) {
+    return String(s == null ? "" : s)
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase().replace(/\s+/g, " ").trim();
+  }
+
+  function fmtN(n) {
+    return n == null ? "—" : Number(n).toLocaleString("es-PE", { maximumFractionDigits: 0 });
+  }
+
+  // Convierte cualquier celda monetaria/porcentual del MEF a número (o null).
+  //  Maneja: "S/ 1,234,567.89", "415189637.34", "1441879175", "-", "", "(123)".
+  function toNum(v) {
+    if (typeof v === "number") return isFinite(v) ? v : null;
+    let s = String(v == null ? "" : v).trim();
+    if (s === "" || s === "-" || s === "--") return null;
+    const neg = /^\(.*\)$/.test(s);           // negativo entre paréntesis
+    s = s.replace(/[^0-9.\-]/g, "");           // deja dígitos, punto y signo
+    if (s === "" || s === "-" || s === ".") return null;
+    let n = parseFloat(s);
+    if (!isFinite(n)) return null;
+    return neg ? -Math.abs(n) : n;
+  }
+
+  // ¿La cadena luce como "CODIGO: NOMBRE" típico del MEF? (5-21:, 2001621:, 452:)
+  function splitCodigo(desc) {
+    const d = String(desc == null ? "" : desc).trim();
+    const m = d.match(/^([0-9][0-9A-Za-z\-\.]*)\s*[:\-]\s*(.+)$/);
+    if (m) return { codigo: m[1], nombre: m[2].trim() };
+    return { codigo: "", nombre: d };
+  }
+
+  // --- detección de familia por bytes mágicos -------------------------------
+  function detectFamily(bytes) {
+    if (bytes && bytes.length >= 4 &&
+        bytes[0] === 0xD0 && bytes[1] === 0xCF &&
+        bytes[2] === 0x11 && bytes[3] === 0xE0) {
+      return "BINARIO";              // contenedor OLE2 (Excel .xls real)
+    }
+    return "HTML";                   // Consulta Amigable (HTML disfrazado)
+  }
+
+  // --- esquema Consulta Amigable (posicional, 9 columnas fijas) -------------
+  //  0:desc 1:PIA 2:PIM 3:Certificación 4:Compromiso Anual
+  //  5:Atención Compromiso 6:Devengado 7:Girado 8:Avance %
+  const CA_COLS = {
+    descripcion: 0, pia: 1, pim: 2, certificacion: 3, compromiso: 4,
+    atencion: 5, devengado: 6, girado: 7, avance: 8
+  };
+
+  function looksLikeCADataRow(row) {
+    if (!row || row.length < 8) return false;
+    const desc = String(row[CA_COLS.descripcion] == null ? "" : row[CA_COLS.descripcion]).trim();
+    if (!desc) return false;
+    // PIM y Devengado deben ser numéricos para considerarla fila de datos.
+    return toNum(row[CA_COLS.pim]) !== null && toNum(row[CA_COLS.devengado]) !== null;
+  }
+
+  function parseHTML(wb, XLSX) {
+    const registros = [], contexto = [];
+    for (const name of wb.SheetNames) {
+      const aoa = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, blankrows: false, raw: false });
+      for (const row of aoa) {
+        if (!looksLikeCADataRow(row)) continue;
+        const rawDesc = String(row[CA_COLS.descripcion]).trim();
+        const head = norm(rawDesc);
+        const rec = {
+          descripcion: rawDesc,
+          pia: toNum(row[CA_COLS.pia]),
+          pim: toNum(row[CA_COLS.pim]),
+          certificacion: toNum(row[CA_COLS.certificacion]),
+          compromiso: toNum(row[CA_COLS.compromiso]),
+          devengado: toNum(row[CA_COLS.devengado]),
+          girado: toNum(row[CA_COLS.girado]),
+          avance: toNum(row[CA_COLS.avance])
+        };
+        Object.assign(rec, splitCodigo(rawDesc));
+        // Filas "Sector .." / "Pliego .." / "Total" son agregados, no detalle.
+        if (/^(SECTOR|PLIEGO|UNIDAD EJECUTORA|PRODUCTO\/PROYECTO|NIVEL DE GOBIERNO)\b/.test(head)) {
+          rec.nivel = head.split(" ")[0];
+          contexto.push(rec);
+        } else if (/^TOTAL\b/.test(head)) {
+          rec.nivel = "TOTAL";
+          contexto.push(rec);
+        } else {
+          registros.push(rec);
+        }
+      }
+    }
+    return { registros, contexto };
+  }
+
+  // --- esquema binario (encabezado por tokens, columnas variables) ----------
+  const HEADER_TOKENS = {
+    pia: ["PIA"],
+    pim: ["PIM"],
+    certificacion: ["CERTIFICACION"],
+    compromiso: ["COMPROMISO"],
+    devengado: ["DEVENGADO"],
+    girado: ["GIRADO"],
+    avance: ["AVANCE"]
+  };
+
+  function findHeaderRow(aoa) {
+    for (let i = 0; i < aoa.length; i++) {
+      const cells = (aoa[i] || []).map(norm);
+      const joined = cells.join(" | ");
+      if (joined.includes("PIM") && joined.includes("PIA") &&
+          (joined.includes("DEVENGADO") || joined.includes("CERTIFICACION"))) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  function buildColMap(headerRow) {
+    const map = {}; // campo -> índice de columna
+    headerRow.forEach((cell, idx) => {
+      const t = norm(cell);
+      if (!t) return;
+      for (const field in HEADER_TOKENS) {
+        if (map[field] != null) continue;
+        if (HEADER_TOKENS[field].some(tok => t.includes(tok))) { map[field] = idx; break; }
+      }
+      // columna descriptiva (la de texto larga: "UNIDAD EJECUTORA / PROYECTO")
+      if (map.descripcion == null && /UNIDAD|PROYECTO|DESCRIPCION|RUBRO|GENERICA|ESPECIFICA/.test(t)) {
+        map.descripcion = idx;
+      }
+    });
+    if (map.descripcion == null) {                 // fallback: 1ª col no numérica del header
+      const numericCols = new Set(Object.values(map));
+      for (let c = 0; c < headerRow.length; c++) {
+        if (norm(headerRow[c]) && !numericCols.has(c)) { map.descripcion = c; break; }
+      }
+    }
+    return map;
+  }
+
+  // --- esquema FLAT: extracto plano tipo SIAF / Gasto Diario BI ------------
+  //  Encabezado snake_case en la fila 0, montos por mes (mto_devenga_01..12).
+  function findFlatHeader(aoa) {
+    for (let i = 0; i < Math.min(aoa.length, 5); i++) {
+      const cells = (aoa[i] || []).map(c => String(c == null ? "" : c).toLowerCase().trim());
+      if (cells.includes("mto_pim") && (cells.includes("mto_pia") || cells.includes("mto_certificado"))) {
+        return { row: i, cols: cells };
+      }
+    }
+    return null;
+  }
+
+  function parseFlat(aoa, header) {
+    const idx = name => header.cols.indexOf(name);
+    const sumMeses = (row, prefijo) => {
+      let s = 0;
+      for (let m = 1; m <= 12; m++) {
+        const c = idx(prefijo + String(m).padStart(2, "0"));
+        if (c >= 0) s += (toNum(row[c]) || 0);
+      }
+      return s;
+    };
+    // columna descriptiva preferida: producto_proyecto; si no, activ_obra_accinv
+    const cDesc = idx("producto_proyecto") >= 0 ? idx("producto_proyecto") : idx("activ_obra_accinv");
+    const registros = [];
+    for (let i = header.row + 1; i < aoa.length; i++) {
+      const row = aoa[i] || [];
+      const rawDesc = String(row[cDesc] == null ? "" : row[cDesc]).trim();
+      const pim = toNum(row[idx("mto_pim")]);
+      const dev = sumMeses(row, "mto_devenga_");
+      if (!rawDesc && pim === null) continue;
+      const rec = {
+        descripcion: rawDesc,
+        pia: toNum(row[idx("mto_pia")]),
+        pim: pim,
+        certificacion: toNum(row[idx("mto_certificado")]),
+        compromiso: toNum(row[idx("mto_compro_anual")]),
+        devengado: dev,
+        girado: sumMeses(row, "mto_girado_"),
+        pagado: sumMeses(row, "mto_pagado_"),
+        avance: pim ? +(dev / pim * 100).toFixed(2) : null,
+        // dimensiones útiles para el modelo (se conservan sin procesar)
+        dim: {
+          unidad_ejecutora: row[idx("unidad_ejecutora")],
+          tipo_prod_proy: row[idx("tipo_prod_proy")],
+          fuente_financ: row[idx("fuente_financ")],
+          rubro: row[idx("rubro")],
+          generica: row[idx("generica")],
+          funcion: row[idx("funcion")]
+        }
+      };
+      Object.assign(rec, splitCodigo(rawDesc));
+      registros.push(rec);
+    }
+    return { registros, contexto: [] };
+  }
+
+  function parseBinary(wb, XLSX) {
+    const registros = [], contexto = [];
+    for (const name of wb.SheetNames) {
+      const aoa = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, blankrows: false, raw: false });
+      const flat = findFlatHeader(aoa);
+      if (flat) { return parseFlat(aoa, flat); }   // extracto plano: esquema propio
+      const hr = findHeaderRow(aoa);
+      if (hr < 0) continue;
+      const map = buildColMap(aoa[hr]);
+      for (let i = hr + 1; i < aoa.length; i++) {
+        const row = aoa[i] || [];
+        const rawDesc = String(row[map.descripcion] == null ? "" : row[map.descripcion]).replace(/\s+/g, " ").trim();
+        const pim = toNum(row[map.pim]);
+        const dev = toNum(row[map.devengado]);
+        if (!rawDesc && pim === null && dev === null) continue; // fila vacía
+        const rec = {
+          descripcion: rawDesc,
+          pia: toNum(row[map.pia]),
+          pim: pim,
+          certificacion: toNum(row[map.certificacion]),
+          compromiso: toNum(row[map.compromiso]),
+          devengado: dev,
+          girado: map.girado != null ? toNum(row[map.girado]) : null,
+          avance: map.avance != null ? toNum(row[map.avance])
+                  : (pim ? +(dev / pim * 100).toFixed(2) : null)
+        };
+        Object.assign(rec, splitCodigo(rawDesc));
+        if (/^TOTAL/.test(norm(rawDesc))) { rec.nivel = "TOTAL"; contexto.push(rec); }
+        else registros.push(rec);
+      }
+    }
+    return { registros, contexto };
+  }
+
+  // --- agregados y validación de consistencia interna -----------------------
+  function sum(rows, field) {
+    return rows.reduce((a, r) => a + (r[field] || 0), 0);
+  }
+
+  // --- API principal --------------------------------------------------------
+  function readMef(bytes, source) {
+    const XLSX = getXLSX();
+    const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    const familia = detectFamily(u8);
+    const wb = XLSX.read(u8, { type: "array", codepage: 1252 }); // 1252 => acentos OK
+    const { registros, contexto } = familia === "BINARIO"
+      ? parseBinary(wb, XLSX) : parseHTML(wb, XLSX);
+
+    const total = {
+      pim: sum(registros, "pim"),
+      certificacion: sum(registros, "certificacion"),
+      compromiso: sum(registros, "compromiso"),
+      devengado: sum(registros, "devengado"),
+      girado: sum(registros, "girado"),
+      pagado: sum(registros, "pagado")
+    };
+    total.avance = total.pim ? +(total.devengado / total.pim * 100).toFixed(2) : null;
+
+    // Validación de consistencia interna: se elige como referencia la fila de
+    // contexto (Pliego/Unidad/Total) cuyo PIM esté MÁS CERCA de la suma del
+    // detalle, y se comprueba que cuadren (±0.5%). Así proy_* valida contra su
+    // Unidad Ejecutora y gen_* contra su Pliego, automáticamente.
+    let validacion = { hayReferencia: false, ok: null, detalle: "Sin fila total de referencia." };
+    const candidatas = contexto.filter(c => c.pim);
+    if (candidatas.length) {
+      const ref = candidatas.reduce((best, c) =>
+        Math.abs(c.pim - total.pim) < Math.abs(best.pim - total.pim) ? c : best);
+      const dif = Math.abs(ref.pim - total.pim);
+      const pct = ref.pim ? dif / ref.pim * 100 : 100;
+      validacion = {
+        hayReferencia: true,
+        ok: pct <= 0.5,
+        nivel: ref.nivel, referenciaPim: ref.pim, sumaPim: total.pim,
+        difAbs: +dif.toFixed(2), difPct: +pct.toFixed(3),
+        detalle: `Ref. ${ref.nivel} PIM=${fmtN(ref.pim)} vs Σ detalle=${fmtN(total.pim)} (dif ${pct.toFixed(3)}%)`
+      };
+    }
+
+    return { source, familia, hojas: wb.SheetNames.length, nRegistros: registros.length,
+             total, registros, contexto, validacion };
+  }
+
+  const api = { readMef, detectFamily, toNum, norm, splitCodigo };
+  global.MEFReader = api;
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+})(typeof self !== "undefined" ? self : (typeof globalThis !== "undefined" ? globalThis : this));
+</script>
+
+<!-- ====== Aplicación: consolidador + Bloque 1 ====== -->
+<script>
+(function(){
+  "use strict";
+  const $ = s => document.querySelector(s);
+  const fmtSoles = n => "S/ " + (Math.round(n||0)).toLocaleString("es-PE");
+  const fmtPct = n => (n==null?0:n).toFixed(1) + "%";
+
+  // Normaliza texto: mayúsculas, sin acentos, sin espacios extra.
+  // NOTA: existe una función equivalente dentro de mef-reader.js, pero vive
+  // en su propio IIFE (closure privado) y no es accesible desde aquí. Se
+  // duplica localmente a propósito para no acoplar la app al lector.
+  function norm(s) {
+    return String(s == null ? "" : s)
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase().replace(/\s+/g, " ").trim();
+  }
+
+  // greca Moche como SVG (firma visual, identidad Lambayeque)
+  (function(){
+    const svg = encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="18" viewBox="0 0 36 18">'+
+      '<rect width="36" height="18" fill="#5a1414"/>'+
+      '<path fill="none" stroke="#FFD166" stroke-width="2" d="M2 15 H14 V6 H8 V11 H11"/>'+
+      '<path fill="none" stroke="#e8821e" stroke-width="2" d="M20 3 H32 V12 H26 V7 H23"/>'+
+      '</svg>');
+    $("#greca").style.backgroundImage = 'url("data:image/svg+xml,'+svg+'")';
+  })();
+
+  $("#fecha").textContent = new Date().toLocaleDateString("es-PE",{day:"2-digit",month:"long",year:"numeric"});
+
+  // -------- Estado --------
+  let archivos = []; // {nombre, res, incluir, esFlat}
+
+  // alcance legible desde el contexto del archivo
+  function alcanceDe(res){
+    if(!res.contexto || !res.contexto.length){
+      // FLAT: usa la unidad ejecutora de la primera fila
+      const r0 = res.registros[0];
+      if(r0 && r0.dim && r0.dim.unidad_ejecutora) return String(r0.dim.unidad_ejecutora);
+      return "Detalle (extracto plano)";
+    }
+    const prio = {UNIDAD:4, TOTAL:3, PLIEGO:2, SECTOR:1, NIVEL:0};
+    const c = res.contexto.slice().sort((a,b)=>(prio[b.nivel]||0)-(prio[a.nivel]||0))[0];
+    return (c.nombre || c.descripcion || c.nivel || "—").replace(/\s+/g," ").trim();
+  }
+
+  // El archivo "nacional" lista los 26 pliegos GORE -> es otro ámbito (Bloque 2),
+  // no debe entrar a la consolidación del pliego (Bloque 1/3).
+  function esNacionalRes(res){
+    if(!res || !res.registros) return false;
+    const n = res.registros.filter(r =>
+      /^4\d\d$|^465$/.test(String(r.codigo||"")) ||
+      /GOBIERNO REGIONAL|MUNICIPALIDAD METROPOLITANA/i.test(String(r.descripcion||""))
+    ).length;
+    return n >= 15;
+  }
+  function goreName(desc){
+    return String(desc||"")
+      .replace(/^\d+:\s*/,"")
+      .replace(/GOBIERNO REGIONAL DE LA PROVINCIA CONSTITUCIONAL DEL\s*/i,"")
+      .replace(/GOBIERNO REGIONAL DEL DEPARTAMENTO DE\s*/i,"")
+      .replace(/GOBIERNO REGIONAL DE\s*/i,"")
+      .replace(/MUNICIPALIDAD METROPOLITANA DE\s*/i,"Lima Metropolitana")
+      .trim();
+  }
+  const VINO = "#5a1414", AZUL = "#1f4e79";
+  let b2mode = "devp"; // devp | devs | certp
+
+  // Archivo de proyectos individuales (B4): códigos 2xxxxxx, > 20 filas
+  function esProyectosRes(res){
+    if(!res || !res.registros) return false;
+    return res.registros.filter(r=>/^2\d{6}$/.test(String(r.codigo||""))).length > 20;
+  }
+  // ── BLOQUE 7: Funciones a nivel Pliego ──────────────────────────────────
+  // Catálogo cerrado del Clasificador Funcional del MEF. Mismo formato de
+  // código (2 dígitos) que un archivo de Rubro/Fuente de financiamiento, así
+  // que NO basta con contar dígitos — hay que comparar contra el catálogo de
+  // nombres de Función para no confundirlo con Bloque 6. Se define ANTES de
+  // esRubroRes porque esta última debe excluir explícitamente las filas que
+  // matchean este catálogo (ver esRubroRes más abajo).
+  const CATALOGO_FUNCIONES = [
+    "PLANEAMIENTO","ORDEN PUBLICO","JUSTICIA","TRABAJO","COMERCIO","TURISMO",
+    "AGROPECUARIA","PESCA","ENERGIA","MINERIA","INDUSTRIA","TRANSPORTE",
+    "COMUNICACIONES","AMBIENTE","SANEAMIENTO","VIVIENDA","SALUD",
+    "CULTURA Y DEPORTE","EDUCACION","PROTECCION SOCIAL","PREVISION SOCIAL",
+    "DEUDA PUBLICA","DEFENSA Y SEGURIDAD","LEGISLATIVA","RELACIONES EXTERIORES"
+  ];
+  function esFilaFuncion(r){
+    return CATALOGO_FUNCIONES.some(f => norm(r.descripcion||"").includes(norm(f)));
+  }
+  function esFuncionRes(res){
+    if(!res || !res.registros) return false;
+    const filas2d = res.registros.filter(r=>/^\d{2}$/.test(String(r.codigo||"")));
+    if(filas2d.length < 5) return false; // el Pliego trae 15-17 funciones; un Rubro trae 6-7
+    const matches = filas2d.filter(esFilaFuncion).length;
+    return matches >= filas2d.length * 0.6; // mayoría del catálogo de Función reconocido
+  }
+
+  // Archivo de rubros (B6): códigos cortos de fuente (00,09,13,15,18,19).
+  // IMPORTANTE: excluye filas que matchean el catálogo de Función (Bloque 7),
+  // porque ambos usan el mismo formato de código de 2 dígitos y, sin este
+  // filtro, un archivo de Función (15-17 filas) también cumpliría "≥3 filas
+  // de 2 dígitos" y se colaría por error en el Bloque 6 (Rubro).
+  function esRubroRes(res){
+    if(!res || !res.registros) return false;
+    const filas2d = res.registros.filter(r=>/^\d{2}$/.test(String(r.codigo||"")));
+    const filasRubro = filas2d.filter(r=>!esFilaFuncion(r));
+    return filasRubro.length >= 3;
+  }
+  // Rubro a nivel PLIEGO (todo el GORE) vs a nivel UNIDAD (p.ej. Sede Central)
+  // El archivo de Consulta Amigable trae jerarquía completa en `contexto`:
+  // primero la fila PLIEGO y, si el reporte está filtrado por UE, también
+  // una fila UNIDAD. Por eso hay que revisar TODO el array de contexto
+  // (no solo contexto[0]) y priorizar UNIDAD: si existe, el archivo está
+  // acotado a una sola Unidad Ejecutora (p.ej. Sede Central), aunque la
+  // fila PLIEGO aparezca primero en el reporte.
+  function rubroNivel(res){
+    if(!esRubroRes(res)) return null;
+    const ctx = res.contexto || [];
+    if(ctx.some(c=>c.nivel==="UNIDAD")) return "UNIDAD";
+    if(ctx.some(c=>c.nivel==="PLIEGO")) return "PLIEGO";
+    // fallback: el pliego trae 5-6 rubros, una UE trae 2-4
+    return res.registros.filter(r=>/^\d{2}$/.test(String(r.codigo||""))).length >= 5 ? "PLIEGO" : "UNIDAD";
+  }
+
+  // Archivo "pliego desglosado por UE" (ya en inversiones): filas con código de UE NNN-NNNN.
+  function esPorUERes(res){
+    if(!res || !res.registros) return false;
+    const n = res.registros.filter(r=>/^\d{3}-\d+$/.test(String(r.codigo||""))).length;
+    return n >= 3;
+  }
+
+  // ── BLOQUE 8: Histórico de años anteriores ──────────────────────────────
+  // Mismo esquema posicional que un archivo "por-UE" (Bloque 1/3), pero de
+  // un año fiscal ya cerrado. El propio archivo CA declara su año en la
+  // cabecera HTML ("Año de Ejecución: YYYY"), fuera de la tabla de datos,
+  // por lo que se extrae con una búsqueda directa sobre el texto crudo.
+  const ANIO_ACTUAL = new Date().getFullYear();
+  function extraerAnioArchivo(rawText){
+    const m = /A[ñn]o de Ejecuci[oó]n.*?(\d{4})/is.exec(rawText||"");
+    return m ? parseInt(m[1],10) : null;
+  }
+  function esHistoricoRes(res, anio){
+    if(!esPorUERes(res)) return false;          // mismo esquema que por-UE
+    if(!anio) return false;                      // sin año detectado, no se puede clasificar
+    return anio < ANIO_ACTUAL;                   // años cerrados, no el año en curso
+  }
+  function cleanUEName(d){
+    const s = String(d||"");
+    if(/OLMOS TINAJONES|PROY\.?\s*ESP/i.test(s)) return "PEOT";
+    if(/MERCEDES/i.test(s)) return "H. Mercedes";
+    if(/BELEN/i.test(s)) return "H. Belén";
+    if(/HOSPITAL REGIONAL/i.test(s)) return "H. Regional";
+    if(/AUTORIDAD PORTUARI/i.test(s)) return "A. Portuaria";
+    if(/EDUCAC/i.test(s)) return "Educación";
+    if(/\bSALUD\b|GERESA/i.test(s)) return "Salud";
+    if(/SEDE CENTRAL/i.test(s)) return "Sede Central";
+    if(/AGRICULTURA/i.test(s)) return "Agricultura";
+    if(/TRANSPORTE/i.test(s)) return "Transportes";
+    return s.replace(/^\d{3}-\d+:\s*/,"")
+      .replace(/REGION LAMBAYEQUE\s*-?\s*/i,"")
+      .replace(/GOB\.?\s*REG\.?\s*(DPTO\.?\s*)?(DE\s*)?LAMBAYEQUE\s*-?\s*/i,"")
+      .trim() || "UE";
+  }
+
+  // ¿es extracto plano? (tiene dim con tipo_prod_proy)
+  function esFlat(res){ return res.registros.some(r=>r.dim && r.dim.tipo_prod_proy!=null); }
+
+  // ¿la fila es un proyecto de inversión?
+  //  FLAT: tipo_prod_proy = "2.PROYECTO".  CA: código de proyecto de 7 díg. (2xxxxxx).
+  function esInversion(r){
+    if(r.dim && r.dim.tipo_prod_proy!=null) return /^2\./.test(String(r.dim.tipo_prod_proy));
+    return /^2\d{6}$/.test(String(r.codigo||""));
+  }
+
+  // totales de un archivo, aplicando el filtro "solo inversiones" a CUALQUIER familia
+  function totalesArchivo(a, soloInv){
+    if(!soloInv || a.esPorUE) return a.res.total;   // por-UE ya viene en inversiones
+    const t={pim:0,certificacion:0,compromiso:0,devengado:0};
+    for(const r of a.res.registros){
+      if(esInversion(r)){
+        t.pim+=r.pim||0; t.certificacion+=r.certificacion||0;
+        t.compromiso+=r.compromiso||0; t.devengado+=r.devengado||0;
+      }
+    }
+    return t;
+  }
+  // etiqueta corta de Unidad Ejecutora a partir del contexto del archivo
+  function ueLabel(res){
+    if(!res.contexto || !res.contexto.length){
+      const r0=res.registros[0];
+      if(r0 && r0.dim && r0.dim.unidad_ejecutora)
+        return String(r0.dim.unidad_ejecutora).replace(/^\d+\.\s*/,"").replace(/REGION LAMBAYEQUE\s*-?\s*/i,"").trim() || "Sede Central";
+      return "Detalle";
+    }
+    const u=res.contexto.find(c=>c.nivel==="UNIDAD")||res.contexto[0];
+    let s=(u.nombre||u.descripcion||"");
+    s=s.replace(/^Unidad Ejecutora\s*[\d-]+:\s*/i,"")
+       .replace(/REGION LAMBAYEQUE\s*-?\s*/i,"")
+       .replace(/GOB\.?\s*REG\.?\s*(DPTO\.?\s*)?(DE\s*)?LAMBAYEQUE\s*-?\s*/i,"").trim();
+    return s || u.nivel || "UE";
+  }
+  const semColor = av => av<=20.9 ? getCSS("--rojo") : (av<=49.99 ? getCSS("--amber") : getCSS("--verde"));
+
+  // -------- Lectura de archivos --------
+  function leerArchivo(file){
+    return new Promise((resolve)=>{
+      const fr = new FileReader();
+      fr.onload = () => {
+        try{
+          const bytes = new Uint8Array(fr.result);
+          const res = window.MEFReader.readMef(bytes, file.name);
+          // Texto crudo (ISO-8859-1) para extraer metadatos de cabecera que
+          // XLSX.js no conserva, como "Año de Ejecución: YYYY" (Bloque 8).
+          let rawText = "";
+          try { rawText = new TextDecoder("iso-8859-1").decode(bytes); } catch(_){}
+          const anio = extraerAnioArchivo(rawText);
+          resolve({nombre:file.name, res, incluir:true, esFlat:esFlat(res),
+                   esNacional:esNacionalRes(res), esPorUE:esPorUERes(res),
+                   esProyectos:esProyectosRes(res), esRubro:esRubroRes(res),
+                   esFuncion:esFuncionRes(res), anio,
+                   esHistorico:esHistoricoRes(res, anio)});
+        }catch(e){
+          resolve({nombre:file.name, error:e.message});
+        }
+      };
+      fr.onerror = () => resolve({nombre:file.name, error:"No se pudo leer el archivo."});
+      fr.readAsArrayBuffer(file);
+    });
+  }
+
+  async function agregar(fileList){
+    const nuevos = await Promise.all(Array.from(fileList).map(leerArchivo));
+    for(const n of nuevos){
+      if(n.error){ alert("⚠ "+n.nombre+": "+n.error); continue; }
+      // evitar duplicados por nombre
+      archivos = archivos.filter(a=>a.nombre!==n.nombre);
+      archivos.push(n);
+    }
+    render();
+  }
+
+  // -------- Render tabla de archivos --------
+  function render(){
+    const tb = $("#rows");
+    const soloInv = true;
+    if(!archivos.length){
+      tb.innerHTML = '<tr><td colspan="7"><div class="empty">Aún no hay archivos. <b>Carga tus .xls</b> (gen_, proy_, RESUMEN o ReporteGasto) y el tablero los consolidará al instante.</div></td></tr>';
+      consolidar();
+      return;
+    }
+    tb.innerHTML = "";
+    archivos.forEach((a,i)=>{
+      const t = a.esNacional ? a.res.total : totalesArchivo(a, soloInv);
+      const v = a.res.validacion;
+      const fam = a.esFlat ? "FLAT" : a.res.familia;
+      let badge = '<span class="badge none">· sin ref.</span>';
+      if(v.hayReferencia) badge = v.ok
+        ? '<span class="badge ok">✔ cuadra</span>'
+        : '<span class="badge warn">‼ revisar '+v.difPct+'%</span>';
+      const av = t.pim ? (t.devengado/t.pim*100).toFixed(1)+"%" : "—";
+      const etq = a.esNacional ? ' <small style="color:#1f4e79">·nacional → Bloque 2</small>'
+                : a.esPorUE   ? ' <small style="color:#1f4e79">·pliego × UE</small>'
+                : a.esFuncion ? ' <small style="color:#1f4e79">·función → Bloque 7</small>'
+                : a.esHistorico ? ' <small style="color:#1f4e79">·histórico '+(a.anio||'')+' → Bloque 8 (guardado)</small>'
+                : (soloInv?' <small style="color:var(--verde)">·inv</small>':'');
+      const tr = document.createElement("tr");
+      tr.innerHTML =
+        '<td><input class="inc" type="checkbox" '+(a.incluir?"checked":"")+' data-i="'+i+'" aria-label="Incluir '+a.nombre+'"></td>'+
+        '<td class="filename">'+a.nombre+etq+'</td>'+
+        '<td><span class="fam '+fam+'">'+fam+'</span></td>'+
+        '<td class="scopecell" title="'+alcanceDe(a.res).replace(/"/g,'')+'">'+alcanceDe(a.res)+'</td>'+
+        '<td class="num">'+fmtSoles(t.pim)+'</td>'+
+        '<td class="num">'+av+'</td>'+
+        '<td>'+badge+'</td>';
+      tb.appendChild(tr);
+    });
+    tb.querySelectorAll("input.inc").forEach(chk=>{
+      chk.addEventListener("change", e=>{
+        archivos[+e.target.dataset.i].incluir = e.target.checked;
+        consolidar();
+      });
+    });
+    consolidar();
+  }
+
+  // -------- Consolidación + Bloque 1 --------
+  function consolidar(){
+    const soloInv = true;   // el tablero siempre muestra inversiones
+    const sel = archivos.filter(a=>a.incluir && !a.error);
+    const selUE = sel.filter(a=>!a.esNacional && !a.esProyectos && !a.esRubro && !a.esFuncion && !a.esHistorico);   // solo archivos de UE para B1/B3
+    const T = {pim:0,certificacion:0,compromiso:0,devengado:0};
+    let nreg = 0;
+    for(const a of selUE){
+      const t = totalesArchivo(a, soloInv);
+      T.pim+=t.pim; T.certificacion+=t.certificacion; T.compromiso+=t.compromiso; T.devengado+=t.devengado;
+      nreg += a.res.nRegistros;
+    }
+    const pct = x => T.pim ? (x/T.pim*100) : 0;
+    const cP=pct(T.certificacion), dP=pct(T.devengado), mP=pct(T.compromiso);
+
+    $("#kPim").textContent = fmtSoles(T.pim);
+    $("#kFiles").textContent = selUE.length+" archivo"+(selUE.length!==1?"s":"")+" · "+nreg.toLocaleString("es-PE")+" registros";
+    $("#kCert").textContent=fmtSoles(T.certificacion); $("#kCertP").textContent=fmtPct(cP);
+    $("#kComp").textContent=fmtSoles(T.compromiso);   $("#kCompP").textContent=fmtPct(mP);
+    $("#kDev").textContent =fmtSoles(T.devengado);    $("#kDevP").textContent =fmtPct(dP);
+    $("#kPend").textContent=fmtSoles(T.pim-T.devengado);
+
+    $("#lCert").textContent=fmtSoles(T.certificacion); $("#lCertR").textContent=fmtSoles(T.pim-T.certificacion);
+    $("#lDev").textContent =fmtSoles(T.devengado);     $("#lDevR").textContent =fmtSoles(T.pim-T.devengado);
+    $("#lComp").textContent=fmtSoles(T.compromiso);    $("#lCompR").textContent=fmtSoles(T.pim-T.compromiso);
+
+    setDonut(charts.cert, $("#pCert"), cP, getCSS("--cert"), getCSS("--cert-bg"));
+    setDonut(charts.dev,  $("#pDev"),  dP, getCSS("--dev"),  getCSS("--dev-bg"));
+    setDonut(charts.comp, $("#pComp"), mP, getCSS("--comp"), getCSS("--comp-bg"));
+
+    try { actualizarFechasTodos(); }       catch(e){ console.error("Fechas:", e); }
+    try { renderBloque2(sel); }           catch(e){ console.error("Bloque 2:", e); }
+    try { renderBloque3(selUE, soloInv); } catch(e){ console.error("Bloque 3:", e); }
+    try { renderBloque6(sel); }            catch(e){ console.error("Bloque 6 Pliego:", e); }
+    try { renderBloque6Rubros(sel); }      catch(e){ console.error("Bloque 6 Rubros:", e); }
+    try { renderBloque7(sel); }            catch(e){ console.error("Bloque 7:", e); }
+    try { renderBloque8(sel); }            catch(e){ console.error("Bloque 8:", e); }
+    try { renderBloque9(sel); }            catch(e){ console.error("Bloque 9:", e); }
+  }
+
+  // -------- Bloque 6: rubro / fuente estilo PDF --------
+  const RUBRO_NAMES={
+    "00":"Recursos Ordinarios","09":"R. Dir. Recaudados","13":"Donaciones y Transf.",
+    "15":"FONCOR","18":"Canon y Sobrecanon","19":"Op. Oficiales de Crédito"
+  };
+  const RUBRO_COLORS={
+    "00":"#2563eb","09":"#c2410c","15":"#a16207","18":"#166534","13":"#4b5563","19":"#7c3aed"
+  };
+  function rubroDonut(canvasId, pct, color, bg){
+    setTimeout(()=>{
+      const c=document.getElementById(canvasId); if(!c) return;
+      new Chart(c,{type:"doughnut",data:{datasets:[{data:[pct,100-pct],backgroundColor:[color,bg],borderWidth:0,borderRadius:2}]},
+        options:{cutout:"68%",responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{display:false},tooltip:{enabled:false}}}});
+    },0);
+  }
+  function rubroTablaHTML(filas, tp, soloDevColor){
+    const f=n=>Math.round(n||0).toLocaleString("es-PE");
+    return filas.map((r)=>{
+      const cod=String(r.codigo||"").trim();
+      const nom=RUBRO_NAMES[cod]||String(r.descripcion||"").replace(/^\d+:\s*/,"");
+      const certP=r.pim?r.certificacion/r.pim*100:0,compP=r.pim?r.compromiso/r.pim*100:0,devP=r.pim?r.devengado/r.pim*100:0;
+      const ppim=tp?(r.pim/tp*100):0;
+      const col=devP<=20.9?"#ef4444":(devP<=49.99?"#e8a020":"#22c55e");
+      return `<tr>
+        <td class="center" style="font-weight:800">${cod}:</td>
+        <td style="text-align:left;white-space:normal">${nom}</td>
+        <td class="num">${f(r.pim)}</td>
+        <td class="num">${ppim.toFixed(2)}%</td>
+        <td class="num">${f(r.certificacion)}</td>
+        <td class="num">${certP.toFixed(1)}%</td>
+        <td class="num" style="background:#fce8e8">${f(r.pim-r.certificacion)}</td>
+        <td class="num">${f(r.compromiso)}</td>
+        <td class="num">${compP.toFixed(1)}%</td>
+        <td class="num" style="color:var(--naranja-h);font-weight:800">${f(r.devengado)}</td>
+        <td class="num" style="background:#fce8e8">${f(r.pim-r.devengado)}</td>
+        <td><div class="av-wrap">
+          <div class="av-bar" style="width:44px"><span style="width:${Math.min(100,devP).toFixed(1)}%;background:${col}"></span></div>
+          <span class="av-pct" style="color:${col}">${devP.toFixed(1)}%</span>
+        </div></td>
+      </tr>`;
+    }).join("");
+  }
+  function rubroFootHTML(tp,tc,tco,td,prom){
+    const f=n=>Math.round(n||0).toLocaleString("es-PE");
+    const s=`style="background:#3a3a3a;color:#FFD166;border:1px solid #555;font-family:'Barlow Condensed';font-weight:800"`;
+    const so=`style="background:#3a3a3a;color:var(--naranja-h);border:1px solid #555;font-family:'Barlow Condensed';font-weight:800"`;
+    return `<tr>
+      <td colspan="2" ${s}>TOTAL</td>
+      <td class="num" ${s}>S/ ${f(tp)}</td><td class="num" ${s}>100%</td>
+      <td class="num" ${s}>S/ ${f(tc)}</td><td class="num" ${s}>${tp?(tc/tp*100).toFixed(1)+"%":"—"}</td>
+      <td class="num" ${s}>S/ ${f(tp-tc)}</td>
+      <td class="num" ${s}>S/ ${f(tco)}</td><td class="num" ${s}>${tp?(tco/tp*100).toFixed(1)+"%":"—"}</td>
+      <td class="num" ${so}>S/ ${f(td)}</td>
+      <td class="num" ${s}>S/ ${f(tp-td)}</td>
+      <td class="num" ${so}>${prom.toFixed(2)}%</td>
+    </tr>`;
+  }
+
+  function renderBloque6(sel){
+    const fecha=new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const rubroArchivos = sel.filter(x=>x.esRubro);
+    const aPliego = rubroArchivos.find(x=>rubroNivel(x.res)==="PLIEGO") || rubroArchivos.find(x=>!x.esPorUE && rubroNivel(x.res)!=="UNIDAD");
+    const aSede   = rubroArchivos.find(x=>x!==aPliego && rubroNivel(x.res)==="UNIDAD");
+
+    // ── 6A: Pliego ──
+    const fEl=$("#b6fecha");if(fEl)fEl.textContent=fecha;
+    const donasEl=$("#b6Donuts"),tBody=$("#rubroRows"),tFoot=$("#rubroFoot"),subtEl=$("#b6subtitulo");
+    if(!aPliego){
+      if(donasEl)donasEl.innerHTML='<div style="padding:32px;text-align:center;color:#888;width:100%">Carga el archivo de rubros del pliego.</div>';
+      if(tBody)tBody.innerHTML='<tr><td colspan="12" style="padding:32px;text-align:center;color:#888">Carga el archivo de rubros del pliego.</td></tr>';
+    } else {
+      const filas=aPliego.res.registros.filter(r=>r.pim>0);
+      const tp=aPliego.res.total.pim||1,td=aPliego.res.total.devengado||0,tc=aPliego.res.total.certificacion||0,tco=aPliego.res.total.compromiso||0;
+      const prom=tp?td/tp*100:0;
+      const pEl=$("#b6prom");if(pEl)pEl.textContent=prom.toFixed(1)+"%";
+      const ctx=aPliego.res.contexto.find(c=>c.nivel==="UNIDAD"||c.nivel==="PLIEGO");
+      const ctxNom=ctx?String(ctx.nombre||ctx.descripcion||"").replace(/^\w+ \d+:\s*/,""):"Pliego";
+      if(subtEl)subtEl.textContent=ctxNom;
+
+      if(donasEl){
+        donasEl.innerHTML="";
+        filas.forEach(r=>{
+          const cod=String(r.codigo||"").trim();
+          const nom=RUBRO_NAMES[cod]||String(r.descripcion||"").replace(/^\d+:\s*/,"");
+          const devP=r.pim?r.devengado/r.pim*100:0;
+          const col=RUBRO_COLORS[cod]||"#666", bgCol=col+"30";
+          const id="b6d_"+cod;
+          const div=document.createElement("div"); div.className="b6-dona-card";
+          div.innerHTML=`<h4>${nom}</h4><div class="sub">(Devengado %)</div>
+            <div class="mc"><canvas id="${id}"></canvas>
+              <div class="mc-center"><span class="mc-pct" style="color:${col}">${devP.toFixed(1)}%</span><span class="mc-rest">${(100-devP).toFixed(1)}%</span></div>
+            </div>
+            <div class="pim-lbl">PIM: <b>${Math.round(r.pim).toLocaleString("es-PE")}</b></div>`;
+          donasEl.appendChild(div);
+          rubroDonut(id, devP, col, bgCol);
+        });
+        // dona total
+        const totalDiv=document.createElement("div"); totalDiv.className="b6-dona-card b6-dona-total";
+        const devTot=tp?td/tp*100:0;
+        totalDiv.innerHTML=`<div class="mc" style="height:130px"><canvas id="b6dtotal"></canvas>
+            <div class="mc-center"><span class="mc-pct" style="color:#7a1f1f;font-size:30px">${devTot.toFixed(1)}%</span><span class="mc-rest">DEVENGADO<br>TOTAL %</span></div>
+          </div>
+          <div class="pim-lbl" style="text-align:left;margin-top:6px">
+            <div><b style="color:var(--naranja-h)">DEVENGADO:</b> S/ ${Math.round(td).toLocaleString("es-PE")}</div>
+            <div><b style="color:var(--gris)">POR DEVENGAR:</b> S/ ${Math.round(tp-td).toLocaleString("es-PE")}</div>
+          </div>`;
+        donasEl.appendChild(totalDiv);
+        rubroDonut("b6dtotal", devTot, "#7a1f1f", "#efe1da");
+      }
+      if(tBody) tBody.innerHTML=rubroTablaHTML(filas,tp);
+      if(tFoot) tFoot.innerHTML=rubroFootHTML(tp,tc,tco,td,prom);
+    }
+  }
+
+  // -------- Bloque 7: Funciones a nivel Pliego --------
+  function funcionTablaHTML(filas, tp){
+    const f=n=>Math.round(n||0).toLocaleString("es-PE");
+    return filas.map(r=>{
+      const nom=String(r.descripcion||"").replace(/^\d+:\s*/,"");
+      const certP=r.pim?r.certificacion/r.pim*100:0, compP=r.pim?r.compromiso/r.pim*100:0, devP=r.pim?r.devengado/r.pim*100:0;
+      const ppim=tp?(r.pim/tp*100):0;
+      const col=devP<=20.9?"#ef4444":(devP<=49.99?"#e8a020":"#22c55e");
+      return `<tr>
+        <td style="text-align:left;white-space:normal">${nom}</td>
+        <td class="num">${f(r.pim)}</td>
+        <td class="num">${ppim.toFixed(2)}%</td>
+        <td class="num">${f(r.certificacion)}</td>
+        <td class="num">${certP.toFixed(1)}%</td>
+        <td class="num">${f(r.compromiso)}</td>
+        <td class="num">${compP.toFixed(1)}%</td>
+        <td class="num" style="color:var(--naranja-h);font-weight:800">${f(r.devengado)}</td>
+        <td class="num" style="background:#fce8e8">${f(r.pim-r.devengado)}</td>
+        <td><div class="av-wrap">
+          <div class="av-bar" style="width:44px"><span style="width:${Math.min(100,devP).toFixed(1)}%;background:${col}"></span></div>
+          <span class="av-pct" style="color:${col}">${devP.toFixed(1)}%</span>
+        </div></td>
+      </tr>`;
+    }).join("");
+  }
+  function funcionFootHTML(tp,tc,tco,td,prom){
+    const f=n=>Math.round(n||0).toLocaleString("es-PE");
+    const s=`style="background:#3a3a3a;color:#FFD166;border:1px solid #555;font-family:'Barlow Condensed';font-weight:800"`;
+    const so=`style="background:#3a3a3a;color:var(--naranja-h);border:1px solid #555;font-family:'Barlow Condensed';font-weight:800"`;
+    return `<tr>
+      <td ${s}>TOTAL</td>
+      <td class="num" ${s}>S/ ${f(tp)}</td><td class="num" ${s}>100%</td>
+      <td class="num" ${s}>S/ ${f(tc)}</td><td class="num" ${s}>${tp?(tc/tp*100).toFixed(1)+"%":"—"}</td>
+      <td class="num" ${s}>S/ ${f(tco)}</td><td class="num" ${s}>${tp?(tco/tp*100).toFixed(1)+"%":"—"}</td>
+      <td class="num" ${so}>S/ ${f(td)}</td>
+      <td class="num" ${s}>S/ ${f(tp-td)}</td>
+      <td class="num" ${so}>${prom.toFixed(2)}%</td>
+    </tr>`;
+  }
+  function renderBloque7(sel){
+    const fecha=new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const aFunc = sel.find(x=>x.esFuncion);
+    const fEl=$("#b7fecha"); if(fEl) fEl.textContent=fecha;
+    const tBody=$("#funcionRows"), tFoot=$("#funcionFoot");
+
+    if(!aFunc){
+      if(tBody) tBody.innerHTML='<tr><td colspan="10" style="padding:32px;text-align:center;color:#888">Carga el archivo de Funciones del Pliego.</td></tr>';
+      if(tFoot) tFoot.innerHTML="";
+      return;
+    }
+
+    const filas = aFunc.res.registros.filter(r=>r.pim>0).slice().sort((a,b)=>b.pim-a.pim);
+    const tp=aFunc.res.total.pim||1, td=aFunc.res.total.devengado||0,
+          tc=aFunc.res.total.certificacion||0, tco=aFunc.res.total.compromiso||0;
+    const prom = tp?td/tp*100:0;
+    const pEl=$("#b7prom"); if(pEl) pEl.textContent=prom.toFixed(1)+"%";
+
+    if(tBody) tBody.innerHTML=funcionTablaHTML(filas,tp);
+    if(tFoot) tFoot.innerHTML=funcionFootHTML(tp,tc,tco,td,prom);
+  }
+
+  // -------- Bloque 8: Histórico 2016-2026 (datos fijos del PDF institucional) --------
+  // Datos tomados directamente de ejecpresupuestaldeinversioneshistorico.png
+  const B8_HISTORICO = [
+    { anio:2016, devengado:281368875, pim:348590307 },
+    { anio:2017, devengado:267744114, pim:363066668 },
+    { anio:2018, devengado:260449784, pim:380087444 },
+    { anio:2019, devengado:275807743, pim:365470097 },
+    { anio:2020, devengado:255420609, pim:308114692 },
+    { anio:2021, devengado:333085294, pim:357469847 },
+    { anio:2022, devengado:373859189, pim:581186551 },
+    { anio:2023, devengado:465307672, pim:722844737 },
+    { anio:2024, devengado:619508497, pim:755891001 },
+    { anio:2025, devengado:650201021, pim:754599572 },
+  ];
+
+  let b8ChartDev=null, b8ChartPim=null;
+  function renderBloque8(sel){
+    // El año 2026 se toma en vivo de los archivos cargados (igual que Bloque 1)
+    const selUE = sel.filter(a=>!a.esNacional && !a.esProyectos && !a.esRubro && !a.esFuncion && !a.esHistorico);
+    let pim26=0, dev26=0;
+    selUE.forEach(a=>{ const t=totalesArchivo(a,true); pim26+=t.pim; dev26+=t.devengado; });
+
+    const labels = B8_HISTORICO.map(d=>String(d.anio)).concat(["2026"]);
+    const devData = B8_HISTORICO.map(d=>d.devengado).concat([dev26||null]);
+    const pimData = B8_HISTORICO.map(d=>d.pim).concat([pim26||null]);
+
+    const vivo=$("#b8vivo");
+    if(vivo){
+      if(dev26>0) vivo.innerHTML=`El año 2026 se actualiza en tiempo real: <b>Devengado S/ ${Math.round(dev26).toLocaleString("es-PE")}</b> · <b>PIM S/ ${Math.round(pim26).toLocaleString("es-PE")}</b>. Los datos 2016–2025 provienen del informe institucional ORPMI.`;
+      else vivo.textContent="Carga los archivos XLS para actualizar el año 2026 en tiempo real. Los datos 2016–2025 provienen del informe institucional ORPMI.";
+    }
+
+    const comOpts = (label, color, dashed)=>({
+      type:"line", label, data: dashed ? devData : (label==="Devengado"?devData:pimData),
+      borderColor:color, backgroundColor:color, tension:.3,
+      pointRadius:5, pointBackgroundColor:color, borderWidth:2.5,
+      borderDash: dashed?[]:[],
+    });
+
+    const segmentosDev = devData.map((v,i)=>{
+      if(i===devData.length-1) return { borderDash:[6,4] };
+      return {};
+    });
+
+    function makeChart(canvasId, serie, color, titulo, destroy){
+      const cv = document.getElementById(canvasId);
+      if(!cv) return null;
+      if(destroy){ destroy.destroy(); }
+      return new Chart(cv, {
+        type:"line",
+        data:{
+          labels,
+          datasets:[{
+            label:titulo,
+            data:serie,
+            borderColor:color,
+            backgroundColor:color,
+            tension:.3,
+            pointRadius: labels.map((_,i)=>5),
+            pointBackgroundColor: labels.map((l,i)=>i===labels.length-1?"#fff":color),
+            pointBorderColor: color,
+            pointBorderWidth: labels.map((_,i)=>i===labels.length-1?2.5:0),
+            borderWidth:2.5,
+            segment:{
+              borderDash: ctx => ctx.p1DataIndex === labels.length-1 ? [6,4] : []
+            },
+          }]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{
+            legend:{display:false},
+            tooltip:{
+              callbacks:{
+                label: ctx=>`S/ ${Math.round(ctx.parsed.y||0).toLocaleString("es-PE")}`
+              }
+            },
+            datalabels:{
+              display:false
+            }
+          },
+          scales:{
+            y:{
+              ticks:{ callback:v=>"S/ "+(v/1e6).toFixed(0)+"M", font:{family:"Barlow",size:11} },
+              grid:{color:"#f0f0f0"}
+            },
+            x:{ grid:{display:false}, ticks:{font:{family:"Barlow Condensed",size:13,weight:"bold"}} }
+          }
+        }
+      });
+    }
+    b8ChartDev = makeChart("b8ChartDev", devData, "#5a1414", "Devengado", b8ChartDev);
+    b8ChartPim = makeChart("b8ChartPim", pimData, "#e8821e", "PIM", b8ChartPim);
+  }
+
+  // -------- Bloque 6C: Ejecución por Rubro — Todas las UEs adicionales --------
+  // Mapa de códigos de UE a nombre de etiqueta y clase CSS
+  const UE_MAP = {
+    "002-1133": { label:"PEOT",      cls:"peot" },
+    "100-856":  { label:"AGRICULTURA", cls:"agri" },
+    "200-857":  { label:"TRANSPORTE",  cls:"trans" },
+    "400-860":  { label:"GERESA / SALUD", cls:"geresa" },
+    "401-1001": { label:"H. MERCEDES",   cls:"hmercedes" },
+    "402-1002": { label:"H. BELÉN",      cls:"hbelen" },
+    "403-1422": { label:"H. REGIONAL",   cls:"hregional" },
+  };
+  // Orden de presentación según el PDF institucional
+  const UE_ORDEN = ["002-1133","100-856","200-857","400-860","401-1001","402-1002","403-1422"];
+
+  // -------- Bloque 6 Rubros: 3 sub-secciones fijas para PDF --------
+  // Agrupación de UEs por sub-sección (Sede Central se gestiona aparte)
+  const B6_GRUPOS = [
+    {
+      panelId: "b6rubro1Paneles",
+      fechaId:  "b6rubro1fecha",
+      ueCodigos: ["001-855", "002-1133"],               // Sede Central + PEOT
+    },
+    {
+      panelId: "b6rubro2Paneles",
+      fechaId:  "b6rubro2fecha",
+      ueCodigos: ["100-856", "200-857", "400-860"],      // Agricultura + Transporte + GERESA
+    },
+    {
+      panelId: "b6rubro3Paneles",
+      fechaId:  "b6rubro3fecha",
+      ueCodigos: ["401-1001", "402-1002", "403-1422"],   // H. Mercedes + H. Belén + H. Regional
+    },
+  ];
+
+  // Mapa completo: código → info de etiqueta
+  const UE_INFO_COMPLETO = {
+    "001-855":  { label:"SEDE CENTRAL", cls:"" },
+    "002-1133": { label:"PEOT",         cls:"peot" },
+    "100-856":  { label:"AGRICULTURA",  cls:"agri" },
+    "200-857":  { label:"TRANSPORTE",   cls:"trans" },
+    "400-860":  { label:"GERESA / SALUD", cls:"geresa" },
+    "401-1001": { label:"H. MERCEDES",  cls:"hmercedes" },
+    "402-1002": { label:"H. BELÉN",     cls:"hbelen" },
+    "403-1422": { label:"H. REGIONAL",  cls:"hregional" },
+  };
+
+  // Construye el HTML de un panel de UE (etiqueta + tabla de rubros)
+  function ueRubroPanel(cod, archivos, fecha, esSede, sedeRes){
+    const info = UE_INFO_COMPLETO[cod] || {label:cod, cls:""};
+
+    // Para Sede Central usamos el resultado ya procesado del Bloque 6 original
+    let rubros, tpTotal, tdTotal, tcTotal, tcoTotal;
+    if(esSede && sedeRes){
+      rubros   = sedeRes.registros.filter(r=>r.pim>0);
+      tpTotal  = sedeRes.total.pim         || 0;
+      tdTotal  = sedeRes.total.devengado   || 0;
+      tcTotal  = sedeRes.total.certificacion || 0;
+      tcoTotal = sedeRes.total.compromiso  || 0;
+    } else {
+      const rubroMap = {};
+      tpTotal = tdTotal = tcTotal = tcoTotal = 0;
+      (archivos||[]).forEach(a=>{
+        a.res.registros.filter(r=>r.pim>0).forEach(r=>{
+          const c2 = String(r.codigo||"").trim();
+          if(!rubroMap[c2]) rubroMap[c2]={descripcion:r.descripcion,codigo:c2,pim:0,certificacion:0,compromiso:0,devengado:0};
+          rubroMap[c2].pim          += r.pim||0;
+          rubroMap[c2].certificacion+= r.certificacion||0;
+          rubroMap[c2].compromiso   += r.compromiso||0;
+          rubroMap[c2].devengado    += r.devengado||0;
+        });
+        const t = totalesArchivo(a, false);
+        tpTotal+=t.pim; tdTotal+=t.devengado; tcTotal+=t.certificacion; tcoTotal+=t.compromiso;
+      });
+      rubros = Object.values(rubroMap).filter(r=>r.pim>0);
+    }
+
+    if(!rubros.length) return "";   // no hay datos: no mostrar el panel
+
+    const tp   = tpTotal||1;
+    const prom = tpTotal ? tdTotal/tpTotal*100 : 0;
+
+    return `<div class="b6ue-panel">
+      <div class="b6ue-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="b6ue-etiqueta ${info.cls}">${info.label}</span>
+          <span style="font-family:'Barlow Condensed';font-size:12px;color:var(--gris)">${fecha}</span>
+        </div>
+        <span class="b6ue-prom-pill">${prom.toFixed(1)}%<span style="font-size:11px;font-weight:600;color:#e8c17a"> EJEC.</span></span>
+      </div>
+      <table class="pdf-table">
+        <thead><tr>
+          <th style="width:40px">N°</th>
+          <th class="left">DESCRIPCIÓN</th>
+          <th class="num">PIM</th><th class="num">% PIM</th>
+          <th class="num">CERTIFICACIÓN</th><th class="num">% CERT</th>
+          <th class="num" style="background:#fce8e8;color:var(--vino)">POR CERTIF.</th>
+          <th class="num">COMPROMISO</th><th class="num">% COMP</th>
+          <th class="num" style="color:var(--naranja-h);font-weight:800">DEVENGADO</th>
+          <th class="num" style="background:#fce8e8;color:var(--vino)">POR DEVENGAR</th>
+          <th class="num" style="width:110px">AVANCE %</th>
+        </tr></thead>
+        <tbody>${rubroTablaHTML(rubros, tp)}</tbody>
+        <tfoot>${rubroFootHTML(tpTotal,tcTotal,tcoTotal,tdTotal,prom)}</tfoot>
+      </table>
+    </div>`;
+  }
+
+  function renderBloque6Rubros(sel){
+    const fecha = new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+
+    // ── Detectar Sede Central — igual que en renderBloque6 ──
+    const rubroArchivos = sel.filter(x=>x.esRubro);
+    const aPliego = rubroArchivos.find(x=>rubroNivel(x.res)==="PLIEGO") || rubroArchivos.find(x=>!x.esPorUE && rubroNivel(x.res)!=="UNIDAD");
+    const aSedeRubro = rubroArchivos.find(x=>x!==aPliego && rubroNivel(x.res)==="UNIDAD");
+
+    // ── Indexar archivos de UEs por código ──
+    const ueFiles = {};
+    for(const a of sel){
+      if(!a.res || !a.res.contexto) continue;
+      const ueCtx = a.res.contexto.find(c=>c.nivel==="UNIDAD");
+      if(!ueCtx) continue;
+      const m = String(ueCtx.descripcion||"").match(/(\d{3}-\d+)/);
+      if(!m) continue;
+      const cod = m[1];
+      if(!ueFiles[cod]) ueFiles[cod]=[];
+      ueFiles[cod].push(a);
+    }
+
+    // ── Renderizar cada grupo en su panel ──
+    B6_GRUPOS.forEach(grupo=>{
+      const contenedor = $("#"+grupo.panelId);
+      if(!contenedor) return;
+
+      let html = "";
+      grupo.ueCodigos.forEach(cod=>{
+        if(cod === "001-855"){
+          // Sede Central: usa el archivo de rubros con nivel UNIDAD
+          if(aSedeRubro){
+            html += ueRubroPanel(cod, null, fecha, true, aSedeRubro.res);
+          }
+        } else {
+          if(ueFiles[cod] && ueFiles[cod].length){
+            html += ueRubroPanel(cod, ueFiles[cod], fecha, false, null);
+          }
+        }
+      });
+
+      contenedor.innerHTML = html ||
+        '<div style="padding:32px;text-align:center;color:#888">Carga los archivos XLS correspondientes para ver este grupo.</div>';
+    });
+  }
+
+  // -------- Bloque 9: Proyección Acumulada al 31/12/2026 --------
+  // Datos fijos del PDF institucional (proyeccionacumulada.png)
+  // PIM 2026: 793,371,105 (de la tabla de rubros pliego)
+  const B9_PIM = 793371105;
+  const B9_MESES_LABELS = ["ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO","JULIO","AGOSTO","SETIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"];
+  // Valores proyectados acumulados del PDF (en soles)
+  const B9_PROYECTADO_ACUM = [
+    18207406, 86795395, 133151711, 167648586, 215264677,
+    284083248, 357988569, 439511773, 525742794, 606727501, 687397331, 772173813
+  ];
+  // Porcentajes proyectados del PDF
+  const B9_PCT_PROY = [2.3,10.9,16.8,21.1,27.1,35.8,45.1,55.4,66.3,76.5,86.6,97.3];
+  // Devengado real acumulado conocido hasta Junio 2026 (del PDF institucional)
+  // Enero–Mayo: valores fijos del PDF. Junio: se reemplaza con datos en vivo cuando hay archivos cargados.
+  const B9_REAL_BASE = [
+    18207406,   // ENE
+    86795395,   // FEB
+    133151711,  // MAR
+    167648586,  // ABR
+    178369785,  // MAY
+    null        // JUN → se rellena en vivo con los archivos cargados
+  ];
+  // El mes actual es Junio (índice 5). La línea punteada arranca a partir de Junio.
+  const B9_MES_ACTUAL_IDX = 5;
+
+  let b9Chart=null;
+  function renderBloque9(sel){
+    // Extraer devengado acumulado en tiempo real de los archivos cargados
+    const selUE = sel.filter(a=>!a.esNacional && !a.esProyectos && !a.esRubro && !a.esFuncion && !a.esHistorico);
+    let devActual=0;
+    selUE.forEach(a=>{ const t=totalesArchivo(a,true); devActual+=t.devengado; });
+
+    // Valor en vivo para Junio; si no hay archivos, mostrar null (punto vacío)
+    const devJunio = devActual>0 ? devActual : null;
+    // Para el KPI, si hay datos en vivo usar esos; si no, usar el último valor conocido (Mayo)
+    const devBase = devActual>0 ? devActual : 178369785;
+    const pctBase = B9_PIM ? devBase/B9_PIM*100 : 22.5;
+
+    // Actualizar KPIs
+    const kDev=$("#b9devActual"), kPct=$("#b9pctActual");
+    if(kDev) kDev.textContent="S/ "+Math.round(devBase).toLocaleString("es-PE");
+    if(kPct) kPct.textContent=pctBase.toFixed(1)+"%";
+
+    // Construir serie real: Ene–May fijos + Junio en vivo + null hasta Dic
+    const realData = [...B9_REAL_BASE];
+    realData[B9_MES_ACTUAL_IDX] = devJunio; // Junio: dato en vivo o null
+    while(realData.length < 12) realData.push(null);
+
+    // Gráfico
+    const cv=document.getElementById("b9Chart");
+    if(!cv) return;
+    if(b9Chart){ b9Chart.destroy(); b9Chart=null; }
+    b9Chart = new Chart(cv,{
+      type:"line",
+      data:{
+        labels:B9_MESES_LABELS,
+        datasets:[
+          {
+            label:"Devengado Real",
+            data:realData,
+            borderColor:"#5a1414", backgroundColor:"#5a1414",
+            tension:.3,
+            pointRadius: realData.map(v => v!==null ? 5 : 0),
+            pointBackgroundColor:"#5a1414",
+            borderWidth:2.5, spanGaps:false,
+          },
+          {
+            label:"Devengado Proyectado",
+            data:B9_PROYECTADO_ACUM,
+            borderColor:"#e8821e", backgroundColor:"#e8821e",
+            tension:.3,
+            pointRadius:5, pointBackgroundColor:"#e8821e",
+            borderWidth:2.5,
+            // Línea punteada a partir del mes actual (Junio = índice 5)
+            segment:{ borderDash: ctx => ctx.p0DataIndex >= B9_MES_ACTUAL_IDX ? [6,4] : [] }
+          }
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{position:"top", labels:{font:{family:"Barlow",weight:700},usePointStyle:true}},
+          tooltip:{ callbacks:{ label:ctx=>`S/ ${Math.round(ctx.parsed.y||0).toLocaleString("es-PE")} (${(ctx.parsed.y/B9_PIM*100).toFixed(1)}%)` } }
+        },
+        scales:{
+          y:{ ticks:{callback:v=>"S/ "+(v/1e6).toFixed(0)+"M",font:{family:"Barlow",size:11}}, grid:{color:"#f0f0f0"} },
+          x:{ grid:{display:false}, ticks:{font:{family:"Barlow Condensed",size:12,weight:"bold"}} }
+        }
+      }
+    });
+  }
+
+  // -------- Bloque 3: tabla detallada + gráfico agrupado estilo PDF --------
+  function renderBloque3(sel, soloInv){
+    const fecha = new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const el=$("#b3fecha"); if(el) el.textContent=fecha;
+    const ues = [];
+    for(const a of sel){
+      if(a.esPorUE){
+        for(const r of a.res.registros){
+          const pim=r.pim||0, cert=r.certificacion||0, comp=r.compromiso||0, dev=r.devengado||0;
+          ues.push({nombre:cleanUEName(r.descripcion), fullNom:String(r.descripcion||"").replace(/^\d{3}-\d+:\s*/,""),
+                    pim, cert, comp, dev, av:pim?dev/pim*100:0,
+                    certP:pim?cert/pim*100:0, compP:pim?comp/pim*100:0});
+        }
+      } else {
+        const t=totalesArchivo(a,soloInv);
+        const pim=t.pim, cert=t.certificacion, comp=t.compromiso, dev=t.devengado;
+        ues.push({nombre:cleanUEName(ueLabel(a.res)), fullNom:ueLabel(a.res),
+                  pim, cert, comp, dev, av:pim?dev/pim*100:0,
+                  certP:pim?cert/pim*100:0, compP:pim?comp/pim*100:0});
+      }
+    }
+    const list = ues.filter(u=>u.pim>0).sort((x,y)=>y.av-x.av);
+    const tp=list.reduce((s,u)=>s+u.pim,0), td=list.reduce((s,u)=>s+u.dev,0),
+          tc=list.reduce((s,u)=>s+u.cert,0), tco=list.reduce((s,u)=>s+u.comp,0);
+    const prom=tp?(td/tp*100):0;
+    const el3p=$("#b3prom"); if(el3p) el3p.textContent=prom.toFixed(1)+"%";
+
+    // ── Tabla detallada ──
+    const tb=$("#ueRows");
+    if(tb){
+      if(!list.length){
+        tb.innerHTML='<tr><td colspan="12" style="padding:32px;text-align:center;color:#888">Carga el pliego desglosado por UE.</td></tr>';
+      } else {
+        const f=n=>Math.round(n||0).toLocaleString("es-PE");
+        tb.innerHTML=list.map((u,i)=>{
+          const col=u.av<=20.9?"#ef4444":(u.av<=49.99?"#e8a020":"#22c55e");
+          const ppim=tp?(u.pim/tp*100):0;
+          return `<tr>
+            <td class="center" style="font-weight:700">${ORDINAL2[i+1]||i+1}</td>
+            <td style="text-align:left;white-space:normal;line-height:1.3;font-size:11px">${u.fullNom}</td>
+            <td class="num">${f(u.pim)}</td>
+            <td class="num">${ppim.toFixed(2)}%</td>
+            <td class="num">${f(u.cert)}</td>
+            <td class="num">${u.certP.toFixed(1)}%</td>
+            <td class="num" style="background:#fff0f0">${f(u.pim-u.cert)}</td>
+            <td class="num">${f(u.comp)}</td>
+            <td class="num">${u.compP.toFixed(1)}%</td>
+            <td class="num" style="color:var(--naranja-h);font-weight:800">${f(u.dev)}</td>
+            <td class="num" style="background:#fff0f0">${f(u.pim-u.dev)}</td>
+            <td><div class="av-wrap">
+              <div class="av-bar" style="width:50px;background:#e0e0e0"><span style="width:${Math.min(100,u.av).toFixed(1)}%;background:${col}"></span></div>
+              <span class="av-pct" style="color:${col}">${u.av.toFixed(1)}%</span>
+            </div></td>
+          </tr>`;
+        }).join("");
+        const tf=$("#ueFoot");
+        if(tf){ const f=n=>Math.round(n||0).toLocaleString("es-PE");
+          const s=(v)=>`style="background:#3a3a3a;color:#FFD166;border:1px solid #555;font-family:'Barlow Condensed';font-weight:800"`;
+          const so=(v)=>`style="background:#3a3a3a;color:var(--naranja-h);border:1px solid #555;font-family:'Barlow Condensed';font-weight:800"`;
+          tf.innerHTML=`<tr>
+            <td colspan="2" ${s()}>TOTAL</td>
+            <td class="num" ${s()}>S/ ${f(tp)}</td><td class="num" ${s()}>100%</td>
+            <td class="num" ${s()}>S/ ${f(tc)}</td><td class="num" ${s()}>${tp?(tc/tp*100).toFixed(1)+"%":"—"}</td>
+            <td class="num" ${s()}>S/ ${f(tp-tc)}</td>
+            <td class="num" ${s()}>S/ ${f(tco)}</td><td class="num" ${s()}>${tp?(tco/tp*100).toFixed(1)+"%":"—"}</td>
+            <td class="num" ${so()}>S/ ${f(td)}</td>
+            <td class="num" ${s()}>S/ ${f(tp-td)}</td>
+            <td class="num" ${so()}>${prom.toFixed(2)}%</td>
+          </tr>`;
+        }
+      }
+    }
+    // ── Gráfico de barras HTML/CSS (sin overflow ni solapamiento de etiquetas) ──
+    const grid=$("#ueBarsGrid");
+    if(grid){
+      if(!list.length){
+        grid.innerHTML='<div style="padding:40px;text-align:center;color:#888;width:100%">Carga el archivo de UE para ver el gráfico.</div>';
+      } else {
+        const byDev=[...list].sort((a,b)=>b.av-a.av);
+        const MAXH=220;
+        grid.innerHTML=byDev.map(u=>{
+          const hDev=Math.max(3,Math.round(u.av/100*MAXH));
+          const hCert=Math.max(3,Math.round(u.certP/100*MAXH));
+          const pimK="S/ "+Math.round(u.pim/1000).toLocaleString("es-PE")+"K";
+          return `<div class="ue-bar-col">
+            <div class="ubc-pim">${pimK}</div>
+            <div class="ubc-bars">
+              <div class="ubc-bar-wrap" style="width:24px">
+                <span class="ubc-pct" style="color:var(--naranja-h)">${u.av.toFixed(1)}%</span>
+                <div class="ubc-bar dev" style="height:${hDev}px"></div>
+              </div>
+              <div class="ubc-bar-wrap" style="width:24px">
+                <span class="ubc-pct" style="color:#2f6b34">${u.certP.toFixed(1)}%</span>
+                <div class="ubc-bar cert" style="height:${hCert}px"></div>
+              </div>
+            </div>
+            <div class="ubc-name">${u.nombre}</div>
+          </div>`;
+        }).join("");
+      }
+    }
+    // ── Donas totales ──
+    const devPct=tp?td/tp*100:0, certPct=tp?tc/tp*100:0;
+    setDonut(cB3Dev,$("#b3DevPct"),devPct,"#e8a020","#f9dfa0");
+    setDonut(cB3Cert,$("#b3CertPct"),certPct,"#2f6b34","#d3e6cc");
+    const elPim=$("#b3pimTotal"); if(elPim) elPim.textContent=fmtSoles(tp);
+    const elCnt=$("#b3cantInv"); if(elCnt) elCnt.textContent=list.length+" UEs";
+  }
+  const ORDINAL2=["","1ero","2do","3ro","4to","5to","6to","7mo","8vo","9no","10mo","11mo"];
+
+  // -------- Bloque 2: tres rankings estilo PDF --------
+  const ORDINAL = ["","1ero","2do","3ro","4to","5to","6to","7mo","8vo","9no","10mo","11mo","12mo","13ro","14to","15to","16to","17mo","18vo","19no","20mo","21ro","22do","23ro","24to","25to","26to","27mo"];
+  const fechaHoy = ()=>new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+
+  function semB2(av,prom){ return av<prom*0.75?"#ef4444":(av<prom?"#e8a020":"#22c55e"); }
+
+  function renderBloque2(sel){
+    const nac=sel.find(a=>a.esNacional);
+    const fecha=fechaHoy();
+    const empty='<tr><td colspan="5" style="padding:32px;text-align:center;color:#888">Carga el archivo nacional de proyectos.</td></tr>';
+    ["b2fechaA","b2fechaB","b2fechaC"].forEach(id=>{const el=$("#"+id);if(el)el.textContent=fecha;});
+    if(!nac){["goreRowsA","goreRowsB","goreRowsC"].forEach(id=>{const el=$("#"+id);if(el)el.innerHTML=empty;});return;}
+    const regs=nac.res.registros.map(r=>({
+      fullName:String(r.descripcion||"").replace(/^\d+:\s*/,""),
+      pim:r.pim||0,cert:r.certificacion||0,dev:r.devengado||0,
+      devp:r.pim?r.devengado/r.pim*100:0,certp:r.pim?r.certificacion/r.pim*100:0,
+      lamb:/^452$/.test(String(r.codigo||""))||/LAMBAYEQUE/i.test(String(r.descripcion||""))
+    }));
+    const sp=regs.reduce((s,r)=>s+r.pim,0);
+    const promDev=sp?regs.reduce((s,r)=>s+r.dev,0)/sp*100:0;
+    const promCert=sp?regs.reduce((s,r)=>s+r.cert,0)/sp*100:0;
+    const meta=`Ámbito: ${sp>30e9?"gasto total":"inversiones"} · ${regs.length} pliegos`;
+    const f=n=>Math.round(n||0).toLocaleString("es-PE");
+
+    // A: devengado %
+    const sA=[...regs].sort((a,b)=>b.devp-a.devp);
+    const elA=$("#goreRowsA");if(elA)elA.innerHTML=sA.map((r,i)=>{
+      const col=r.lamb?"#FFD166":semB2(r.devp,promDev);
+      const trC=r.lamb?'class="lamb-row"':'';
+      return `<tr ${trC}>
+        <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1}</td>
+        <td style="text-align:left">${r.fullName}</td>
+        <td class="num">S/ ${f(r.pim)}</td>
+        <td class="num">S/ ${f(r.dev)}</td>
+        <td><div class="av-wrap">
+          <div class="av-bar"><span style="width:${Math.min(100,r.devp).toFixed(1)}%;background:${r.lamb?"#FFD166":col}"></span></div>
+          <span class="av-pct" style="color:${col}">${r.devp.toFixed(1)}%</span>
+        </div></td>
+      </tr>`;
+    }).join("");
+    const pA=$("#b2promA");if(pA)pA.textContent=promDev.toFixed(1)+"%";
+    const mA=$("#b2metaA");if(mA)mA.textContent=meta;
+
+    // B: devengado S/
+    const sB=[...regs].sort((a,b)=>b.dev-a.dev);const maxDev=sB[0]?.dev||1;
+    const elB=$("#goreRowsB");if(elB)elB.innerHTML=sB.map((r,i)=>{
+      const col=r.lamb?"#FFD166":"#8B6045";const trC=r.lamb?'class="lamb-row"':'';
+      return `<tr ${trC}>
+        <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1}</td>
+        <td style="text-align:left">${r.fullName}</td>
+        <td class="num">S/ ${f(r.pim)}</td>
+        <td class="num">S/ ${f(r.dev)}</td>
+        <td><div class="av-bar" style="width:100px;height:14px"><span style="width:${(r.dev/maxDev*100).toFixed(1)}%;background:${col}"></span></div></td>
+      </tr>`;
+    }).join("");
+    const mB=$("#b2metaB");if(mB)mB.textContent=meta;
+
+    // C: certificación %
+    const sC=[...regs].sort((a,b)=>b.certp-a.certp);
+    const elC=$("#goreRowsC");if(elC)elC.innerHTML=sC.map((r,i)=>{
+      const col=r.lamb?"#FFD166":semB2(r.certp,promCert);const trC=r.lamb?'class="lamb-row"':'';
+      return `<tr ${trC}>
+        <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1}</td>
+        <td style="text-align:left">${r.fullName}</td>
+        <td class="num">S/ ${f(r.pim)}</td>
+        <td class="num">S/ ${f(r.cert)}</td>
+        <td><div class="av-wrap">
+          <div class="av-bar"><span style="width:${Math.min(100,r.certp).toFixed(1)}%;background:${r.lamb?"#FFD166":col}"></span></div>
+          <span class="av-pct" style="color:${col}">${r.certp.toFixed(1)}%</span>
+        </div></td>
+      </tr>`;
+    }).join("");
+    const pC=$("#b2promC");if(pC)pC.textContent=promCert.toFixed(1)+"%";
+  }
+
+  // -------- Donas (Chart.js) --------
+  const getCSS = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+  function makeDonut(id){
+    return new Chart(document.getElementById(id),{
+      type:"doughnut",
+      data:{datasets:[{data:[0,100],backgroundColor:["#e7eaee","#f2f4f6"],borderWidth:0,
+        borderRadius:3, spacing:0}]},
+      options:{
+        cutout:"72%", responsive:true, maintainAspectRatio:false,
+        animation:{duration:600,easing:"easeOutQuart"},
+        plugins:{legend:{display:false},tooltip:{enabled:false}}
+      }
+    });
+  }
+  // actualiza la dona y su porcentaje central (capa HTML, sin depender de internals de Chart.js)
+  function setDonut(chart,pctEl,pct,color,bg){
+    const p = Math.max(0,Math.min(100,pct||0));
+    chart.data.datasets[0].data=[p,100-p];
+    chart.data.datasets[0].backgroundColor=[color,bg];
+    chart.update();
+    if(pctEl){ pctEl.textContent = p.toFixed(1)+"%"; pctEl.style.color = color; }
+  }
+
+  const charts = {
+    cert: makeDonut("cCert"),
+    dev:  makeDonut("cDev"),
+    comp: makeDonut("cComp")
+  };
+  const cB3Dev  = makeDonut("cB3Dev");
+  const cB3Cert = makeDonut("cB3Cert");
+
+  // ── Fecha de actualización — actualiza TODOS los bloques ──
+  function actualizarFechasTodos(){
+    const fLarga  = new Date().toLocaleDateString("es-PE",{weekday:"long",  day:"numeric",month:"long",year:"numeric"});
+    const fCorta  = new Date().toLocaleDateString("es-PE",{day:"numeric",   month:"long", year:"numeric"});
+
+    // Cabecera y footer
+    const elTop  = document.getElementById("fechaTop"); if(elTop)  elTop.textContent  = fCorta;
+    const elFoot = document.getElementById("fecha");    if(elFoot) elFoot.textContent = fCorta;
+
+    // Bloque 1 — fecha en franja debajo de la cabecera
+    const b1f=document.getElementById("b1fecha"); if(b1f) b1f.textContent=fLarga;
+
+    // Bloques 2 (A, B, C)
+    ["b2fechaA","b2fechaB","b2fechaC"].forEach(id=>{const e=$("#"+id);if(e)e.textContent=fLarga;});
+
+    // Bloque 3
+    const b3f=$("#b3fecha"); if(b3f) b3f.textContent=fLarga;
+
+    // Bloque 6 pliego
+    const b6f=$("#b6fecha"); if(b6f) b6f.textContent=fLarga;
+
+    // Bloques 6 rubro — fecha en sub-cabecera
+    ["b6rubro1fecha","b6rubro2fecha","b6rubro3fecha"].forEach(id=>{
+      const e=document.getElementById(id); if(e) e.textContent=fLarga;
+    });
+
+    // Bloque 7
+    const b7f=$("#b7fecha"); if(b7f) b7f.textContent=fLarga;
+
+    // Bloque 8 — fecha en sub-cabecera
+    const b8f=document.getElementById("b8fecha"); if(b8f) b8f.textContent=fCorta;
+
+    // Bloque 9 — fecha en sub-cabecera
+    const b9fs=document.getElementById("b9fechaSub"); if(b9fs) b9fs.textContent=fCorta;
+
+    // Bloque 9 — fecha en KPI "Ejecutado a la fecha"
+    const b9lbl=document.getElementById("b9fechaLabel");
+    if(b9lbl) b9lbl.textContent="a "+fLarga;
+  }
+  actualizarFechasTodos();
+
+  // -------- Eventos UI --------
+  $("#pick").addEventListener("click",()=>$("#file").click());
+  $("#dropzone").addEventListener("click",()=>$("#file").click());
+  $("#dropzone").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();$("#file").click();}});
+  $("#file").addEventListener("change",e=>{ agregar(e.target.files); e.target.value=""; });
+  $("#clear").addEventListener("click",()=>{ archivos=[]; render(); });
+  $("#soloInv").addEventListener("change",render);
+  const dz=$("#dropzone");
+  ["dragenter","dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("drag");}));
+  ["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("drag");}));
+  dz.addEventListener("drop",e=>{ if(e.dataTransfer.files.length) agregar(e.dataTransfer.files); });
+
+
+  consolidar(); // estado inicial en cero
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  MÓDULO DE CARGA AUTOMÁTICA DESDE JSON
+  //  Cuando el dashboard detecta el archivo data/ejecucion.json en el mismo
+  //  servidor, lo lee y reconstruye el array `archivos` con objetos compatibles
+  //  con el formato interno, SIN que el usuario tenga que cargar nada.
+  //  Si el JSON no existe (apertura local con file://), el modo manual sigue
+  //  funcionando exactamente igual que antes.
+  // ══════════════════════════════════════════════════════════════════════════
+  (function autoCargarJSON() {
+    // Solo intentar si estamos en un servidor HTTP (no file://)
+    if (location.protocol === "file:") return;
+
+    const BANNER = document.createElement("div");
+    BANNER.id = "json-status";
+    BANNER.style.cssText = [
+      "position:fixed","bottom:16px","right:16px","z-index:9999",
+      "background:#1a3a1a","color:#4ade80","font-family:'Barlow Condensed',sans-serif",
+      "font-size:13px","font-weight:700","padding:10px 16px","border-radius:8px",
+      "box-shadow:0 4px 12px rgba(0,0,0,.4)","letter-spacing:.04em","display:none"
+    ].join(";");
+    document.body.appendChild(BANNER);
+
+    function mostrarBanner(msg, color) {
+      BANNER.textContent = msg;
+      BANNER.style.background = color === "ok" ? "#1a3a1a" : color === "warn" ? "#3a2a0a" : "#3a0a0a";
+      BANNER.style.color = color === "ok" ? "#4ade80" : color === "warn" ? "#fbbf24" : "#f87171";
+      BANNER.style.display = "block";
+      if (color === "ok") setTimeout(() => BANNER.style.display = "none", 4000);
+    }
+
+    // Construye un objeto "archivo virtual" compatible con el array interno
+    function construirArchivoVirtual(tipo, registros, contexto, nombre) {
+      return {
+        nombre: nombre,
+        res: {
+          familia: "HTML",
+          registros: registros,
+          contexto: contexto,
+          nRegistros: registros.length,
+          total: null,
+          validacion: { hayReferencia: false, ok: true, difPct: "0.0" }
+        },
+        incluir: true,
+        error: null,
+        esFlat: false,
+        esPorUE:      tipo === "UE",
+        esNacional:   tipo === "NACIONAL",
+        esRubro:      tipo === "RUBRO",
+        esFuncion:    tipo === "FUNCION",
+        esHistorico:  tipo === "HISTORICO",
+        esProyectos:  false,
+        anio:         tipo === "HISTORICO" ? (contexto[0] && contexto[0].anio) : undefined
+      };
+    }
+
+    // Mapeo JSON → estructura interna del MEFReader
+    function jsonUEaRegistros(ues) {
+      return ues.map(ue => ({
+        descripcion: ue.nombre,
+        codigo: ue.nombre.split(":")[0].trim(),
+        dim: { unidad_ejecutora: ue.nombre },
+        nivel: "UNIDAD EJECUTORA",
+        esInversion: true,
+        pia:          ue.pia,
+        pim:          ue.pim,
+        certificacion:ue.cert,
+        compromiso:   ue.comp,
+        devengado:    ue.dev,
+        girado:       ue.girado || 0,
+        avance:       ue.avance
+      }));
+    }
+
+    function jsonRubroaRegistros(rubros) {
+      return rubros.map(r => ({
+        descripcion: r.nombre,
+        codigo: r.nombre.split(":")[0].trim(),
+        nivel: "RUBRO",
+        esInversion: true,
+        pia:          r.pia,
+        pim:          r.pim,
+        certificacion:r.cert,
+        compromiso:   r.comp,
+        devengado:    r.dev,
+        girado:       r.girado || 0,
+        avance:       r.avance
+      }));
+    }
+
+    function jsonNacionalARegistros(ranking) {
+      return ranking.map(g => ({
+        descripcion: g.nombre,
+        codigo: g.codigo,
+        nivel: "PLIEGO",
+        esInversion: true,
+        pia:          g.pim * 0.9, // aprox (no viene del JSON)
+        pim:          g.pim,
+        certificacion:g.cert,
+        compromiso:   g.cert * 0.85,
+        devengado:    g.dev,
+        girado:       g.dev * 0.98,
+        avance:       g.avance_dev_pct
+      }));
+    }
+
+    function jsonFuncionaRegistros(funciones) {
+      return funciones.map(fn => ({
+        descripcion: fn.nombre,
+        codigo: fn.nombre.split(":")[0].trim(),
+        nivel: "FUNCION",
+        esInversion: true,
+        pia:          fn.pia,
+        pim:          fn.pim,
+        certificacion:fn.cert,
+        compromiso:   fn.comp,
+        devengado:    fn.dev,
+        girado:       fn.dev * 0.98,
+        avance:       fn.avance
+      }));
+    }
+
+    function construirContextoPliego(pliego) {
+      return [{
+        nivel: "PLIEGO",
+        nombre: "GOBIERNO REGIONAL DEL DEPARTAMENTO DE LAMBAYEQUE",
+        descripcion: "Pliego 452",
+        pia:          pliego.pia,
+        pim:          pliego.pim,
+        certificacion:pliego.certificacion,
+        compromiso:   pliego.compromiso,
+        devengado:    pliego.devengado,
+        girado:       pliego.girado || 0,
+        avance:       pliego.avance_pct
+      }];
+    }
+
+    fetch("data/ejecucion.json?" + Date.now())
+      .then(r => {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(json => {
+        const nuevosArchivos = [];
+
+        // 1. Archivo UE (Bloques 1 y 3)
+        if (json.unidades_ejecutoras && json.unidades_ejecutoras.length) {
+          nuevosArchivos.push(construirArchivoVirtual(
+            "UE",
+            jsonUEaRegistros(json.unidades_ejecutoras),
+            construirContextoPliego(json.pliego),
+            "ue_pliego.xls [JSON]"
+          ));
+        }
+
+        // 2. Nacional GOREs (Bloque 2)
+        if (json.ranking_nacional && json.ranking_nacional.ranking_dev_pct) {
+          const nacArch = construirArchivoVirtual(
+            "NACIONAL",
+            jsonNacionalARegistros(json.ranking_nacional.ranking_dev_pct),
+            [{ nivel: "SECTOR", nombre: "GOBIERNOS REGIONALES" }],
+            "nacional_gores.xls [JSON]"
+          );
+          // Inyectar total para que renderBloque2 calcule el promedio
+          nacArch.res.total = {
+            pim:          json.ranking_nacional.ranking_dev_pct.reduce((s,g) => s+g.pim, 0),
+            devengado:    json.ranking_nacional.ranking_dev_pct.reduce((s,g) => s+g.dev, 0),
+            certificacion:json.ranking_nacional.ranking_dev_pct.reduce((s,g) => s+g.cert, 0),
+            compromiso:   0,
+            promedioPct:  json.ranking_nacional.promedio_dev_pct
+          };
+          nuevosArchivos.push(nacArch);
+        }
+
+        // 3. Rubros pliego (Bloque 6A)
+        if (json.rubros_pliego && json.rubros_pliego.length) {
+          const arch = construirArchivoVirtual(
+            "RUBRO",
+            jsonRubroaRegistros(json.rubros_pliego),
+            construirContextoPliego(json.pliego),
+            "rubro_pliego.xls [JSON]"
+          );
+          arch.esRubroPliego = true;
+          nuevosArchivos.push(arch);
+        }
+
+        // 4. Rubros Sede Central (Bloque 6B)
+        if (json.rubros_sede_central && json.rubros_sede_central.length) {
+          const arch = construirArchivoVirtual(
+            "RUBRO",
+            jsonRubroaRegistros(json.rubros_sede_central),
+            [{ nivel: "UNIDAD", nombre: "001-855: REGION LAMBAYEQUE-SEDE CENTRAL" }],
+            "rubro_sede_central.xls [JSON]"
+          );
+          arch.esRubroSedeCentral = true;
+          nuevosArchivos.push(arch);
+        }
+
+        // 5. Funciones (Bloque 7)
+        if (json.funciones && json.funciones.length) {
+          nuevosArchivos.push(construirArchivoVirtual(
+            "FUNCION",
+            jsonFuncionaRegistros(json.funciones),
+            construirContextoPliego(json.pliego),
+            "funciones_pliego.xls [JSON]"
+          ));
+        }
+
+        // 6. Histórico (Bloque 8) — uno por año
+        if (json.historico && json.historico.length) {
+          json.historico.forEach(h => {
+            const arch = construirArchivoVirtual(
+              "HISTORICO",
+              [{
+                descripcion: "Pliego 452 - " + h.anio,
+                codigo: "452",
+                nivel: "PLIEGO",
+                esInversion: true,
+                pia: h.pim * 0.9,
+                pim: h.pim,
+                certificacion: h.dev * 1.1,
+                compromiso: h.dev * 1.05,
+                devengado: h.dev,
+                girado: h.dev * 0.98,
+                avance: h.avance
+              }],
+              [{ nivel: "PLIEGO", nombre: "PLIEGO 452", anio: h.anio }],
+              "historico_" + h.anio + ".xls [JSON]"
+            );
+            arch.anio = h.anio;
+            nuevosArchivos.push(arch);
+          });
+        }
+
+        // Reemplazar archivos y re-renderizar
+        archivos = nuevosArchivos;
+
+        // Actualizar panel lateral de archivos
+        render();
+
+        // Mostrar fecha de actualización
+        const fechaMeta = json.meta && json.meta.fecha_consulta ? json.meta.fecha_consulta : "—";
+        const generado  = json.generado_en ? new Date(json.generado_en).toLocaleString("es-PE") : "—";
+        mostrarBanner("✅ Datos actualizados · Consulta: " + fechaMeta, "ok");
+
+        // Ocultar el panel de carga (ya no es necesario para el jefe)
+        const loader = document.querySelector(".loader");
+        if (loader) {
+          loader.style.display = "none";
+        }
+        const eyebrow = document.querySelector(".eyebrow");
+        if (eyebrow) {
+          eyebrow.style.display = "none";
+        }
+
+        console.log("[ORPMI] Datos cargados desde JSON:", {
+          ues: json.unidades_ejecutoras?.length,
+          gores: json.ranking_nacional?.total_gores,
+          rubros: json.rubros_pliego?.length,
+          funciones: json.funciones?.length,
+          historico: json.historico?.length,
+          generado: generado
+        });
+      })
+      .catch(err => {
+        console.warn("[ORPMI] JSON no encontrado o error:", err.message,
+          "- Modo manual activo (carga de XLS)");
+      });
+  })();
+
+})();
+</script>
+<!-- ====== EXPORTADOR A PDF ====== -->
+<script>
+(function(){
+  // Relación de IDs de secciones HTML reales → una página PDF por sección.
+  // El orden define el orden de las páginas en el PDF final.
+  const SECTION_SELECTORS = [
+    { query:"#b1wrap",              titulo:"Ejecución Financiera — Gobierno Regional de Lambayeque" },
+    { query:"#b2secDevP",           titulo:"GR por Devengado %" },
+    { query:"#b2secDevS",           titulo:"GR por Devengado en Monto" },
+    { query:"#b2secCert",           titulo:"GR por Certificación %" },
+    { query:"#b3secTabla",          titulo:"Ejecución Presupuestal de Inversiones a Nivel UE" },
+    { query:"#b3secGrafico",        titulo:"PIM Asignado según Unidad Ejecutora" },
+    { query:"#b6secPliego",         titulo:"Ejecución Presupuestal por Rubro — Pliego" },
+    { query:"#b6rubro1",            titulo:"Ejecución por Rubro — Sede Central / PEOT" },
+    { query:"#b6rubro2",            titulo:"Ejecución por Rubro — Agricultura / Transporte / GERESA" },
+    { query:"#b6rubro3",            titulo:"Ejecución por Rubro — H. Mercedes / H. Belén / H. Regional" },
+    { query:"#b7secFunciones",      titulo:"Funciones a Nivel Pliego" },
+    { query:"#b8secHistorico",      titulo:"Ejecución Presupuestal — Comparativo Histórico" },
+    { query:"#b9secProyeccion",     titulo:"Proyección Acumulada al 31/12/2026" },
+  ];
+
+  async function capturar(el){
+    return html2canvas(el, {
+      scale:2,
+      useCORS:true,
+      backgroundColor:"#ffffff",
+      logging:false,
+      onclone: (doc) => {
+        // asegurar fondo blanco en el clon
+        doc.body.style.background = "#fff";
+      }
+    });
+  }
+
+  async function exportarPdf(){
+    const btn = document.getElementById("btnPdf");
+
+    // jsPDF se expone como window.jspdf.jsPDF (UMD build)
+    const jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+    if(!jsPDFCtor){ alert("La librería jsPDF no está disponible. Verifica tu conexión a internet."); return; }
+    if(!window.html2canvas){ alert("La librería html2canvas no está disponible. Verifica tu conexión a internet."); return; }
+
+    btn.disabled = true;
+    btn.textContent = "⏳ Generando...";
+
+    try {
+      // Página horizontal (landscape) tamaño A4: 297 x 210 mm
+      const PAGE_W = 297, PAGE_H = 210;
+      const MARGIN = 8;          // margen exterior uniforme
+      const BAND_H = 12;         // alto de la franja vino del título
+      const FOOT_H = 7;          // alto de la franja de fuente al pie
+
+      const pdf = new jsPDFCtor({ orientation:"landscape", unit:"mm", format:"a4" });
+      pdf.setProperties({
+        title:"Reporte ORPMI — Gobierno Regional de Lambayeque",
+        subject:"Ejecución de Inversiones",
+        author:"ORPMI - GORE Lambayeque"
+      });
+
+      let primera = true;
+      let paginasGeneradas = 0;
+
+      for(const sec of SECTION_SELECTORS){
+        const el = document.querySelector(sec.query);
+        if(!el || el.offsetParent === null) continue; // omite secciones ocultas (display:none / sin datos)
+
+        btn.textContent = `⏳ Capturando: ${sec.titulo.slice(0,28)}…`;
+
+        let canvas;
+        try { canvas = await capturar(el); }
+        catch(e){ console.warn("Error capturando", sec.query, e); continue; }
+
+        const imgData = canvas.toDataURL("image/jpeg", 0.93);
+        const cw = canvas.width, ch = canvas.height;
+
+        if(!primera) pdf.addPage("a4", "landscape");
+        primera = false;
+        paginasGeneradas++;
+
+        // Fondo blanco de toda la página
+        pdf.setFillColor(255,255,255);
+        pdf.rect(0, 0, PAGE_W, PAGE_H, "F");
+
+        // Franja vino con título (idéntica identidad visual del dashboard)
+        pdf.setFillColor(0x5a, 0x14, 0x14);
+        pdf.rect(0, 0, PAGE_W, BAND_H, "F");
+        pdf.setTextColor(0xFF, 0xD1, 0x66);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(13);
+        pdf.text(sec.titulo, MARGIN, BAND_H/2 + 1.5, { baseline:"middle" });
+
+        // Área disponible para la imagen, manteniendo proporción (horizontal, sin recortes)
+        const areaX = MARGIN;
+        const areaY = BAND_H + 4;
+        const areaW = PAGE_W - MARGIN*2;
+        const areaH = PAGE_H - BAND_H - FOOT_H - 8;
+
+        const ratio = cw / ch;
+        let imgW = areaW, imgH = areaW / ratio;
+        if(imgH > areaH){ imgH = areaH; imgW = areaH * ratio; }
+        const imgX = areaX + (areaW - imgW)/2;
+        const imgY = areaY + (areaH - imgH)/2;
+
+        pdf.addImage(imgData, "JPEG", imgX, imgY, imgW, imgH, undefined, "FAST");
+
+        // Pie de página: fuente + numeración
+        pdf.setTextColor(0x88, 0x88, 0x88);
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(8);
+        pdf.text(
+          "Fuente: SIAF — Consulta Amigable MEF  |  Elaborado por: ORPMI — GORE Lambayeque",
+          PAGE_W/2, PAGE_H - FOOT_H/2, { align:"center", baseline:"middle" }
+        );
+      }
+
+      if(paginasGeneradas === 0){
+        alert("No hay secciones con datos cargados para exportar. Carga primero los archivos .xls.");
+        btn.disabled = false;
+        btn.textContent = "⬇ Exportar a PDF";
+        return;
+      }
+
+      btn.textContent = "⏳ Guardando archivo...";
+      const nombre = `ORPMI_Lambayeque_${new Date().toLocaleDateString("es-PE").replace(/\//g,"-")}.pdf`;
+      pdf.save(nombre);
+      btn.textContent = "✓ Descargado";
+      setTimeout(()=>{ btn.disabled=false; btn.textContent="⬇ Exportar a PDF"; },2500);
+
+    } catch(err){
+      console.error("Error exportando PDF:", err);
+      alert("Error al generar el PDF: " + err.message);
+      btn.disabled=false;
+      btn.textContent="⬇ Exportar a PDF";
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded",()=>{
+    const btn=document.getElementById("btnPdf");
+    if(btn) btn.addEventListener("click", exportarPdf);
+  });
+})();
+</script>
+</body>
+</html>
