@@ -2224,6 +2224,16 @@
 
     // Construye un objeto "archivo virtual" compatible con el array interno
     function construirArchivoVirtual(tipo, registros, contexto, nombre) {
+      const total = registros.reduce((t, r) => {
+        t.pia          += r.pia          || 0;
+        t.pim          += r.pim          || 0;
+        t.certificacion+= r.certificacion|| 0;
+        t.compromiso   += r.compromiso   || 0;
+        t.devengado    += r.devengado    || 0;
+        t.girado       += r.girado       || 0;
+        return t;
+      }, { pia:0, pim:0, certificacion:0, compromiso:0, devengado:0, girado:0 });
+      total.avance = total.pim ? +(total.devengado / total.pim * 100).toFixed(2) : 0;
       return {
         nombre: nombre,
         res: {
@@ -2231,7 +2241,7 @@
           registros: registros,
           contexto: contexto,
           nRegistros: registros.length,
-          total: null,
+          total: total,
           validacion: { hayReferencia: false, ok: true, difPct: "0.0" }
         },
         incluir: true,
