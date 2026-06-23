@@ -1796,7 +1796,7 @@
       if(!a.res || !a.res.contexto) continue;
       const ueCtx = a.res.contexto.find(c=>c.nivel==="UNIDAD");
       if(!ueCtx) continue;
-      const m = String(ueCtx.descripcion||"").match(/(\d{3}-\d+)/);
+      const m = String(ueCtx.descripcion||ueCtx.nombre||"").match(/(\d{3}-\d+)/);
       if(!m) continue;
       const cod = m[1];
       if(!ueFiles[cod]) ueFiles[cod]=[];
