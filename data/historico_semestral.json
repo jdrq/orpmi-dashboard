@@ -1,0 +1,1243 @@
+{
+  "meta": {
+    "descripcion": "Primer semestre de cada año — Ranking GOREs por Devengado en Monto",
+    "elaborado_por": "ORPMI - Oficina Regional de Programación Multianual de Inversiones",
+    "gore": "Gobierno Regional del Departamento de Lambayeque — Pliego 452",
+    "fuente": "Consulta Amigable MEF — apps5.mineco.gob.pe",
+    "nota_metodologia": "Primer semestre = T1 (Ene-Mar) + T2 (Abr-Jun). Archivos MEF trimestrales representan el período, no acumulado. 2026 usa el dato diario acumulado del archivo ejecucion.json.",
+    "generado": "2026-06-24 23:32"
+  },
+  "semestres": {
+    "2022": {
+      "label": "Ene–Jun 2022",
+      "total_gores": 26,
+      "lambayeque": {
+        "dev": 145927836.0,
+        "dev_t1": 48964873.0,
+        "dev_t2": 96962963.0,
+        "posicion": 8
+      },
+      "ranking": [
+        {
+          "codigo": "453",
+          "nombre": "453: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LORETO",
+          "dev": 257399251.0,
+          "dev_t1": 94603587.0,
+          "dev_t2": 162795664.0,
+          "es_lambayeque": false,
+          "posicion": 1
+        },
+        {
+          "codigo": "446",
+          "nombre": "446: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CUSCO",
+          "dev": 255862020.0,
+          "dev_t1": 94073513.0,
+          "dev_t2": 161788507.0,
+          "es_lambayeque": false,
+          "posicion": 2
+        },
+        {
+          "codigo": "450",
+          "nombre": "450: GOBIERNO REGIONAL DEL DEPARTAMENTO DE JUNIN",
+          "dev": 214392978.0,
+          "dev_t1": 92978812.0,
+          "dev_t2": 121414166.0,
+          "es_lambayeque": false,
+          "posicion": 3
+        },
+        {
+          "codigo": "444",
+          "nombre": "444: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AYACUCHO",
+          "dev": 190454645.0,
+          "dev_t1": 68697357.0,
+          "dev_t2": 121757288.0,
+          "es_lambayeque": false,
+          "posicion": 4
+        },
+        {
+          "codigo": "443",
+          "nombre": "443: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AREQUIPA",
+          "dev": 173784190.0,
+          "dev_t1": 74195548.0,
+          "dev_t2": 99588642.0,
+          "es_lambayeque": false,
+          "posicion": 5
+        },
+        {
+          "codigo": "442",
+          "nombre": "442: GOBIERNO REGIONAL DEL DEPARTAMENTO DE APURIMAC",
+          "dev": 158957125.0,
+          "dev_t1": 51542705.0,
+          "dev_t2": 107414420.0,
+          "es_lambayeque": false,
+          "posicion": 6
+        },
+        {
+          "codigo": "457",
+          "nombre": "457: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PIURA",
+          "dev": 158210229.0,
+          "dev_t1": 61952667.0,
+          "dev_t2": 96257562.0,
+          "es_lambayeque": false,
+          "posicion": 7
+        },
+        {
+          "codigo": "452",
+          "nombre": "452: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LAMBAYEQUE",
+          "dev": 145927836.0,
+          "dev_t1": 48964873.0,
+          "dev_t2": 96962963.0,
+          "es_lambayeque": true,
+          "posicion": 8
+        },
+        {
+          "codigo": "459",
+          "nombre": "459: GOBIERNO REGIONAL DEL DEPARTAMENTO DE SAN MARTIN",
+          "dev": 138016105.0,
+          "dev_t1": 39890693.0,
+          "dev_t2": 98125412.0,
+          "es_lambayeque": false,
+          "posicion": 9
+        },
+        {
+          "codigo": "441",
+          "nombre": "441: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ANCASH",
+          "dev": 126305994.0,
+          "dev_t1": 39346671.0,
+          "dev_t2": 86959323.0,
+          "es_lambayeque": false,
+          "posicion": 10
+        },
+        {
+          "codigo": "458",
+          "nombre": "458: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PUNO",
+          "dev": 123965145.0,
+          "dev_t1": 42638029.0,
+          "dev_t2": 81327116.0,
+          "es_lambayeque": false,
+          "posicion": 11
+        },
+        {
+          "codigo": "445",
+          "nombre": "445: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CAJAMARCA",
+          "dev": 117678992.0,
+          "dev_t1": 39519230.0,
+          "dev_t2": 78159762.0,
+          "es_lambayeque": false,
+          "posicion": 12
+        },
+        {
+          "codigo": "462",
+          "nombre": "462: GOBIERNO REGIONAL DEL DEPARTAMENTO DE UCAYALI",
+          "dev": 109419643.0,
+          "dev_t1": 65708765.0,
+          "dev_t2": 43710878.0,
+          "es_lambayeque": false,
+          "posicion": 13
+        },
+        {
+          "codigo": "456",
+          "nombre": "456: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PASCO",
+          "dev": 86264908.0,
+          "dev_t1": 28723376.0,
+          "dev_t2": 57541532.0,
+          "es_lambayeque": false,
+          "posicion": 14
+        },
+        {
+          "codigo": "447",
+          "nombre": "447: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANCAVELICA",
+          "dev": 80446845.0,
+          "dev_t1": 35835346.0,
+          "dev_t2": 44611499.0,
+          "es_lambayeque": false,
+          "posicion": 15
+        },
+        {
+          "codigo": "464",
+          "nombre": "464: GOBIERNO REGIONAL DE LA PROVINCIA CONSTITUCIONAL DEL CALLAO",
+          "dev": 79023304.0,
+          "dev_t1": 28199651.0,
+          "dev_t2": 50823653.0,
+          "es_lambayeque": false,
+          "posicion": 16
+        },
+        {
+          "codigo": "440",
+          "nombre": "440: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AMAZONAS",
+          "dev": 78783437.0,
+          "dev_t1": 38962603.0,
+          "dev_t2": 39820834.0,
+          "es_lambayeque": false,
+          "posicion": 17
+        },
+        {
+          "codigo": "460",
+          "nombre": "460: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TACNA",
+          "dev": 73876699.0,
+          "dev_t1": 33319967.0,
+          "dev_t2": 40556732.0,
+          "es_lambayeque": false,
+          "posicion": 18
+        },
+        {
+          "codigo": "455",
+          "nombre": "455: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MOQUEGUA",
+          "dev": 71993443.0,
+          "dev_t1": 26820180.0,
+          "dev_t2": 45173263.0,
+          "es_lambayeque": false,
+          "posicion": 19
+        },
+        {
+          "codigo": "463",
+          "nombre": "463: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LIMA",
+          "dev": 68640914.0,
+          "dev_t1": 8487546.0,
+          "dev_t2": 60153368.0,
+          "es_lambayeque": false,
+          "posicion": 20
+        },
+        {
+          "codigo": "451",
+          "nombre": "451: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LA LIBERTAD",
+          "dev": 66992954.0,
+          "dev_t1": 28614637.0,
+          "dev_t2": 38378317.0,
+          "es_lambayeque": false,
+          "posicion": 21
+        },
+        {
+          "codigo": "465",
+          "nombre": "465: MUNICIPALIDAD METROPOLITANA DE LIMA",
+          "dev": 57895508.0,
+          "dev_t1": 20625912.0,
+          "dev_t2": 37269596.0,
+          "es_lambayeque": false,
+          "posicion": 22
+        },
+        {
+          "codigo": "449",
+          "nombre": "449: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ICA",
+          "dev": 57337253.0,
+          "dev_t1": 18436200.0,
+          "dev_t2": 38901053.0,
+          "es_lambayeque": false,
+          "posicion": 23
+        },
+        {
+          "codigo": "454",
+          "nombre": "454: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MADRE DE DIOS",
+          "dev": 51530746.0,
+          "dev_t1": 17132004.0,
+          "dev_t2": 34398742.0,
+          "es_lambayeque": false,
+          "posicion": 24
+        },
+        {
+          "codigo": "448",
+          "nombre": "448: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANUCO",
+          "dev": 42440746.0,
+          "dev_t1": 21272413.0,
+          "dev_t2": 21168333.0,
+          "es_lambayeque": false,
+          "posicion": 25
+        },
+        {
+          "codigo": "461",
+          "nombre": "461: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TUMBES",
+          "dev": 27676324.0,
+          "dev_t1": 7385459.0,
+          "dev_t2": 20290865.0,
+          "es_lambayeque": false,
+          "posicion": 26
+        }
+      ]
+    },
+    "2023": {
+      "label": "Ene–Jun 2023",
+      "total_gores": 26,
+      "lambayeque": {
+        "dev": 145909848.0,
+        "dev_t1": 67399684.0,
+        "dev_t2": 78510164.0,
+        "posicion": 10
+      },
+      "ranking": [
+        {
+          "codigo": "450",
+          "nombre": "450: GOBIERNO REGIONAL DEL DEPARTAMENTO DE JUNIN",
+          "dev": 275572026.0,
+          "dev_t1": 96734262.0,
+          "dev_t2": 178837764.0,
+          "es_lambayeque": false,
+          "posicion": 1
+        },
+        {
+          "codigo": "443",
+          "nombre": "443: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AREQUIPA",
+          "dev": 250614388.0,
+          "dev_t1": 54678279.0,
+          "dev_t2": 195936109.0,
+          "es_lambayeque": false,
+          "posicion": 2
+        },
+        {
+          "codigo": "445",
+          "nombre": "445: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CAJAMARCA",
+          "dev": 235183014.0,
+          "dev_t1": 104683625.0,
+          "dev_t2": 130499389.0,
+          "es_lambayeque": false,
+          "posicion": 3
+        },
+        {
+          "codigo": "446",
+          "nombre": "446: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CUSCO",
+          "dev": 232767631.0,
+          "dev_t1": 74464256.0,
+          "dev_t2": 158303375.0,
+          "es_lambayeque": false,
+          "posicion": 4
+        },
+        {
+          "codigo": "453",
+          "nombre": "453: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LORETO",
+          "dev": 231838817.0,
+          "dev_t1": 98096551.0,
+          "dev_t2": 133742266.0,
+          "es_lambayeque": false,
+          "posicion": 5
+        },
+        {
+          "codigo": "457",
+          "nombre": "457: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PIURA",
+          "dev": 225085057.0,
+          "dev_t1": 100331219.0,
+          "dev_t2": 124753838.0,
+          "es_lambayeque": false,
+          "posicion": 6
+        },
+        {
+          "codigo": "444",
+          "nombre": "444: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AYACUCHO",
+          "dev": 207579854.0,
+          "dev_t1": 65290470.0,
+          "dev_t2": 142289384.0,
+          "es_lambayeque": false,
+          "posicion": 7
+        },
+        {
+          "codigo": "458",
+          "nombre": "458: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PUNO",
+          "dev": 175447773.0,
+          "dev_t1": 30488050.0,
+          "dev_t2": 144959723.0,
+          "es_lambayeque": false,
+          "posicion": 8
+        },
+        {
+          "codigo": "451",
+          "nombre": "451: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LA LIBERTAD",
+          "dev": 155252120.0,
+          "dev_t1": 49188768.0,
+          "dev_t2": 106063352.0,
+          "es_lambayeque": false,
+          "posicion": 9
+        },
+        {
+          "codigo": "452",
+          "nombre": "452: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LAMBAYEQUE",
+          "dev": 145909848.0,
+          "dev_t1": 67399684.0,
+          "dev_t2": 78510164.0,
+          "es_lambayeque": true,
+          "posicion": 10
+        },
+        {
+          "codigo": "440",
+          "nombre": "440: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AMAZONAS",
+          "dev": 140667342.0,
+          "dev_t1": 52793933.0,
+          "dev_t2": 87873409.0,
+          "es_lambayeque": false,
+          "posicion": 11
+        },
+        {
+          "codigo": "449",
+          "nombre": "449: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ICA",
+          "dev": 136309377.0,
+          "dev_t1": 78570256.0,
+          "dev_t2": 57739121.0,
+          "es_lambayeque": false,
+          "posicion": 12
+        },
+        {
+          "codigo": "442",
+          "nombre": "442: GOBIERNO REGIONAL DEL DEPARTAMENTO DE APURIMAC",
+          "dev": 115286301.0,
+          "dev_t1": 26512971.0,
+          "dev_t2": 88773330.0,
+          "es_lambayeque": false,
+          "posicion": 13
+        },
+        {
+          "codigo": "462",
+          "nombre": "462: GOBIERNO REGIONAL DEL DEPARTAMENTO DE UCAYALI",
+          "dev": 112487673.0,
+          "dev_t1": 33930303.0,
+          "dev_t2": 78557370.0,
+          "es_lambayeque": false,
+          "posicion": 14
+        },
+        {
+          "codigo": "459",
+          "nombre": "459: GOBIERNO REGIONAL DEL DEPARTAMENTO DE SAN MARTIN",
+          "dev": 105783731.0,
+          "dev_t1": 49174938.0,
+          "dev_t2": 56608793.0,
+          "es_lambayeque": false,
+          "posicion": 15
+        },
+        {
+          "codigo": "455",
+          "nombre": "455: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MOQUEGUA",
+          "dev": 83136087.0,
+          "dev_t1": 39470337.0,
+          "dev_t2": 43665750.0,
+          "es_lambayeque": false,
+          "posicion": 16
+        },
+        {
+          "codigo": "461",
+          "nombre": "461: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TUMBES",
+          "dev": 80690732.0,
+          "dev_t1": 31002514.0,
+          "dev_t2": 49688218.0,
+          "es_lambayeque": false,
+          "posicion": 17
+        },
+        {
+          "codigo": "460",
+          "nombre": "460: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TACNA",
+          "dev": 73823172.0,
+          "dev_t1": 21163448.0,
+          "dev_t2": 52659724.0,
+          "es_lambayeque": false,
+          "posicion": 18
+        },
+        {
+          "codigo": "463",
+          "nombre": "463: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LIMA",
+          "dev": 73372648.0,
+          "dev_t1": 20259919.0,
+          "dev_t2": 53112729.0,
+          "es_lambayeque": false,
+          "posicion": 19
+        },
+        {
+          "codigo": "447",
+          "nombre": "447: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANCAVELICA",
+          "dev": 71479982.0,
+          "dev_t1": 21487268.0,
+          "dev_t2": 49992714.0,
+          "es_lambayeque": false,
+          "posicion": 20
+        },
+        {
+          "codigo": "441",
+          "nombre": "441: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ANCASH",
+          "dev": 69519754.0,
+          "dev_t1": 28135395.0,
+          "dev_t2": 41384359.0,
+          "es_lambayeque": false,
+          "posicion": 21
+        },
+        {
+          "codigo": "448",
+          "nombre": "448: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANUCO",
+          "dev": 62486916.0,
+          "dev_t1": 20657053.0,
+          "dev_t2": 41829863.0,
+          "es_lambayeque": false,
+          "posicion": 22
+        },
+        {
+          "codigo": "456",
+          "nombre": "456: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PASCO",
+          "dev": 52611647.0,
+          "dev_t1": 8302797.0,
+          "dev_t2": 44308850.0,
+          "es_lambayeque": false,
+          "posicion": 23
+        },
+        {
+          "codigo": "454",
+          "nombre": "454: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MADRE DE DIOS",
+          "dev": 46449592.0,
+          "dev_t1": 10153217.0,
+          "dev_t2": 36296375.0,
+          "es_lambayeque": false,
+          "posicion": 24
+        },
+        {
+          "codigo": "464",
+          "nombre": "464: GOBIERNO REGIONAL DE LA PROVINCIA CONSTITUCIONAL DEL CALLAO",
+          "dev": 36426443.0,
+          "dev_t1": 22048783.0,
+          "dev_t2": 14377660.0,
+          "es_lambayeque": false,
+          "posicion": 25
+        },
+        {
+          "codigo": "465",
+          "nombre": "465: MUNICIPALIDAD METROPOLITANA DE LIMA",
+          "dev": 18747193.0,
+          "dev_t1": 9224401.0,
+          "dev_t2": 9522792.0,
+          "es_lambayeque": false,
+          "posicion": 26
+        }
+      ]
+    },
+    "2024": {
+      "label": "Ene–Jun 2024",
+      "total_gores": 26,
+      "lambayeque": {
+        "dev": 229932101.0,
+        "dev_t1": 106957976.0,
+        "dev_t2": 122974125.0,
+        "posicion": 10
+      },
+      "ranking": [
+        {
+          "codigo": "453",
+          "nombre": "453: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LORETO",
+          "dev": 519683086.0,
+          "dev_t1": 220560334.0,
+          "dev_t2": 299122752.0,
+          "es_lambayeque": false,
+          "posicion": 1
+        },
+        {
+          "codigo": "457",
+          "nombre": "457: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PIURA",
+          "dev": 431384525.0,
+          "dev_t1": 154896095.0,
+          "dev_t2": 276488430.0,
+          "es_lambayeque": false,
+          "posicion": 2
+        },
+        {
+          "codigo": "450",
+          "nombre": "450: GOBIERNO REGIONAL DEL DEPARTAMENTO DE JUNIN",
+          "dev": 430963295.0,
+          "dev_t1": 292983004.0,
+          "dev_t2": 137980291.0,
+          "es_lambayeque": false,
+          "posicion": 3
+        },
+        {
+          "codigo": "446",
+          "nombre": "446: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CUSCO",
+          "dev": 412591228.0,
+          "dev_t1": 138745469.0,
+          "dev_t2": 273845759.0,
+          "es_lambayeque": false,
+          "posicion": 4
+        },
+        {
+          "codigo": "444",
+          "nombre": "444: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AYACUCHO",
+          "dev": 360066037.0,
+          "dev_t1": 233664157.0,
+          "dev_t2": 126401880.0,
+          "es_lambayeque": false,
+          "posicion": 5
+        },
+        {
+          "codigo": "445",
+          "nombre": "445: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CAJAMARCA",
+          "dev": 345114184.0,
+          "dev_t1": 137047287.0,
+          "dev_t2": 208066897.0,
+          "es_lambayeque": false,
+          "posicion": 6
+        },
+        {
+          "codigo": "458",
+          "nombre": "458: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PUNO",
+          "dev": 283072774.0,
+          "dev_t1": 79759649.0,
+          "dev_t2": 203313125.0,
+          "es_lambayeque": false,
+          "posicion": 7
+        },
+        {
+          "codigo": "462",
+          "nombre": "462: GOBIERNO REGIONAL DEL DEPARTAMENTO DE UCAYALI",
+          "dev": 250356478.0,
+          "dev_t1": 91662116.0,
+          "dev_t2": 158694362.0,
+          "es_lambayeque": false,
+          "posicion": 8
+        },
+        {
+          "codigo": "443",
+          "nombre": "443: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AREQUIPA",
+          "dev": 241417002.0,
+          "dev_t1": 111667517.0,
+          "dev_t2": 129749485.0,
+          "es_lambayeque": false,
+          "posicion": 9
+        },
+        {
+          "codigo": "452",
+          "nombre": "452: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LAMBAYEQUE",
+          "dev": 229932101.0,
+          "dev_t1": 106957976.0,
+          "dev_t2": 122974125.0,
+          "es_lambayeque": true,
+          "posicion": 10
+        },
+        {
+          "codigo": "459",
+          "nombre": "459: GOBIERNO REGIONAL DEL DEPARTAMENTO DE SAN MARTIN",
+          "dev": 191169692.0,
+          "dev_t1": 67009430.0,
+          "dev_t2": 124160262.0,
+          "es_lambayeque": false,
+          "posicion": 11
+        },
+        {
+          "codigo": "451",
+          "nombre": "451: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LA LIBERTAD",
+          "dev": 175032960.0,
+          "dev_t1": 63485267.0,
+          "dev_t2": 111547693.0,
+          "es_lambayeque": false,
+          "posicion": 12
+        },
+        {
+          "codigo": "456",
+          "nombre": "456: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PASCO",
+          "dev": 147631099.0,
+          "dev_t1": 75903102.0,
+          "dev_t2": 71727997.0,
+          "es_lambayeque": false,
+          "posicion": 13
+        },
+        {
+          "codigo": "449",
+          "nombre": "449: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ICA",
+          "dev": 141730357.0,
+          "dev_t1": 44341856.0,
+          "dev_t2": 97388501.0,
+          "es_lambayeque": false,
+          "posicion": 14
+        },
+        {
+          "codigo": "463",
+          "nombre": "463: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LIMA",
+          "dev": 135710532.0,
+          "dev_t1": 51410870.0,
+          "dev_t2": 84299662.0,
+          "es_lambayeque": false,
+          "posicion": 15
+        },
+        {
+          "codigo": "448",
+          "nombre": "448: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANUCO",
+          "dev": 125855703.0,
+          "dev_t1": 54907100.0,
+          "dev_t2": 70948603.0,
+          "es_lambayeque": false,
+          "posicion": 16
+        },
+        {
+          "codigo": "447",
+          "nombre": "447: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANCAVELICA",
+          "dev": 122669397.0,
+          "dev_t1": 26908618.0,
+          "dev_t2": 95760779.0,
+          "es_lambayeque": false,
+          "posicion": 17
+        },
+        {
+          "codigo": "442",
+          "nombre": "442: GOBIERNO REGIONAL DEL DEPARTAMENTO DE APURIMAC",
+          "dev": 122280953.0,
+          "dev_t1": 38066309.0,
+          "dev_t2": 84214644.0,
+          "es_lambayeque": false,
+          "posicion": 18
+        },
+        {
+          "codigo": "440",
+          "nombre": "440: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AMAZONAS",
+          "dev": 114487184.0,
+          "dev_t1": 33474170.0,
+          "dev_t2": 81013014.0,
+          "es_lambayeque": false,
+          "posicion": 19
+        },
+        {
+          "codigo": "455",
+          "nombre": "455: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MOQUEGUA",
+          "dev": 107295673.0,
+          "dev_t1": 30489456.0,
+          "dev_t2": 76806217.0,
+          "es_lambayeque": false,
+          "posicion": 20
+        },
+        {
+          "codigo": "460",
+          "nombre": "460: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TACNA",
+          "dev": 102864652.0,
+          "dev_t1": 47285331.0,
+          "dev_t2": 55579321.0,
+          "es_lambayeque": false,
+          "posicion": 21
+        },
+        {
+          "codigo": "461",
+          "nombre": "461: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TUMBES",
+          "dev": 92717064.0,
+          "dev_t1": 29389324.0,
+          "dev_t2": 63327740.0,
+          "es_lambayeque": false,
+          "posicion": 22
+        },
+        {
+          "codigo": "441",
+          "nombre": "441: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ANCASH",
+          "dev": 90657964.0,
+          "dev_t1": 44104929.0,
+          "dev_t2": 46553035.0,
+          "es_lambayeque": false,
+          "posicion": 23
+        },
+        {
+          "codigo": "454",
+          "nombre": "454: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MADRE DE DIOS",
+          "dev": 78598005.0,
+          "dev_t1": 23862425.0,
+          "dev_t2": 54735580.0,
+          "es_lambayeque": false,
+          "posicion": 24
+        },
+        {
+          "codigo": "464",
+          "nombre": "464: GOBIERNO REGIONAL DE LA PROVINCIA CONSTITUCIONAL DEL CALLAO",
+          "dev": 69231445.0,
+          "dev_t1": 28371575.0,
+          "dev_t2": 40859870.0,
+          "es_lambayeque": false,
+          "posicion": 25
+        },
+        {
+          "codigo": "465",
+          "nombre": "465: MUNICIPALIDAD METROPOLITANA DE LIMA",
+          "dev": 30460178.0,
+          "dev_t1": 13509801.0,
+          "dev_t2": 16950377.0,
+          "es_lambayeque": false,
+          "posicion": 26
+        }
+      ]
+    },
+    "2025": {
+      "label": "Ene–Jun 2025",
+      "total_gores": 26,
+      "lambayeque": {
+        "dev": 249200222.0,
+        "dev_t1": 66410886.0,
+        "dev_t2": 182789336.0,
+        "posicion": 10
+      },
+      "ranking": [
+        {
+          "codigo": "450",
+          "nombre": "450: GOBIERNO REGIONAL DEL DEPARTAMENTO DE JUNIN",
+          "dev": 515750726.0,
+          "dev_t1": 244784769.0,
+          "dev_t2": 270965957.0,
+          "es_lambayeque": false,
+          "posicion": 1
+        },
+        {
+          "codigo": "457",
+          "nombre": "457: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PIURA",
+          "dev": 495567188.0,
+          "dev_t1": 199535104.0,
+          "dev_t2": 296032084.0,
+          "es_lambayeque": false,
+          "posicion": 2
+        },
+        {
+          "codigo": "453",
+          "nombre": "453: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LORETO",
+          "dev": 448825204.0,
+          "dev_t1": 293097380.0,
+          "dev_t2": 155727824.0,
+          "es_lambayeque": false,
+          "posicion": 3
+        },
+        {
+          "codigo": "444",
+          "nombre": "444: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AYACUCHO",
+          "dev": 398643450.0,
+          "dev_t1": 168291943.0,
+          "dev_t2": 230351507.0,
+          "es_lambayeque": false,
+          "posicion": 4
+        },
+        {
+          "codigo": "443",
+          "nombre": "443: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AREQUIPA",
+          "dev": 387356833.0,
+          "dev_t1": 91679353.0,
+          "dev_t2": 295677480.0,
+          "es_lambayeque": false,
+          "posicion": 5
+        },
+        {
+          "codigo": "446",
+          "nombre": "446: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CUSCO",
+          "dev": 359525515.0,
+          "dev_t1": 131686670.0,
+          "dev_t2": 227838845.0,
+          "es_lambayeque": false,
+          "posicion": 6
+        },
+        {
+          "codigo": "445",
+          "nombre": "445: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CAJAMARCA",
+          "dev": 318210561.0,
+          "dev_t1": 122301397.0,
+          "dev_t2": 195909164.0,
+          "es_lambayeque": false,
+          "posicion": 7
+        },
+        {
+          "codigo": "458",
+          "nombre": "458: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PUNO",
+          "dev": 297786932.0,
+          "dev_t1": 141880645.0,
+          "dev_t2": 155906287.0,
+          "es_lambayeque": false,
+          "posicion": 8
+        },
+        {
+          "codigo": "459",
+          "nombre": "459: GOBIERNO REGIONAL DEL DEPARTAMENTO DE SAN MARTIN",
+          "dev": 296837593.0,
+          "dev_t1": 107774804.0,
+          "dev_t2": 189062789.0,
+          "es_lambayeque": false,
+          "posicion": 9
+        },
+        {
+          "codigo": "452",
+          "nombre": "452: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LAMBAYEQUE",
+          "dev": 249200222.0,
+          "dev_t1": 66410886.0,
+          "dev_t2": 182789336.0,
+          "es_lambayeque": true,
+          "posicion": 10
+        },
+        {
+          "codigo": "451",
+          "nombre": "451: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LA LIBERTAD",
+          "dev": 243938037.0,
+          "dev_t1": 59011212.0,
+          "dev_t2": 184926825.0,
+          "es_lambayeque": false,
+          "posicion": 11
+        },
+        {
+          "codigo": "440",
+          "nombre": "440: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AMAZONAS",
+          "dev": 233600213.0,
+          "dev_t1": 162412950.0,
+          "dev_t2": 71187263.0,
+          "es_lambayeque": false,
+          "posicion": 12
+        },
+        {
+          "codigo": "463",
+          "nombre": "463: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LIMA",
+          "dev": 199506693.0,
+          "dev_t1": 114105616.0,
+          "dev_t2": 85401077.0,
+          "es_lambayeque": false,
+          "posicion": 13
+        },
+        {
+          "codigo": "462",
+          "nombre": "462: GOBIERNO REGIONAL DEL DEPARTAMENTO DE UCAYALI",
+          "dev": 179830649.0,
+          "dev_t1": 68721998.0,
+          "dev_t2": 111108651.0,
+          "es_lambayeque": false,
+          "posicion": 14
+        },
+        {
+          "codigo": "460",
+          "nombre": "460: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TACNA",
+          "dev": 157134044.0,
+          "dev_t1": 65031960.0,
+          "dev_t2": 92102084.0,
+          "es_lambayeque": false,
+          "posicion": 15
+        },
+        {
+          "codigo": "442",
+          "nombre": "442: GOBIERNO REGIONAL DEL DEPARTAMENTO DE APURIMAC",
+          "dev": 132975564.0,
+          "dev_t1": 44266896.0,
+          "dev_t2": 88708668.0,
+          "es_lambayeque": false,
+          "posicion": 16
+        },
+        {
+          "codigo": "456",
+          "nombre": "456: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PASCO",
+          "dev": 129981926.0,
+          "dev_t1": 32275990.0,
+          "dev_t2": 97705936.0,
+          "es_lambayeque": false,
+          "posicion": 17
+        },
+        {
+          "codigo": "449",
+          "nombre": "449: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ICA",
+          "dev": 129533309.0,
+          "dev_t1": 68235188.0,
+          "dev_t2": 61298121.0,
+          "es_lambayeque": false,
+          "posicion": 18
+        },
+        {
+          "codigo": "455",
+          "nombre": "455: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MOQUEGUA",
+          "dev": 122494550.0,
+          "dev_t1": 42408723.0,
+          "dev_t2": 80085827.0,
+          "es_lambayeque": false,
+          "posicion": 19
+        },
+        {
+          "codigo": "441",
+          "nombre": "441: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ANCASH",
+          "dev": 122220617.0,
+          "dev_t1": 42023670.0,
+          "dev_t2": 80196947.0,
+          "es_lambayeque": false,
+          "posicion": 20
+        },
+        {
+          "codigo": "448",
+          "nombre": "448: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANUCO",
+          "dev": 99357795.0,
+          "dev_t1": 22954557.0,
+          "dev_t2": 76403238.0,
+          "es_lambayeque": false,
+          "posicion": 21
+        },
+        {
+          "codigo": "454",
+          "nombre": "454: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MADRE DE DIOS",
+          "dev": 98601681.0,
+          "dev_t1": 42058005.0,
+          "dev_t2": 56543676.0,
+          "es_lambayeque": false,
+          "posicion": 22
+        },
+        {
+          "codigo": "447",
+          "nombre": "447: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANCAVELICA",
+          "dev": 95963495.0,
+          "dev_t1": 59011404.0,
+          "dev_t2": 36952091.0,
+          "es_lambayeque": false,
+          "posicion": 23
+        },
+        {
+          "codigo": "464",
+          "nombre": "464: GOBIERNO REGIONAL DE LA PROVINCIA CONSTITUCIONAL DEL CALLAO",
+          "dev": 83889307.0,
+          "dev_t1": 34883456.0,
+          "dev_t2": 49005851.0,
+          "es_lambayeque": false,
+          "posicion": 24
+        },
+        {
+          "codigo": "465",
+          "nombre": "465: MUNICIPALIDAD METROPOLITANA DE LIMA",
+          "dev": 72811979.0,
+          "dev_t1": 31107416.0,
+          "dev_t2": 41704563.0,
+          "es_lambayeque": false,
+          "posicion": 25
+        },
+        {
+          "codigo": "461",
+          "nombre": "461: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TUMBES",
+          "dev": 57981745.0,
+          "dev_t1": 30567153.0,
+          "dev_t2": 27414592.0,
+          "es_lambayeque": false,
+          "posicion": 26
+        }
+      ]
+    },
+    "2026": {
+      "label": "Ene–Jun 2026 (al 24/06/2026)",
+      "total_gores": 26,
+      "nota": "Dato diario acumulado desde ejecucion.json. Aún no cierra el 2T 2026.",
+      "lambayeque": {
+        "dev": 235388702.0,
+        "dev_t1": 235388702.0,
+        "dev_t2": 0,
+        "posicion": 12
+      },
+      "ranking": [
+        {
+          "codigo": "450",
+          "nombre": "450: GOBIERNO REGIONAL DEL DEPARTAMENTO DE JUNIN",
+          "dev": 564017111.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 1
+        },
+        {
+          "codigo": "453",
+          "nombre": "453: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LORETO",
+          "dev": 561331073.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 2
+        },
+        {
+          "codigo": "457",
+          "nombre": "457: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PIURA",
+          "dev": 531301113.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 3
+        },
+        {
+          "codigo": "444",
+          "nombre": "444: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AYACUCHO",
+          "dev": 382901505.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 4
+        },
+        {
+          "codigo": "443",
+          "nombre": "443: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AREQUIPA",
+          "dev": 369206498.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 5
+        },
+        {
+          "codigo": "446",
+          "nombre": "446: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CUSCO",
+          "dev": 356477177.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 6
+        },
+        {
+          "codigo": "445",
+          "nombre": "445: GOBIERNO REGIONAL DEL DEPARTAMENTO DE CAJAMARCA",
+          "dev": 317993480.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 7
+        },
+        {
+          "codigo": "462",
+          "nombre": "462: GOBIERNO REGIONAL DEL DEPARTAMENTO DE UCAYALI",
+          "dev": 292411257.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 8
+        },
+        {
+          "codigo": "456",
+          "nombre": "456: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PASCO",
+          "dev": 273405354.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 9
+        },
+        {
+          "codigo": "440",
+          "nombre": "440: GOBIERNO REGIONAL DEL DEPARTAMENTO DE AMAZONAS",
+          "dev": 244539865.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 10
+        },
+        {
+          "codigo": "451",
+          "nombre": "451: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LA LIBERTAD",
+          "dev": 241688832.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 11
+        },
+        {
+          "codigo": "452",
+          "nombre": "452: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LAMBAYEQUE",
+          "dev": 235388702.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": true,
+          "posicion": 12
+        },
+        {
+          "codigo": "459",
+          "nombre": "459: GOBIERNO REGIONAL DEL DEPARTAMENTO DE SAN MARTIN",
+          "dev": 235190969.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 13
+        },
+        {
+          "codigo": "458",
+          "nombre": "458: GOBIERNO REGIONAL DEL DEPARTAMENTO DE PUNO",
+          "dev": 228792814.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 14
+        },
+        {
+          "codigo": "449",
+          "nombre": "449: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ICA",
+          "dev": 226606707.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 15
+        },
+        {
+          "codigo": "441",
+          "nombre": "441: GOBIERNO REGIONAL DEL DEPARTAMENTO DE ANCASH",
+          "dev": 223010210.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 16
+        },
+        {
+          "codigo": "463",
+          "nombre": "463: GOBIERNO REGIONAL DEL DEPARTAMENTO DE LIMA",
+          "dev": 165897155.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 17
+        },
+        {
+          "codigo": "442",
+          "nombre": "442: GOBIERNO REGIONAL DEL DEPARTAMENTO DE APURIMAC",
+          "dev": 146853991.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 18
+        },
+        {
+          "codigo": "460",
+          "nombre": "460: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TACNA",
+          "dev": 133103731.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 19
+        },
+        {
+          "codigo": "455",
+          "nombre": "455: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MOQUEGUA",
+          "dev": 109844836.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 20
+        },
+        {
+          "codigo": "448",
+          "nombre": "448: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANUCO",
+          "dev": 85313095.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 21
+        },
+        {
+          "codigo": "447",
+          "nombre": "447: GOBIERNO REGIONAL DEL DEPARTAMENTO DE HUANCAVELICA",
+          "dev": 74599941.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 22
+        },
+        {
+          "codigo": "454",
+          "nombre": "454: GOBIERNO REGIONAL DEL DEPARTAMENTO DE MADRE DE DIOS",
+          "dev": 68022110.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 23
+        },
+        {
+          "codigo": "464",
+          "nombre": "464: GOBIERNO REGIONAL DE LA PROVINCIA CONSTITUCIONAL DEL CALLAO",
+          "dev": 40264999.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 24
+        },
+        {
+          "codigo": "461",
+          "nombre": "461: GOBIERNO REGIONAL DEL DEPARTAMENTO DE TUMBES",
+          "dev": 30592530.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 25
+        },
+        {
+          "codigo": "465",
+          "nombre": "465: MUNICIPALIDAD METROPOLITANA DE LIMA",
+          "dev": 29658727.0,
+          "dev_t1": 0,
+          "dev_t2": 0,
+          "es_lambayeque": false,
+          "posicion": 26
+        }
+      ]
+    }
+  }
+}
