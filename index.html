@@ -63,6 +63,19 @@
     border-color:var(--vino);box-shadow:0 2px 8px rgba(90,20,20,.18)
   }
   .yr-btn.activo:hover{background:var(--vino2)}
+  /* Bloques 2A y 2C usan mismas clases de estilo */
+  .yr-btn-a, .yr-btn-c {
+    appearance:none;border:1.5px solid var(--linea);border-radius:8px;
+    padding:5px 16px;font-family:"Barlow Condensed";font-weight:700;font-size:15px;
+    cursor:pointer;background:#fff;color:var(--gris);
+    transition:all .15s;letter-spacing:.04em;
+  }
+  .yr-btn-a:hover,.yr-btn-c:hover{border-color:var(--naranja-h);color:var(--vino);background:#fff7ef}
+  .yr-btn-a.activo,.yr-btn-c.activo{
+    background:var(--vino);color:#FFD166;
+    border-color:var(--vino);box-shadow:0 2px 8px rgba(90,20,20,.18)
+  }
+  .yr-btn-a.activo:hover,.yr-btn-c.activo:hover{background:var(--vino2)}
   .yr-nota{font-size:11.5px;color:var(--gris);font-style:italic;
     margin-left:auto;font-weight:500}
 
@@ -441,6 +454,18 @@
         <div class="pdf-header"><div class="pdf-header-left"><h2>Ejecución Presupuestal de Inversiones</h2>
           <div class="sub">A Nivel Gobiernos Regionales — Por Devengado en %</div></div><div class="orad-stamp"><div class="os-sigla">ORAD</div><div class="os-texto">Oficina Regional de Administración</div></div></div>
         <div class="pdf-body">
+
+          <!-- Selector de año -->
+          <div class="yr-selector">
+            <span class="yr-selector-label">Período:</span>
+            <button class="yr-btn-a" data-yr="2022">2022</button>
+            <button class="yr-btn-a" data-yr="2023">2023</button>
+            <button class="yr-btn-a" data-yr="2024">2024</button>
+            <button class="yr-btn-a" data-yr="2025">2025</button>
+            <button class="yr-btn-a activo" data-yr="2026">2026</button>
+            <span class="yr-nota" id="b2ayrNota">Dato diario acumulado</span>
+          </div>
+
           <div class="pdf-date-row">
             <span id="b2fechaA">—</span>
             <span>PROMEDIO DE EJECUCIÓN: <span class="prom" id="b2promA">—</span></span>
@@ -524,6 +549,18 @@
         <div class="pdf-header"><div class="pdf-header-left"><h2>Ejecución Presupuestal de Inversiones</h2>
           <div class="sub">A Nivel Gobiernos Regionales — Por Certificación en %</div></div><div class="orad-stamp"><div class="os-sigla">ORAD</div><div class="os-texto">Oficina Regional de Administración</div></div></div>
         <div class="pdf-body">
+
+          <!-- Selector de año -->
+          <div class="yr-selector">
+            <span class="yr-selector-label">Período:</span>
+            <button class="yr-btn-c" data-yr="2022">2022</button>
+            <button class="yr-btn-c" data-yr="2023">2023</button>
+            <button class="yr-btn-c" data-yr="2024">2024</button>
+            <button class="yr-btn-c" data-yr="2025">2025</button>
+            <button class="yr-btn-c activo" data-yr="2026">2026</button>
+            <span class="yr-nota" id="b2cyrNota">Dato diario acumulado</span>
+          </div>
+
           <div class="pdf-date-row">
             <span id="b2fechaC">—</span>
             <span>PROMEDIO DE CERTIFICACIÓN: <span class="prom" id="b2promC">—</span></span>
@@ -2542,198 +2579,324 @@
   })();
 
   // ═══════════════════════════════════════════════════════════════
-  // BLOQUE 2-B HISTÓRICO — Selector de año + Ranking + Tendencia
+  // MÓDULO HISTÓRICO — Bloques 2A, 2B y 2C con selector de año
   // ═══════════════════════════════════════════════════════════════
   (function(){
 
-    // Estado global del módulo histórico
     const STATE = {
-      historico:    null,   // datos del historico_semestral.json
-      anioActivo:   "2026", // año seleccionado por defecto
-      datosActuales: null,  // datos del ejecucion.json (para 2026)
-      chartTendencia: null  // instancia Chart.js del gráfico lineal
+      historico:     null,
+      anioA:         "2026",
+      anioB:         "2026",
+      anioC:         "2026",
+      chartTendencia: null,
     };
 
-    const fmt = n => Math.round(n||0).toLocaleString("es-PE");
+    const fmt  = n => Math.round(n||0).toLocaleString("es-PE");
     const fmtM = n => {
       if (!n) return "S/ 0";
       if (n >= 1e9) return "S/ " + (n/1e9).toFixed(1) + " B";
       if (n >= 1e6) return "S/ " + (n/1e6).toFixed(1) + " M";
       return "S/ " + fmt(n);
     };
+    const semColor = (v, prom) =>
+      v >= prom * 1.1 ? "var(--verde)" : v >= prom * 0.9 ? "var(--amber)" : "var(--rojo)";
 
-    // ── 1. Cargar historico_semestral.json ──────────────────────
+    // ── Cargar historico_semestral.json ──────────────────────────
     fetch("data/historico_semestral.json?" + Date.now())
       .then(r => { if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); })
       .then(data => {
         STATE.historico = data;
-        console.log("[ORPMI-Hist] Histórico semestral cargado:", Object.keys(data.semestres));
-        // Si ya hay datos del ejecucion.json en 2026, inyectarlos
-        inyectar2026desdeEstado();
-        renderAnio(STATE.anioActivo);
-        iniciarGraficoTendencia();
+        console.log("[ORPMI-Hist] Cargado:", Object.keys(data.semestres));
+        inyectar2026();
+        renderA("2026"); renderB("2026"); renderC("2026");
+        iniciarTendencia();
       })
-      .catch(err => {
-        console.warn("[ORPMI-Hist] historico_semestral.json no encontrado:", err.message);
-        // Sin histórico, el bloque 2B sigue funcionando con el dato diario (2026)
-      });
+      .catch(err => console.warn("[ORPMI-Hist] No se pudo cargar:", err.message));
 
-    // ── 2. Inyectar el dato 2026 desde ejecucion.json ───────────
-    // Se llama después de que el fetch principal ya cargó los datos
-    function inyectar2026desdeEstado(){
+    // ── Inyectar 2026 desde ejecucion.json (archivos ya cargados) ─
+    function inyectar2026(){
       if (!STATE.historico) return;
-      // Buscar el dato de Lambayeque en los archivos ya cargados (ventana global archivos)
       try {
-        const nacArch = (typeof archivos !== "undefined") && archivos.find(a => a.esNacional);
-        if (nacArch && nacArch.res && nacArch.res.registros) {
-          const lam = nacArch.res.registros.find(r =>
-            /^452$/.test(String(r.codigo||"")) || /LAMBAYEQUE/i.test(String(r.descripcion||"")));
-          if (lam) {
-            const dev2026 = lam.devengado || 0;
-            const ranking2026 = [...nacArch.res.registros]
-              .sort((a,b) => (b.devengado||0) - (a.devengado||0))
-              .map((r, i) => ({
-                codigo: String(r.codigo||""),
-                nombre: String(r.descripcion||""),
-                dev: r.devengado||0,
-                posicion: i+1,
-                es_lambayeque: /^452$/.test(String(r.codigo||"")) || /LAMBAYEQUE/i.test(String(r.descripcion||""))
-              }));
-            const lamPos = ranking2026.find(g => g.es_lambayeque);
-            STATE.historico.semestres["2026"] = {
-              label: "Ene–Jun 2026 (acumulado al " + fechaHoy() + ")",
-              nota: "Dato diario acumulado desde ejecucion.json",
-              total_gores: ranking2026.length,
-              lambayeque: {
-                dev: dev2026,
-                dev_t1: dev2026,
-                dev_t2: 0,
-                posicion: lamPos ? lamPos.posicion : 0
-              },
-              ranking: ranking2026
-            };
-            console.log("[ORPMI-Hist] 2026 inyectado: S/", fmt(dev2026), "Pos:", lamPos?.posicion);
-          }
-        }
-      } catch(e) {
-        console.warn("[ORPMI-Hist] No se pudo inyectar 2026:", e.message);
-      }
+        const nac = (typeof archivos !== "undefined") && archivos.find(a => a.esNacional);
+        if (!nac) return;
+        const regs = nac.res.registros;
+        const total_pim  = regs.reduce((s,r) => s+(r.pim||0), 0);
+        const total_dev  = regs.reduce((s,r) => s+(r.devengado||0), 0);
+        const total_cert = regs.reduce((s,r) => s+(r.certificacion||0), 0);
+        const prom_dev_pct  = total_pim ? total_dev/total_pim*100  : 0;
+        const prom_cert_pct = total_pim ? total_cert/total_pim*100 : 0;
+
+        const mkRanking = (arr) => arr.map((r,i) => ({
+          codigo:        String(r.codigo||""),
+          nombre:        String(r.descripcion||""),
+          pim:           r.pim||0,
+          dev:           r.devengado||0,
+          cert:          r.certificacion||0,
+          dev_pct:       r.pim ? (r.devengado||0)/r.pim*100 : 0,
+          cert_pct:      r.pim ? (r.certificacion||0)/r.pim*100 : 0,
+          posicion:      i+1,
+          es_lambayeque: /^452$/.test(String(r.codigo||"")) || /LAMBAYEQUE/i.test(String(r.descripcion||""))
+        }));
+
+        const byDevSol  = mkRanking([...regs].sort((a,b)=>(b.devengado||0)-(a.devengado||0)));
+        const byDevPct  = mkRanking([...regs].sort((a,b)=>(b.pim?b.devengado/b.pim:0)-(a.pim?a.devengado/a.pim:0)));
+        const byCertPct = mkRanking([...regs].sort((a,b)=>(b.pim?b.certificacion/b.pim:0)-(a.pim?a.certificacion/a.pim:0)));
+
+        const lam = byDevSol.find(g=>g.es_lambayeque)||{};
+        const fecha = fechaHoy();
+
+        STATE.historico.semestres["2026"] = {
+          label:         `Ene–Jun 2026 (al ${fecha})`,
+          nota:          "Dato diario acumulado",
+          total_gores:   byDevSol.length,
+          prom_dev_pct:  Math.round(prom_dev_pct*10)/10,
+          prom_cert_pct: Math.round(prom_cert_pct*10)/10,
+          lambayeque: {
+            pim:          lam.pim||0,
+            dev:          lam.dev||0,
+            cert:         lam.cert||0,
+            dev_pct:      lam.dev_pct||0,
+            cert_pct:     lam.cert_pct||0,
+            dev_t1:       lam.dev||0,
+            dev_t2:       0,
+            pos_dev_sol:  byDevSol.findIndex(g=>g.es_lambayeque)+1,
+            pos_dev_pct:  byDevPct.findIndex(g=>g.es_lambayeque)+1,
+            pos_cert_pct: byCertPct.findIndex(g=>g.es_lambayeque)+1,
+          },
+          ranking_dev_sol:  byDevSol,
+          ranking_dev_pct:  byDevPct,
+          ranking_cert_pct: byCertPct,
+        };
+        console.log("[ORPMI-Hist] 2026 inyectado. Dev%:", prom_dev_pct.toFixed(1)+"% prom");
+      } catch(e) { console.warn("[ORPMI-Hist] inyectar2026:", e.message); }
     }
 
-    // ── 3. Renderizar tabla de ranking por año ───────────────────
-    function renderAnio(anio){
-      STATE.anioActivo = anio;
+    // ── BLOQUE 2A — Devengado % ──────────────────────────────────
+    function renderA(anio){
+      STATE.anioA = anio;
+      document.querySelectorAll(".yr-btn-a").forEach(b =>
+        b.classList.toggle("activo", b.dataset.yr === anio));
 
-      // Actualizar botones activos
-      document.querySelectorAll(".yr-btn").forEach(btn => {
-        btn.classList.toggle("activo", btn.dataset.yr === anio);
-      });
+      const nota   = document.getElementById("b2ayrNota");
+      const tbody  = document.getElementById("goreRowsA");
+      const promEl = document.getElementById("b2promA");
+      const fechaEl= document.getElementById("b2fechaA");
+      const metaEl = document.getElementById("b2metaA");
 
-      const nota = document.getElementById("b2yrNota");
-      const tbody = document.getElementById("goreRowsB");
-      const metaEl = document.getElementById("b2metaB");
-      const fechaEl = document.getElementById("b2fechaB");
-
-      // Si no hay histórico cargado y es 2026, renderizar desde archivos actuales
       if (!STATE.historico || !STATE.historico.semestres[anio]) {
-        if (anio === "2026") {
-          renderDesdeArchivosActuales();
-          if (nota) nota.textContent = "Dato diario acumulado";
-        } else {
-          if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="padding:24px;text-align:center;color:#888">
-            Histórico ${anio} no disponible. Verifica que historico_semestral.json esté en data/.</td></tr>`;
-          if (nota) nota.textContent = "Archivo histórico no encontrado";
-        }
+        if (anio === "2026") renderA_desdeArchivos();
+        else if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:24px;text-align:center;color:#888">Histórico ${anio} no disponible.</td></tr>`;
         return;
       }
+      const sem     = STATE.historico.semestres[anio];
+      const ranking = sem.ranking_dev_pct || [];
+      const prom    = sem.prom_dev_pct || 0;
 
-      const sem = STATE.historico.semestres[anio];
-      const ranking = sem.ranking || [];
-      const maxDev = ranking.reduce((m,g) => Math.max(m, g.dev||0), 1);
-
-      // Etiqueta nota
-      if (nota) {
-        if (anio === "2026") nota.textContent = "Dato diario acumulado";
-        else nota.textContent = `Primer semestre ${anio} (Ene–Jun) · T1+T2`;
-      }
-
-      // Fecha encabezado
-      if (fechaEl) {
-        if (anio === "2026") fechaEl.textContent = fechaHoy();
-        else fechaEl.textContent = `Primer Semestre ${anio} — Enero a Junio`;
-      }
-
-      // Meta
+      if (nota)   nota.textContent   = anio==="2026" ? "Dato diario acumulado" : `Primer semestre ${anio} (Ene–Jun)`;
+      if (fechaEl) fechaEl.textContent = anio==="2026" ? fechaHoy() : `Primer Semestre ${anio} — Enero a Junio`;
+      if (promEl) promEl.textContent = prom.toFixed(1)+"%";
       if (metaEl) metaEl.textContent = `Ámbito: inversiones · ${ranking.length} pliegos`;
 
-      // Filas de la tabla
-      if (tbody) {
-        tbody.innerHTML = ranking.map((g, i) => {
-          const esLam = g.es_lambayeque || g.codigo === "452";
-          const nombre = String(g.nombre||"").replace(/^\d+:\s*/, "");
-          const pct = (g.dev / maxDev * 100).toFixed(1);
+      if (tbody) tbody.innerHTML = ranking.map((g,i) => {
+        const esLam = g.es_lambayeque || g.codigo==="452";
+        const nombre = String(g.nombre||"").replace(/^\d+:\s*/,"");
+        const pct    = g.dev_pct||0;
+        const col    = esLam ? "#FFD166" : semColor(pct, prom);
+        const trC    = esLam ? 'class="lamb-row"' : "";
+        return `<tr ${trC}>
+          <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1+"°"}</td>
+          <td style="text-align:left">${nombre}</td>
+          <td class="num">S/ ${fmt(g.pim)}</td>
+          <td class="num">S/ ${fmt(g.dev)}</td>
+          <td><div class="av-wrap">
+            <div class="av-bar"><span style="width:${Math.min(100,pct).toFixed(1)}%;background:${col}"></span></div>
+            <span class="av-pct" style="color:${col}">${pct.toFixed(1)}%</span>
+          </div></td>
+        </tr>`;
+      }).join("");
+    }
+
+    function renderA_desdeArchivos(){
+      try {
+        const nac = (typeof archivos !== "undefined") && archivos.find(a => a.esNacional);
+        if (!nac) return;
+        const regs = nac.res.registros;
+        const sp = regs.reduce((s,r)=>s+(r.pim||0),0);
+        const prom = sp ? regs.reduce((s,r)=>s+(r.devengado||0),0)/sp*100 : 0;
+        const sA = [...regs].sort((a,b)=>(b.pim?b.devengado/b.pim:0)-(a.pim?a.devengado/a.pim:0));
+        const tbody = document.getElementById("goreRowsA");
+        const promEl = document.getElementById("b2promA");
+        if (promEl) promEl.textContent = prom.toFixed(1)+"%";
+        if (tbody) tbody.innerHTML = sA.map((r,i) => {
+          const esLam = /^452$/.test(String(r.codigo||""))||/LAMBAYEQUE/i.test(String(r.descripcion||""));
+          const nombre = String(r.descripcion||"").replace(/^\d+:\s*/,"");
+          const pct = r.pim ? (r.devengado||0)/r.pim*100 : 0;
+          const col = esLam ? "#FFD166" : semColor(pct, prom);
+          const trC = esLam ? 'class="lamb-row"' : "";
+          return `<tr ${trC}>
+            <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1+"°"}</td>
+            <td style="text-align:left">${nombre}</td>
+            <td class="num">S/ ${fmt(r.pim||0)}</td>
+            <td class="num">S/ ${fmt(r.devengado||0)}</td>
+            <td><div class="av-wrap">
+              <div class="av-bar"><span style="width:${Math.min(100,pct).toFixed(1)}%;background:${col}"></span></div>
+              <span class="av-pct" style="color:${col}">${pct.toFixed(1)}%</span>
+            </div></td>
+          </tr>`;
+        }).join("");
+      } catch(e) { console.warn("[ORPMI-Hist] renderA_desdeArchivos:", e.message); }
+    }
+
+    // ── BLOQUE 2B — Devengado Monto ──────────────────────────────
+    function renderB(anio){
+      STATE.anioB = anio;
+      document.querySelectorAll(".yr-btn").forEach(b =>
+        b.classList.toggle("activo", b.dataset.yr === anio));
+
+      const nota   = document.getElementById("b2yrNota");
+      const tbody  = document.getElementById("goreRowsB");
+      const metaEl = document.getElementById("b2metaB");
+      const fechaEl= document.getElementById("b2fechaB");
+
+      if (!STATE.historico || !STATE.historico.semestres[anio]) {
+        if (anio === "2026") renderB_desdeArchivos();
+        else if (tbody) tbody.innerHTML = `<tr><td colspan="4" style="padding:24px;text-align:center;color:#888">Histórico ${anio} no disponible.</td></tr>`;
+        return;
+      }
+      const sem     = STATE.historico.semestres[anio];
+      const ranking = sem.ranking_dev_sol || [];
+      const maxDev  = ranking.reduce((m,g)=>Math.max(m,g.dev||0),1);
+
+      if (nota)    nota.textContent    = anio==="2026" ? "Dato diario acumulado" : `Primer semestre ${anio} (Ene–Jun) · T1+T2`;
+      if (fechaEl) fechaEl.textContent = anio==="2026" ? fechaHoy() : `Primer Semestre ${anio} — Enero a Junio`;
+      if (metaEl)  metaEl.textContent  = `Ámbito: inversiones · ${ranking.length} pliegos`;
+
+      if (tbody) tbody.innerHTML = ranking.map((g,i) => {
+        const esLam = g.es_lambayeque || g.codigo==="452";
+        const nombre = String(g.nombre||"").replace(/^\d+:\s*/,"");
+        const pct = ((g.dev||0)/maxDev*100).toFixed(1);
+        const col = esLam ? "#FFD166" : "#8B6045";
+        const trC = esLam ? 'class="lamb-row"' : "";
+        return `<tr ${trC}>
+          <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1+"°"}</td>
+          <td style="text-align:left">${nombre}</td>
+          <td class="num">S/ ${fmt(g.dev)}</td>
+          <td><div class="av-bar" style="width:100%;height:14px">
+            <span style="width:${pct}%;background:${col};display:block;height:100%;border-radius:2px"></span>
+          </div></td>
+        </tr>`;
+      }).join("");
+      actualizarTendencia(anio);
+    }
+
+    function renderB_desdeArchivos(){
+      try {
+        const nac = (typeof archivos !== "undefined") && archivos.find(a => a.esNacional);
+        if (!nac) return;
+        const regs = nac.res.registros;
+        const sB = [...regs].sort((a,b)=>(b.devengado||0)-(a.devengado||0));
+        const maxDev = sB[0]?.devengado||1;
+        const tbody = document.getElementById("goreRowsB");
+        if (tbody) tbody.innerHTML = sB.map((r,i)=>{
+          const esLam = /^452$/.test(String(r.codigo||""))||/LAMBAYEQUE/i.test(String(r.descripcion||""));
+          const nombre = String(r.descripcion||"").replace(/^\d+:\s*/,"");
+          const pct = ((r.devengado||0)/maxDev*100).toFixed(1);
           const col = esLam ? "#FFD166" : "#8B6045";
           const trC = esLam ? 'class="lamb-row"' : "";
-          const ordinal = ORDINAL[i+1] || (i+1)+"°";
           return `<tr ${trC}>
-            <td class="center" style="font-weight:700">${ordinal}</td>
+            <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1+"°"}</td>
             <td style="text-align:left">${nombre}</td>
-            <td class="num">S/ ${fmt(g.dev)}</td>
+            <td class="num">S/ ${fmt(r.devengado||0)}</td>
             <td><div class="av-bar" style="width:100%;height:14px">
               <span style="width:${pct}%;background:${col};display:block;height:100%;border-radius:2px"></span>
             </div></td>
           </tr>`;
         }).join("");
+      } catch(e) { console.warn("[ORPMI-Hist] renderB_desdeArchivos:", e.message); }
+    }
+
+    // ── BLOQUE 2C — Certificación % ──────────────────────────────
+    function renderC(anio){
+      STATE.anioC = anio;
+      document.querySelectorAll(".yr-btn-c").forEach(b =>
+        b.classList.toggle("activo", b.dataset.yr === anio));
+
+      const nota   = document.getElementById("b2cyrNota");
+      const tbody  = document.getElementById("goreRowsC");
+      const promEl = document.getElementById("b2promC");
+      const fechaEl= document.getElementById("b2fechaC");
+
+      if (!STATE.historico || !STATE.historico.semestres[anio]) {
+        if (anio === "2026") renderC_desdeArchivos();
+        else if (tbody) tbody.innerHTML = `<tr><td colspan="5" style="padding:24px;text-align:center;color:#888">Histórico ${anio} no disponible.</td></tr>`;
+        return;
       }
+      const sem     = STATE.historico.semestres[anio];
+      const ranking = sem.ranking_cert_pct || [];
+      const prom    = sem.prom_cert_pct || 0;
 
-      // Actualizar gráfico de tendencia (año activo resaltado)
-      actualizarTendencia(anio);
+      if (nota)    nota.textContent    = anio==="2026" ? "Dato diario acumulado" : `Primer semestre ${anio} (Ene–Jun)`;
+      if (fechaEl) fechaEl.textContent = anio==="2026" ? fechaHoy() : `Primer Semestre ${anio} — Enero a Junio`;
+      if (promEl)  promEl.textContent  = prom.toFixed(1)+"%";
+
+      if (tbody) tbody.innerHTML = ranking.map((g,i) => {
+        const esLam  = g.es_lambayeque || g.codigo==="452";
+        const nombre = String(g.nombre||"").replace(/^\d+:\s*/,"");
+        const pct    = g.cert_pct||0;
+        const col    = esLam ? "#FFD166" : semColor(pct, prom);
+        const trC    = esLam ? 'class="lamb-row"' : "";
+        return `<tr ${trC}>
+          <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1+"°"}</td>
+          <td style="text-align:left">${nombre}</td>
+          <td class="num">S/ ${fmt(g.pim)}</td>
+          <td class="num">S/ ${fmt(g.cert)}</td>
+          <td><div class="av-wrap">
+            <div class="av-bar"><span style="width:${Math.min(100,pct).toFixed(1)}%;background:${col}"></span></div>
+            <span class="av-pct" style="color:${col}">${pct.toFixed(1)}%</span>
+          </div></td>
+        </tr>`;
+      }).join("");
     }
 
-    // Fallback: renderizar desde archivos actuales (modo sin histórico o año 2026)
-    function renderDesdeArchivosActuales(){
+    function renderC_desdeArchivos(){
       try {
-        const nacArch = (typeof archivos !== "undefined") && archivos.find(a => a.esNacional);
-        if (!nacArch) return;
-        const regs = nacArch.res.registros;
-        const sB = [...regs].sort((a,b) => (b.devengado||0) - (a.devengado||0));
-        const maxDev = sB[0]?.devengado || 1;
-        const tbody = document.getElementById("goreRowsB");
-        if (tbody) {
-          tbody.innerHTML = sB.map((r,i) => {
-            const esLam = /^452$/.test(String(r.codigo||"")) || /LAMBAYEQUE/i.test(String(r.descripcion||""));
-            const nombre = String(r.descripcion||"").replace(/^\d+:\s*/,"");
-            const pct = ((r.devengado||0) / maxDev * 100).toFixed(1);
-            const col = esLam ? "#FFD166" : "#8B6045";
-            const trC = esLam ? 'class="lamb-row"' : "";
-            return `<tr ${trC}>
-              <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1+"°"}</td>
-              <td style="text-align:left">${nombre}</td>
-              <td class="num">S/ ${fmt(r.devengado||0)}</td>
-              <td><div class="av-bar" style="width:100%;height:14px">
-                <span style="width:${pct}%;background:${col};display:block;height:100%;border-radius:2px"></span>
-              </div></td>
-            </tr>`;
-          }).join("");
-        }
-      } catch(e) { console.warn("[ORPMI-Hist] renderDesdeArchivosActuales:", e.message); }
+        const nac = (typeof archivos !== "undefined") && archivos.find(a => a.esNacional);
+        if (!nac) return;
+        const regs = nac.res.registros;
+        const sp = regs.reduce((s,r)=>s+(r.pim||0),0);
+        const prom = sp ? regs.reduce((s,r)=>s+(r.certificacion||0),0)/sp*100 : 0;
+        const sC = [...regs].sort((a,b)=>(b.pim?b.certificacion/b.pim:0)-(a.pim?a.certificacion/a.pim:0));
+        const tbody = document.getElementById("goreRowsC");
+        const promEl = document.getElementById("b2promC");
+        if (promEl) promEl.textContent = prom.toFixed(1)+"%";
+        if (tbody) tbody.innerHTML = sC.map((r,i)=>{
+          const esLam = /^452$/.test(String(r.codigo||""))||/LAMBAYEQUE/i.test(String(r.descripcion||""));
+          const nombre = String(r.descripcion||"").replace(/^\d+:\s*/,"");
+          const pct = r.pim ? (r.certificacion||0)/r.pim*100 : 0;
+          const col = esLam ? "#FFD166" : semColor(pct, prom);
+          const trC = esLam ? 'class="lamb-row"' : "";
+          return `<tr ${trC}>
+            <td class="center" style="font-weight:700">${ORDINAL[i+1]||i+1+"°"}</td>
+            <td style="text-align:left">${nombre}</td>
+            <td class="num">S/ ${fmt(r.pim||0)}</td>
+            <td class="num">S/ ${fmt(r.certificacion||0)}</td>
+            <td><div class="av-wrap">
+              <div class="av-bar"><span style="width:${Math.min(100,pct).toFixed(1)}%;background:${col}"></span></div>
+              <span class="av-pct" style="color:${col}">${pct.toFixed(1)}%</span>
+            </div></td>
+          </tr>`;
+        }).join("");
+      } catch(e) { console.warn("[ORPMI-Hist] renderC_desdeArchivos:", e.message); }
     }
 
-    // ── 4. Gráfico de tendencia (Chart.js) ──────────────────────
-    function iniciarGraficoTendencia(){
+    // ── Gráfico de tendencia (solo Bloque 2B) ────────────────────
+    function iniciarTendencia(){
       const canvas = document.getElementById("chartTendenciaSem");
       if (!canvas || !STATE.historico) return;
-      if (STATE.chartTendencia) { STATE.chartTendencia.destroy(); }
-
-      const años = ["2022","2023","2024","2025","2026"];
-      const labels = años.map(a => {
-        const sem = STATE.historico.semestres[a];
-        return sem ? sem.label : `Ene–Jun ${a}`;
-      });
-      const devs = años.map(a => {
-        const sem = STATE.historico.semestres[a];
-        return sem ? (sem.lambayeque?.dev || 0) : null;
-      });
+      if (STATE.chartTendencia) STATE.chartTendencia.destroy();
+      const años  = ["2022","2023","2024","2025","2026"];
+      const devs  = años.map(a => STATE.historico.semestres[a]?.lambayeque?.dev || null);
+      const labels = años.map(a => STATE.historico.semestres[a]?.label || `Ene–Jun ${a}`);
 
       STATE.chartTendencia = new Chart(canvas, {
         type: "line",
@@ -2745,93 +2908,64 @@
             borderColor: "#5a1414",
             backgroundColor: "rgba(90,20,20,0.08)",
             borderWidth: 2.5,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            pointBackgroundColor: años.map(a => a === STATE.anioActivo ? "#FFD166" : "#5a1414"),
-            pointBorderColor:     años.map(a => a === STATE.anioActivo ? "#5a1414" : "#fff"),
-            pointBorderWidth:     años.map(a => a === STATE.anioActivo ? 2 : 1.5),
-            fill: true,
-            tension: 0.35,
-            spanGaps: true
+            pointRadius:       años.map(a => a===STATE.anioB ? 8 : 5),
+            pointHoverRadius:  7,
+            pointBackgroundColor: años.map(a => a===STATE.anioB ? "#FFD166" : "#5a1414"),
+            pointBorderColor:     años.map(a => a===STATE.anioB ? "#5a1414" : "#fff"),
+            pointBorderWidth:     años.map(a => a===STATE.anioB ? 2 : 1.5),
+            fill: true, tension: 0.35, spanGaps: true
           }]
         },
         options: {
-          responsive: true,
-          maintainAspectRatio: false,
+          responsive: true, maintainAspectRatio: false,
           animation: { duration: 500, easing: "easeOutQuart" },
           plugins: {
             legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: ctx => " S/ " + fmt(ctx.raw) + "  —  " + fmtM(ctx.raw)
-              }
-            }
+            tooltip: { callbacks: { label: ctx => " S/ "+fmt(ctx.raw)+"  —  "+fmtM(ctx.raw) }}
           },
           scales: {
-            x: {
-              grid: { color: "#f0f2f5" },
-              ticks: { font: { family: "'Barlow Condensed'", weight: "700", size: 12 } }
-            },
-            y: {
-              grid: { color: "#f0f2f5" },
-              ticks: {
-                font: { family: "'Barlow'", size: 11 },
-                callback: v => fmtM(v)
-              }
-            }
+            x: { grid:{color:"#f0f2f5"}, ticks:{font:{family:"'Barlow Condensed'",weight:"700",size:12}} },
+            y: { grid:{color:"#f0f2f5"}, ticks:{font:{family:"'Barlow'",size:11}, callback: v=>fmtM(v)} }
           }
         }
       });
-
-      // Nota de fuente
       const notaEl = document.getElementById("tendenciaNota");
-      if (notaEl) notaEl.textContent =
-        "Fuente: Consulta Amigable MEF · 2022–2025: T1+T2 · 2026: acumulado diario";
+      if (notaEl) notaEl.textContent = "Fuente: Consulta Amigable MEF · 2022–2025: T1+T2 / PIM anual · 2026: acumulado diario";
     }
 
-    // Actualiza colores de puntos en el gráfico al cambiar de año
     function actualizarTendencia(anioActivo){
       if (!STATE.chartTendencia) return;
       const años = ["2022","2023","2024","2025","2026"];
       const ds = STATE.chartTendencia.data.datasets[0];
-      ds.pointBackgroundColor = años.map(a => a === anioActivo ? "#FFD166" : "#5a1414");
-      ds.pointBorderColor     = años.map(a => a === anioActivo ? "#5a1414" : "#fff");
-      ds.pointRadius          = años.map(a => a === anioActivo ? 8 : 5);
+      ds.pointBackgroundColor = años.map(a => a===anioActivo ? "#FFD166" : "#5a1414");
+      ds.pointBorderColor     = años.map(a => a===anioActivo ? "#5a1414" : "#fff");
+      ds.pointRadius          = años.map(a => a===anioActivo ? 8 : 5);
       STATE.chartTendencia.update("active");
     }
 
-    // ── 5. Event listeners de los botones ───────────────────────
+    // ── Event listeners ──────────────────────────────────────────
     document.addEventListener("DOMContentLoaded", function(){
-      document.querySelectorAll(".yr-btn").forEach(btn => {
-        btn.addEventListener("click", function(){
-          const anio = this.dataset.yr;
-          // Si el histórico aún no cargó pero es 2026, usar archivos actuales
-          if (!STATE.historico && anio === "2026") {
-            renderDesdeArchivosActuales();
-            document.querySelectorAll(".yr-btn").forEach(b => b.classList.remove("activo"));
-            this.classList.add("activo");
-            return;
-          }
-          renderAnio(anio);
-        });
-      });
+      document.querySelectorAll(".yr-btn-a").forEach(btn =>
+        btn.addEventListener("click", function(){ renderA(this.dataset.yr); }));
+      document.querySelectorAll(".yr-btn").forEach(btn =>
+        btn.addEventListener("click", function(){ renderB(this.dataset.yr); }));
+      document.querySelectorAll(".yr-btn-c").forEach(btn =>
+        btn.addEventListener("click", function(){ renderC(this.dataset.yr); }));
     });
 
-    // ── 6. Hook: cuando el JSON principal termina de cargar ──────
-    // Re-inyectar 2026 y re-renderizar si el año activo es 2026
-    const _origRender = typeof render === "function" ? render : null;
-    // Observar cambios en archivos globales con un pequeño delay
-    const _hookInterval = setInterval(function(){
-      if (typeof archivos !== "undefined" && archivos.find(a => a.esNacional)) {
-        clearInterval(_hookInterval);
-        inyectar2026desdeEstado();
-        if (STATE.anioActivo === "2026") renderAnio("2026");
-        if (STATE.chartTendencia) {
-          // Actualizar el dato 2026 en el gráfico
-          const sem2026 = STATE.historico && STATE.historico.semestres["2026"];
-          if (sem2026) {
-            STATE.chartTendencia.data.datasets[0].data[4] = sem2026.lambayeque?.dev || null;
-            STATE.chartTendencia.data.labels[4] = sem2026.label;
+    // ── Hook: cuando ejecucion.json termina de cargar ────────────
+    const _hook = setInterval(function(){
+      if ((typeof archivos !== "undefined") && archivos.find(a => a.esNacional)){
+        clearInterval(_hook);
+        inyectar2026();
+        if (STATE.anioA === "2026") renderA("2026");
+        if (STATE.anioB === "2026") renderB("2026");
+        if (STATE.anioC === "2026") renderC("2026");
+        if (STATE.chartTendencia){
+          const sem26 = STATE.historico && STATE.historico.semestres["2026"];
+          if (sem26){
+            STATE.chartTendencia.data.datasets[0].data[4]  = sem26.lambayeque?.dev || null;
+            STATE.chartTendencia.data.labels[4] = sem26.label;
             STATE.chartTendencia.update();
           }
         }
