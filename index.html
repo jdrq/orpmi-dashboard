@@ -1819,9 +1819,20 @@
             },
             datalabels:{
               display: true,
-              align: "top",
-              anchor: "end",
-              offset: 5,
+              align: ctx => {
+                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+                if(ctx.dataIndex===nn[0]) return "right";
+                if(ctx.dataIndex===nn[nn.length-1]) return "left";
+                return "top";
+              },
+              anchor: ctx => {
+                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? "center" : "end";
+              },
+              offset: ctx => {
+                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 10 : 5;
+              },
               color: "#000",
               font: { family:"Barlow Condensed", size:14, weight:"800" },
               formatter: v => v != null ? "S/ "+(v/1e6).toFixed(1)+"M" : ""
@@ -1946,8 +1957,23 @@
                 return true;
               },
               align: "top",
-              anchor: "end",
-              offset: 5,
+              align: ctx => {
+                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return "left";
+                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+                if(ctx.dataIndex===nn[0]) return "right";
+                if(ctx.dataIndex===nn[nn.length-1]) return "left";
+                return "top";
+              },
+              anchor: ctx => {
+                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return "center";
+                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? "center" : "end";
+              },
+              offset: ctx => {
+                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return 10;
+                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 10 : 5;
+              },
               color: ctx => {
                 if(ctx.datasetIndex===2) return "#b85e00";
                 if(ctx.datasetIndex===1) return "#c0392b";
@@ -2361,9 +2387,20 @@
           tooltip: { callbacks: { label: ctx => ` ${ctx.raw !== null ? ctx.raw.toFixed(1)+"%" : "—"}` } },
           datalabels: {
             display: true,
-            align: "top",
-            anchor: "end",
-            offset: 4,
+            align: ctx => {
+              const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+              if(ctx.dataIndex===nn[0]) return "right";
+              if(ctx.dataIndex===nn[nn.length-1]) return "left";
+              return "top";
+            },
+            anchor: ctx => {
+              const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+              return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? "center" : "end";
+            },
+            offset: ctx => {
+              const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+              return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 10 : 4;
+            },
             color: ctx => ctx.dataIndex === años.indexOf(RB1_ANIO) ? "#5a1414" : "#000",
             font: ctx => ({
               family: "'Barlow Condensed'",
@@ -3439,9 +3476,20 @@
             tooltip: { callbacks: { label: ctx => " S/ "+fmt(ctx.raw)+"  —  "+fmtM(ctx.raw) }},
             datalabels: {
               display: true,
-              align: "top",
-              anchor: "end",
-              offset: 4,
+              align: ctx => {
+                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+                if(ctx.dataIndex===nn[0]) return "right";
+                if(ctx.dataIndex===nn[nn.length-1]) return "left";
+                return "top";
+              },
+              anchor: ctx => {
+                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? "center" : "end";
+              },
+              offset: ctx => {
+                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
+                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 10 : 4;
+              },
               color: ctx => ctx.dataIndex === años.indexOf(STATE.anioB) ? "#5a1414" : "#000",
               font: ctx => ({
                 family: "'Barlow Condensed'",
