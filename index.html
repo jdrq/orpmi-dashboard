@@ -1829,21 +1829,109 @@
         }
       });
     }
-    // Gráfico Devengado: línea principal + punto de proyección institucional 2026
-    b8ChartDev = makeChart("b8ChartDev", devData, "#5a1414", "Devengado Real", b8ChartDev, [{
-      label:"Proyección 2026",
-      data: projData,
-      borderColor:"#e8821e",
-      backgroundColor:"#e8821e",
-      borderWidth:0,
-      pointRadius: labels.map((_,i)=>i===labels.length-1?10:0),
-      pointStyle: labels.map((_,i)=>i===labels.length-1?"star":"circle"),
-      pointBackgroundColor:"#e8821e",
-      pointBorderColor:"#3a1a00",
-      pointBorderWidth:2,
-      tension:0,
-      showLine:false,
-    }]);
+    // ── Gráfico Devengado ─────────────────────────────────────────────────────
+    // Construimos 3 series para lograr el bifurcado desde 2025:
+    //   [0] Línea histórica 2016–2025  (vino sólida, sin punto 2026)
+    //   [1] Ramal real     2025→2026   (vino sólida,  baja al dato real)
+    //   [2] Ramal proy     2025→2026   (naranja punteada, sube a la meta)
+    //
+    // Truco: en Chart.js una serie con solo 2 puntos dibuja exactamente un segmento.
+    // El punto de 2025 se repite en los 3 datasets para que la unión sea perfecta.
+
+    const n = labels.length; // total de labels: 2016…2025 = 10, + 2026 = 11
+    const dev2025 = B8_HISTORICO[B8_HISTORICO.length - 1].devengado; // último histórico
+
+    // Dataset 0 — línea histórica completa hasta 2025, sin extenderse a 2026
+    const dHist = B8_HISTORICO.map(d => d.devengado).concat([null]);
+
+    // Dataset 1 — ramal real: null hasta penúltimo, luego 2025→real2026
+    const dReal = B8_HISTORICO.map(() => null);
+    dReal[dReal.length - 1] = dev2025;          // ancla en 2025
+    dReal.push(dev26 || null);                   // punto 2026 real (o null si no cargado)
+
+    // Dataset 2 — ramal proyección: null hasta penúltimo, luego 2025→proj2026
+    const dProj = B8_HISTORICO.map(() => null);
+    dProj[dProj.length - 1] = dev2025;          // ancla en 2025
+    dProj.push(B8_PROJ_2026);                    // punto 2026 proyectado
+
+    const cv8 = document.getElementById("b8ChartDev");
+    if(cv8){
+      if(b8ChartDev){ b8ChartDev.destroy(); b8ChartDev = null; }
+      b8ChartDev = new Chart(cv8, {
+        type:"line",
+        data:{
+          labels,
+          datasets:[
+            // 0 — histórico 2016-2025
+            {
+              label:"Devengado Real",
+              data: dHist,
+              borderColor:"#5a1414", backgroundColor:"#5a1414",
+              tension:.3, borderWidth:2.5,
+              pointRadius: dHist.map((v,i) => v!==null ? 5 : 0),
+              pointBackgroundColor:"#5a1414",
+              spanGaps:false,
+            },
+            // 1 — ramal sólido hacia el real 2026
+            {
+              label: dev26 ? "Devengado 2026 (a la fecha)" : null,
+              data: dReal,
+              borderColor:"#5a1414", backgroundColor:"#5a1414",
+              tension:0, borderWidth:2.5,
+              pointRadius: dReal.map((v,i) => (v!==null && i===n-1) ? 6 : 0),
+              pointBackgroundColor: dReal.map((_,i) => i===n-1 ? "#fff" : "#5a1414"),
+              pointBorderColor:"#5a1414",
+              pointBorderWidth:2,
+              spanGaps:false,
+            },
+            // 2 — ramal punteado hacia la proyección
+            {
+              label:"Proyección Dic 2026",
+              data: dProj,
+              borderColor:"#e8821e", backgroundColor:"#e8821e",
+              tension:0, borderWidth:2.5,
+              borderDash:[6,4],
+              segment:{ borderDash: ()=>[6,4] },
+              pointRadius: dProj.map((v,i) => (v!==null && i===n-1) ? 8 : 0),
+              pointBackgroundColor:"#e8821e",
+              pointBorderColor:"#3a1a00",
+              pointBorderWidth:2,
+              spanGaps:false,
+            }
+          ]
+        },
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          plugins:{
+            legend:{
+              display:true,
+              labels:{
+                filter: item => item.text !== null && item.text !== "null",
+                font:{family:"Barlow",weight:700},
+                usePointStyle:true,
+                padding:16
+              }
+            },
+            tooltip:{
+              callbacks:{
+                label: ctx => ctx.parsed.y != null
+                  ? `${ctx.dataset.label}: S/ ${Math.round(ctx.parsed.y).toLocaleString("es-PE")}`
+                  : null,
+                filter: item => item.parsed.y != null
+              }
+            },
+            datalabels:{ display:false }
+          },
+          scales:{
+            y:{
+              ticks:{ callback:v=>"S/ "+(v/1e6).toFixed(0)+"M", font:{family:"Barlow",size:11} },
+              grid:{color:"#f0f0f0"}
+            },
+            x:{ grid:{display:false}, ticks:{font:{family:"Barlow Condensed",size:13,weight:"bold"}} }
+          }
+        }
+      });
+    }
     b8ChartPim = makeChart("b8ChartPim", pimData, "#e8821e", "PIM", b8ChartPim);
   }
 
