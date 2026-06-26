@@ -1822,16 +1822,15 @@
               align: ctx => {
                 const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
                 if(ctx.dataIndex===nn[0]) return "right";
-                if(ctx.dataIndex===nn[nn.length-1]) return "left";
+                if(ctx.dataIndex===nn[nn.length-1]) return "right";
                 return "top";
               },
-              anchor: ctx => {
-                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? "center" : "end";
-              },
+              anchor: "end",
               offset: ctx => {
                 const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 10 : 5;
+                if(ctx.dataIndex===nn[0]) return 8;
+                if(ctx.dataIndex===nn[nn.length-1]) return 8;
+                return 5;
               },
               color: "#000",
               font: { family:"Barlow Condensed", size:14, weight:"800" },
@@ -1845,7 +1844,7 @@
             },
             x:{ grid:{display:false}, ticks:{font:{family:"Barlow Condensed",size:13,weight:"bold"}} }
           },
-          layout:{ padding:{ top:44, left:60, right:70 } }
+          layout:{ padding:{ top:44, left:80, right:110 } }
         },
         plugins: [ ChartDataLabels ]
       });
@@ -1956,23 +1955,20 @@
                 if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return ctx.dataIndex === n-1;
                 return true;
               },
-              align: "top",
               align: ctx => {
-                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return "left";
+                // datasets 1 (ramal real) y 2 (proyección): solo punto final, sale a la derecha
+                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return "right";
+                // dataset 0 histórico: primer punto a la derecha, último a la derecha, medio arriba
                 const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
                 if(ctx.dataIndex===nn[0]) return "right";
-                if(ctx.dataIndex===nn[nn.length-1]) return "left";
+                if(ctx.dataIndex===nn[nn.length-1]) return "right";
                 return "top";
               },
-              anchor: ctx => {
-                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return "center";
-                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? "center" : "end";
-              },
+              anchor: "end",
               offset: ctx => {
-                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return 10;
+                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return 8;
                 const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 10 : 5;
+                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 8 : 5;
               },
               color: ctx => {
                 if(ctx.datasetIndex===2) return "#b85e00";
@@ -1990,7 +1986,7 @@
             },
             x:{ grid:{display:false}, ticks:{font:{family:"Barlow Condensed",size:13,weight:"bold"}} }
           },
-          layout:{ padding:{ top:44, left:60, right:70 } }
+          layout:{ padding:{ top:44, left:80, right:110 } }
         },
         plugins: [ ChartDataLabels ]
       });
@@ -2390,16 +2386,13 @@
             align: ctx => {
               const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
               if(ctx.dataIndex===nn[0]) return "right";
-              if(ctx.dataIndex===nn[nn.length-1]) return "left";
+              if(ctx.dataIndex===nn[nn.length-1]) return "right";
               return "top";
             },
-            anchor: ctx => {
-              const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-              return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? "center" : "end";
-            },
+            anchor: "end",
             offset: ctx => {
               const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-              return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 10 : 4;
+              return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 8 : 4;
             },
             color: ctx => ctx.dataIndex === años.indexOf(RB1_ANIO) ? "#5a1414" : "#000",
             font: ctx => ({
@@ -2418,7 +2411,7 @@
             suggestedMin: 0, suggestedMax: 40
           }
         },
-        layout: { padding: { top: 28, left: 50, right: 80 } }
+        layout: { padding: { top: 28, left: 70, right: 110 } }
       },
       plugins: [ ChartDataLabels ]
     });
@@ -3479,16 +3472,13 @@
               align: ctx => {
                 const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
                 if(ctx.dataIndex===nn[0]) return "right";
-                if(ctx.dataIndex===nn[nn.length-1]) return "left";
+                if(ctx.dataIndex===nn[nn.length-1]) return "right";
                 return "top";
               },
-              anchor: ctx => {
-                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? "center" : "end";
-              },
+              anchor: "end",
               offset: ctx => {
                 const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 10 : 4;
+                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 8 : 4;
               },
               color: ctx => ctx.dataIndex === años.indexOf(STATE.anioB) ? "#5a1414" : "#000",
               font: ctx => ({
@@ -3503,7 +3493,7 @@
             x: { grid:{color:"#f0f2f5"}, ticks:{font:{family:"'Barlow Condensed'",weight:"700",size:14}, color:"#000"} },
             y: { grid:{color:"#f0f2f5"}, ticks:{font:{family:"'Barlow'",size:13}, color:"#000", callback: v=>fmtM(v)} }
           },
-          layout: { padding: { top: 32, left: 55, right: 80 } }
+          layout: { padding: { top: 32, left: 75, right: 110 } }
         },
         plugins: [ ChartDataLabels ]
       });
