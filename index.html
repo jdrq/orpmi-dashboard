@@ -1811,7 +1811,7 @@
         options:{
           responsive:true, maintainAspectRatio:false,
           plugins:{
-            legend:{ display: extraDatasets&&extraDatasets.length>0, onClick: ()=>{}, labels:{font:{family:"Barlow Condensed", size:15, weight:"700"}, usePointStyle:true, pointStyleWidth:14, padding:20} },
+            legend:{ display: extraDatasets&&extraDatasets.length>0, onClick: ()=>{}, position:"top", align:"center", labels:{font:{family:"Barlow Condensed", size:15, weight:"700"}, usePointStyle:true, pointStyle:"circle", pointStyleWidth:14, padding:28, boxHeight:14} },
             tooltip:{
               callbacks:{
                 label: ctx=>`S/ ${Math.round(ctx.parsed.y||0).toLocaleString("es-PE")}`
@@ -1821,20 +1821,20 @@
               display: true,
               align: "top",
               anchor: "end",
-              offset: 4,
+              offset: 5,
               color: "#000",
-              font: { family:"Barlow Condensed", size:11, weight:"700" },
+              font: { family:"Barlow Condensed", size:14, weight:"800" },
               formatter: v => v != null ? "S/ "+(v/1e6).toFixed(1)+"M" : ""
             }
           },
           scales:{
             y:{
-              ticks:{ callback:v=>"S/ "+(v/1e6).toFixed(0)+"M", font:{family:"Barlow",size:11} },
+              ticks:{ callback:v=>"S/ "+(v/1e6).toFixed(0)+"M", font:{family:"Barlow",size:12} },
               grid:{color:"#f0f0f0"}
             },
             x:{ grid:{display:false}, ticks:{font:{family:"Barlow Condensed",size:13,weight:"bold"}} }
           },
-          layout:{ padding:{ top:30 } }
+          layout:{ padding:{ top:44 } }
         },
         plugins: [ ChartDataLabels ]
       });
@@ -1888,6 +1888,7 @@
               data: dReal,
               borderColor:"#c0392b", backgroundColor:"#c0392b",
               tension:0, borderWidth:2.5,
+              // Solo mostrar punto en 2026 (último), NO en el ancla 2025
               pointRadius: dReal.map((v,i) => (v!==null && i===n-1) ? 6 : 0),
               pointBackgroundColor: dReal.map((_,i) => i===n-1 ? "#fff" : "#c0392b"),
               pointBorderColor:"#c0392b",
@@ -1902,6 +1903,7 @@
               tension:0, borderWidth:2.5,
               borderDash:[6,4],
               segment:{ borderDash: ()=>[6,4] },
+              // Solo mostrar punto en 2026 (último), NO en el ancla 2025
               pointRadius: dProj.map((v,i) => (v!==null && i===n-1) ? 8 : 0),
               pointBackgroundColor:"#e8821e",
               pointBorderColor:"#3a1a00",
@@ -1916,12 +1918,16 @@
             legend:{
               display:true,
               onClick: () => {},
+              position: "top",
+              align: "center",
               labels:{
                 filter: item => item.text !== null && item.text !== "null",
                 font:{family:"Barlow Condensed", size:15, weight:"700"},
                 usePointStyle:true,
+                pointStyle: "circle",
                 pointStyleWidth:14,
-                padding:20
+                padding:28,
+                boxHeight:14
               }
             },
             tooltip:{
@@ -1935,28 +1941,31 @@
             datalabels:{
               display: ctx => {
                 const v = ctx.dataset.data[ctx.dataIndex];
-                return v != null;
+                if(v == null) return false;
+                // Datasets 1 y 2 (ramales): solo mostrar etiqueta en el último punto (2026), nunca en el ancla 2025
+                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return ctx.dataIndex === n-1;
+                return true;
               },
               align: "top",
               anchor: "end",
-              offset: 4,
+              offset: 5,
               color: ctx => {
-                if(ctx.datasetIndex===2) return "#e8821e";
+                if(ctx.datasetIndex===2) return "#b85e00";
                 if(ctx.datasetIndex===1) return "#c0392b";
-                return "#000";
+                return "#111";
               },
-              font: { family:"Barlow Condensed", size:11, weight:"700" },
+              font: { family:"Barlow Condensed", size:14, weight:"800" },
               formatter: v => v != null ? "S/ "+(v/1e6).toFixed(1)+"M" : ""
             }
           },
           scales:{
             y:{
-              ticks:{ callback:v=>"S/ "+(v/1e6).toFixed(0)+"M", font:{family:"Barlow",size:11} },
+              ticks:{ callback:v=>"S/ "+(v/1e6).toFixed(0)+"M", font:{family:"Barlow",size:12} },
               grid:{color:"#f0f0f0"}
             },
             x:{ grid:{display:false}, ticks:{font:{family:"Barlow Condensed",size:13,weight:"bold"}} }
           },
-          layout:{ padding:{ top:30 } }
+          layout:{ padding:{ top:44 } }
         },
         plugins: [ ChartDataLabels ]
       });
