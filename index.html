@@ -853,24 +853,32 @@
           <div class="sub">Comparativo Histórico de Enero — Diciembre — Gobierno Regional de Lambayeque &nbsp;·&nbsp; <span id="b8fecha">—</span></div></div><div class="orad-stamp"><div class="os-sigla">ORAD</div><div class="os-texto">Oficina Regional de Administración</div></div></div>
         <div class="pdf-body" style="padding:20px 24px 24px">
           <!-- Etiqueta del año actual en vivo -->
-          <div id="b8vivo" style="font-family:'Barlow Condensed';font-weight:700;color:var(--gris);font-size:13px;margin-bottom:10px">
+          <div id="b8vivo" style="font-family:'Barlow Condensed';font-weight:600;color:var(--texto);font-size:13px;margin-bottom:14px">
             El año 2026 se actualiza en tiempo real con los archivos cargados. Los datos 2016–2025 provienen del informe institucional ORAD.
           </div>
           <!-- GRÁFICO DEVENGADO -->
           <div style="background:#fff;border:1px solid #e4e7ec;border-radius:10px;padding:16px 14px 10px;margin-bottom:20px">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:18px;margin-bottom:6px;flex-wrap:wrap">
               <div style="background:#5a1414;color:#fff;font-family:'Barlow Condensed';font-weight:800;font-size:13px;padding:5px 14px;border-radius:6px;text-transform:uppercase;letter-spacing:.06em">DEVENGADO</div>
+              <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;font-family:'Barlow Condensed';font-weight:700;font-size:14px;color:var(--texto)">
+                <span style="display:flex;align-items:center;gap:6px"><span style="width:13px;height:13px;border-radius:50%;background:#5a1414;display:inline-block"></span>Devengado Real</span>
+                <span style="display:flex;align-items:center;gap:6px"><span style="width:13px;height:13px;border-radius:50%;background:#c0392b;display:inline-block"></span>Devengado 2026 (a la fecha)</span>
+                <span style="display:flex;align-items:center;gap:6px"><span style="width:13px;height:13px;border-radius:50%;background:#e8821e;display:inline-block"></span>Proyección Dic 2026</span>
+              </div>
             </div>
-            <div style="position:relative;height:280px;width:100%">
+            <div style="position:relative;height:320px;width:100%">
               <canvas id="b8ChartDev"></canvas>
             </div>
           </div>
           <!-- GRÁFICO PIM -->
           <div style="background:#fff;border:1px solid #e4e7ec;border-radius:10px;padding:16px 14px 10px">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <div style="display:flex;align-items:center;gap:18px;margin-bottom:6px;flex-wrap:wrap">
               <div style="background:#7a4200;color:#fff;font-family:'Barlow Condensed';font-weight:800;font-size:13px;padding:5px 14px;border-radius:6px;text-transform:uppercase;letter-spacing:.06em">PIM</div>
+              <div style="display:flex;align-items:center;gap:6px;font-family:'Barlow Condensed';font-weight:700;font-size:14px;color:var(--texto)">
+                <span style="width:13px;height:13px;border-radius:50%;background:#e8821e;display:inline-block"></span>PIM
+              </div>
             </div>
-            <div style="position:relative;height:280px;width:100%">
+            <div style="position:relative;height:320px;width:100%">
               <canvas id="b8ChartPim"></canvas>
             </div>
           </div>
@@ -1811,7 +1819,7 @@
         options:{
           responsive:true, maintainAspectRatio:false,
           plugins:{
-            legend:{ display: extraDatasets&&extraDatasets.length>0, onClick: ()=>{}, position:"top", align:"center", labels:{font:{family:"Barlow Condensed", size:15, weight:"700"}, usePointStyle:true, pointStyle:"circle", pointStyleWidth:14, padding:28, boxHeight:14} },
+            legend:{ display:false },
             tooltip:{
               callbacks:{
                 label: ctx=>`S/ ${Math.round(ctx.parsed.y||0).toLocaleString("es-PE")}`
@@ -1819,19 +1827,9 @@
             },
             datalabels:{
               display: true,
-              align: ctx => {
-                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                if(ctx.dataIndex===nn[0]) return "right";
-                if(ctx.dataIndex===nn[nn.length-1]) return "right";
-                return "top";
-              },
+              align: ctx => (ctx.dataIndex===0 || ctx.dataIndex===labels.length-1) ? "right" : "top",
               anchor: "end",
-              offset: ctx => {
-                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                if(ctx.dataIndex===nn[0]) return 8;
-                if(ctx.dataIndex===nn[nn.length-1]) return 8;
-                return 5;
-              },
+              offset: 6,
               color: "#000",
               font: { family:"Barlow Condensed", size:14, weight:"800" },
               formatter: v => v != null ? "S/ "+(v/1e6).toFixed(1)+"M" : ""
@@ -1844,7 +1842,7 @@
             },
             x:{ grid:{display:false}, ticks:{font:{family:"Barlow Condensed",size:13,weight:"bold"}} }
           },
-          layout:{ padding:{ top:44, left:80, right:110 } }
+          layout:{ padding:{ top:32, left:60, right:110 } }
         },
         plugins: [ ChartDataLabels ]
       });
@@ -1925,21 +1923,7 @@
         options:{
           responsive:true, maintainAspectRatio:false,
           plugins:{
-            legend:{
-              display:true,
-              onClick: () => {},
-              position: "top",
-              align: "center",
-              labels:{
-                filter: item => item.text !== null && item.text !== "null",
-                font:{family:"Barlow Condensed", size:15, weight:"700"},
-                usePointStyle:true,
-                pointStyle: "circle",
-                pointStyleWidth:14,
-                padding:28,
-                boxHeight:14
-              }
-            },
+            legend:{ display:false },
             tooltip:{
               callbacks:{
                 label: ctx => ctx.parsed.y != null
@@ -1955,21 +1939,9 @@
                 if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return ctx.dataIndex === n-1;
                 return true;
               },
-              align: ctx => {
-                // datasets 1 (ramal real) y 2 (proyección): solo punto final, sale a la derecha
-                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return "right";
-                // dataset 0 histórico: primer punto a la derecha, último a la derecha, medio arriba
-                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                if(ctx.dataIndex===nn[0]) return "right";
-                if(ctx.dataIndex===nn[nn.length-1]) return "right";
-                return "top";
-              },
+              align: ctx => (ctx.dataIndex===0 || ctx.dataIndex===n-1) ? "right" : "top",
               anchor: "end",
-              offset: ctx => {
-                if(ctx.datasetIndex===1 || ctx.datasetIndex===2) return 8;
-                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 8 : 5;
-              },
+              offset: 6,
               color: ctx => {
                 if(ctx.datasetIndex===2) return "#b85e00";
                 if(ctx.datasetIndex===1) return "#c0392b";
@@ -1986,7 +1958,7 @@
             },
             x:{ grid:{display:false}, ticks:{font:{family:"Barlow Condensed",size:13,weight:"bold"}} }
           },
-          layout:{ padding:{ top:44, left:80, right:110 } }
+          layout:{ padding:{ top:32, left:60, right:110 } }
         },
         plugins: [ ChartDataLabels ]
       });
@@ -2383,17 +2355,9 @@
           tooltip: { callbacks: { label: ctx => ` ${ctx.raw !== null ? ctx.raw.toFixed(1)+"%" : "—"}` } },
           datalabels: {
             display: true,
-            align: ctx => {
-              const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-              if(ctx.dataIndex===nn[0]) return "right";
-              if(ctx.dataIndex===nn[nn.length-1]) return "right";
-              return "top";
-            },
+            align: "top",
             anchor: "end",
-            offset: ctx => {
-              const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-              return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 8 : 4;
-            },
+            offset: 4,
             color: ctx => ctx.dataIndex === años.indexOf(RB1_ANIO) ? "#5a1414" : "#000",
             font: ctx => ({
               family: "'Barlow Condensed'",
@@ -2411,7 +2375,7 @@
             suggestedMin: 0, suggestedMax: 40
           }
         },
-        layout: { padding: { top: 28, left: 70, right: 110 } }
+        layout: { padding: { top: 28, left: 50, right: 80 } }
       },
       plugins: [ ChartDataLabels ]
     });
@@ -3469,17 +3433,9 @@
             tooltip: { callbacks: { label: ctx => " S/ "+fmt(ctx.raw)+"  —  "+fmtM(ctx.raw) }},
             datalabels: {
               display: true,
-              align: ctx => {
-                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                if(ctx.dataIndex===nn[0]) return "right";
-                if(ctx.dataIndex===nn[nn.length-1]) return "right";
-                return "top";
-              },
+              align: "top",
               anchor: "end",
-              offset: ctx => {
-                const nn = ctx.dataset.data.reduce((a,v,i)=>v!=null?[...a,i]:a,[]);
-                return (ctx.dataIndex===nn[0]||ctx.dataIndex===nn[nn.length-1]) ? 8 : 4;
-              },
+              offset: 4,
               color: ctx => ctx.dataIndex === años.indexOf(STATE.anioB) ? "#5a1414" : "#000",
               font: ctx => ({
                 family: "'Barlow Condensed'",
@@ -3493,7 +3449,7 @@
             x: { grid:{color:"#f0f2f5"}, ticks:{font:{family:"'Barlow Condensed'",weight:"700",size:14}, color:"#000"} },
             y: { grid:{color:"#f0f2f5"}, ticks:{font:{family:"'Barlow'",size:13}, color:"#000", callback: v=>fmtM(v)} }
           },
-          layout: { padding: { top: 32, left: 75, right: 110 } }
+          layout: { padding: { top: 32, left: 55, right: 80 } }
         },
         plugins: [ ChartDataLabels ]
       });
