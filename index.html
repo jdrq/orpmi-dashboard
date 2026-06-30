@@ -707,6 +707,42 @@
         </div>
       </div>
 
+      <!-- ═══════════════ BLOQUE 3B: Top Proyectos — Unidad Ejecutora (detalle) ═══════════════ -->
+      <div class="pdf-section" id="b3secTop">
+        <div class="pdf-header"><div class="pdf-header-left"><h2>Top Proyectos por Devengado</h2>
+          <div class="sub">Detalle de Inversiones — <span id="b3tUE">Unidad Ejecutora</span></div></div><div class="orad-stamp"><div class="os-sigla">ORAD</div><div class="os-texto">Oficina Regional de Administración</div></div></div>
+        <div class="pdf-body">
+          <div class="pdf-date-row">
+            <span id="b3tFecha">—</span>
+            <span>PROM. DE AVANCE (TOP <span id="b3tN">15</span>): <span class="prom" id="b3tProm">—</span></span>
+          </div>
+          <table class="pdf-table" id="b3tTable">
+            <thead><tr>
+              <th style="width:44px">N°</th>
+              <th class="left">PROYECTO</th>
+              <th class="num">PIM</th>
+              <th class="num">CERTIFICACIÓN</th>
+              <th class="num">% CERT</th>
+              <th class="num" style="background:#f4c8c8;color:var(--vino)">POR CERTIF.</th>
+              <th class="num">COMPROMISO</th>
+              <th class="num">% COMP.</th>
+              <th class="num" style="color:var(--naranja-h)">DEVENGADO</th>
+              <th class="num" style="background:#f4c8c8;color:var(--vino)">POR DEVENGAR</th>
+              <th class="num" style="width:130px">AVANCE %</th>
+            </tr></thead>
+            <tbody id="b3tRows">
+              <tr><td colspan="11" style="padding:32px;text-align:center;color:#888">Carga el archivo de proyectos (Consulta Amigable filtrada por UE) para ver el ranking.</td></tr>
+            </tbody>
+            <tfoot id="b3tFoot"></tfoot>
+          </table>
+          <div class="pdf-legend">
+            <span style="font-weight:700;color:var(--vino);font-size:12px">LEYENDA:</span>
+            <span class="litem"><i style="background:var(--rojo)"></i>BAJO 0.00% – 20.90%</span>
+            <span class="litem"><i style="background:var(--amber)"></i>INTERMEDIO 21.00% – 49.99%</span>
+            <span class="litem"><i style="background:var(--verde)"></i>ALTO 50.00% – 100%</span>
+          </div>
+        </div>
+      </div>
 
       <!-- ═══════════════ BLOQUE 6A: Rubro / Fuente — Pliego ═══════════════ -->
       <div class="pdf-section" id="b6secPliego">
@@ -1453,23 +1489,29 @@
   const semColor = av => av<=20.9 ? getCSS("--rojo") : (av<=49.99 ? getCSS("--amber") : getCSS("--verde"));
 
   // -------- Lectura de archivos --------
+  // Núcleo de parseo, independiente del origen de los bytes (FileReader local
+  // o fetch() desde el propio repo en GitHub Pages). Así un mismo archivo se
+  // procesa igual venga de "Cargar archivos" o de la carga automática diaria.
+  function procesarBytes(nombre, bytes){
+    const res = window.MEFReader.readMef(bytes, nombre);
+    // Texto crudo (ISO-8859-1) para extraer metadatos de cabecera que
+    // XLSX.js no conserva, como "Año de Ejecución: YYYY" (Bloque 8).
+    let rawText = "";
+    try { rawText = new TextDecoder("iso-8859-1").decode(bytes); } catch(_){}
+    const anio = extraerAnioArchivo(rawText);
+    return {nombre, res, incluir:true, esFlat:esFlat(res),
+            esNacional:esNacionalRes(res), esPorUE:esPorUERes(res),
+            esProyectos:esProyectosRes(res), esRubro:esRubroRes(res),
+            esFuncion:esFuncionRes(res), anio,
+            esHistorico:esHistoricoRes(res, anio)};
+  }
+
   function leerArchivo(file){
     return new Promise((resolve)=>{
       const fr = new FileReader();
       fr.onload = () => {
         try{
-          const bytes = new Uint8Array(fr.result);
-          const res = window.MEFReader.readMef(bytes, file.name);
-          // Texto crudo (ISO-8859-1) para extraer metadatos de cabecera que
-          // XLSX.js no conserva, como "Año de Ejecución: YYYY" (Bloque 8).
-          let rawText = "";
-          try { rawText = new TextDecoder("iso-8859-1").decode(bytes); } catch(_){}
-          const anio = extraerAnioArchivo(rawText);
-          resolve({nombre:file.name, res, incluir:true, esFlat:esFlat(res),
-                   esNacional:esNacionalRes(res), esPorUE:esPorUERes(res),
-                   esProyectos:esProyectosRes(res), esRubro:esRubroRes(res),
-                   esFuncion:esFuncionRes(res), anio,
-                   esHistorico:esHistoricoRes(res, anio)});
+          resolve(procesarBytes(file.name, new Uint8Array(fr.result)));
         }catch(e){
           resolve({nombre:file.name, error:e.message});
         }
@@ -1477,6 +1519,52 @@
       fr.onerror = () => resolve({nombre:file.name, error:"No se pudo leer el archivo."});
       fr.readAsArrayBuffer(file);
     });
+  }
+
+  // -------- Carga automática diaria desde el repo (GitHub Pages) --------
+  // En lugar de pedirle al jefe que suba 13 .xls a mano cada vez, el propio
+  // index.html intenta leerlos directo de la carpeta xls/ del repositorio.
+  // Tú solo reemplazas esos 13 archivos y haces git push; la web los toma
+  // solos en la siguiente visita. Si no existe la carpeta (modo manual /
+  // doble clic local) simplemente no hace nada y queda el flujo manual.
+  const XLS_AUTOLOAD = [
+    "ue_pliego.xls",
+    "nacional_gores.xls",
+    "funciones_pliego.xls",
+    "rubro_pliego.xls",
+    "rubro_sede_central.xls",
+    "rubro_peot.xls",
+    "rubro_agricultura.xls",
+    "rubro_transportes.xls",
+    "rubro_salud.xls",
+    "rubro_h_mercedes.xls",
+    "rubro_h_belen.xls",
+    "rubro_h_regional.xls",
+    "proyectos_sede_central.xls"
+  ];
+
+  async function cargarArchivoServidor(nombre){
+    try{
+      const resp = await fetch("xls/" + nombre, { cache: "no-store" });
+      if(!resp.ok) return null;
+      const buf = await resp.arrayBuffer();
+      return procesarBytes(nombre, new Uint8Array(buf));
+    }catch(e){
+      return null; // archivo no disponible: se omite sin romper el resto
+    }
+  }
+
+  async function autoCargarDesdeRepo(){
+    // fetch() no funciona con file:// (doble clic local) — en ese caso se
+    // mantiene el flujo manual de siempre, sin mensajes de error molestos.
+    if(location.protocol === "file:") return;
+    const resultados = await Promise.all(XLS_AUTOLOAD.map(cargarArchivoServidor));
+    const ok = resultados.filter(Boolean);
+    if(!ok.length) return; // no hay carpeta xls/ publicada todavía
+    for(const n of ok){ archivos = archivos.filter(a=>a.nombre!==n.nombre); archivos.push(n); }
+    render();
+    const faltantes = XLS_AUTOLOAD.filter((_,i)=>!resultados[i]);
+    if(faltantes.length) console.warn("No se pudieron cargar automáticamente:", faltantes.join(", "));
   }
 
   async function agregar(fileList){
@@ -1567,6 +1655,7 @@
     try { actualizarFechasTodos(); }       catch(e){ console.error("Fechas:", e); }
     try { renderBloque2(sel); }           catch(e){ console.error("Bloque 2:", e); }
     try { renderBloque3(selUE, soloInv); } catch(e){ console.error("Bloque 3:", e); }
+    try { renderBloque3B(sel); }           catch(e){ console.error("Bloque 3B (Top Proyectos):", e); }
     try { renderBloque6(sel); }            catch(e){ console.error("Bloque 6 Pliego:", e); }
     try { renderBloque6Rubros(sel); }      catch(e){ console.error("Bloque 6 Rubros:", e); }
     // Si el año activo en Rubro 1 NO es 2026, restaurar la vista histórica
@@ -2629,6 +2718,79 @@
     const elPim=$("#b3pimTotal"); if(elPim) elPim.textContent=fmtSoles(tp);
     const elCnt=$("#b3cantInv"); if(elCnt) elCnt.textContent=list.length+" UEs";
   }
+  // -------- Bloque 3B: Top Proyectos por Devengado (detalle de una UE) --------
+  // Toma el primer archivo marcado esProyectos (Consulta Amigable filtrada por
+  // UE, códigos de proyecto 2xxxxxx). El nombre de la UE se lee directo del
+  // contexto del archivo (fila UNIDAD), igual que ueLabel(), así el bloque es
+  // reutilizable para cualquier Unidad Ejecutora, no solo Sede Central.
+  const TOP_N_PROYECTOS = 15;
+  function renderBloque3B(sel){
+    const tb=$("#b3tRows"); if(!tb) return;
+    const aProy = sel.find(a=>a.esProyectos);
+    const fecha = new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const elF=$("#b3tFecha"); if(elF) elF.textContent=fecha;
+    if(!aProy){
+      tb.innerHTML='<tr><td colspan="11" style="padding:32px;text-align:center;color:#888">Carga el archivo de proyectos (Consulta Amigable filtrada por UE) para ver el ranking.</td></tr>';
+      const tf=$("#b3tFoot"); if(tf) tf.innerHTML="";
+      const elP=$("#b3tProm"); if(elP) elP.textContent="—";
+      return;
+    }
+    const elUE=$("#b3tUE"); if(elUE) elUE.textContent=ueLabel(aProy.res);
+    const proyectos = aProy.res.registros
+      .filter(r=>esInversion(r) && (r.pim||0)>0)
+      .sort((a,b)=>(b.devengado||0)-(a.devengado||0))
+      .slice(0, TOP_N_PROYECTOS);
+    const elN=$("#b3tN"); if(elN) elN.textContent=proyectos.length;
+    if(!proyectos.length){
+      tb.innerHTML='<tr><td colspan="11" style="padding:32px;text-align:center;color:#888">El archivo no trae proyectos con PIM > 0.</td></tr>';
+      const tf=$("#b3tFoot"); if(tf) tf.innerHTML="";
+      return;
+    }
+    const f=n=>Math.round(n||0).toLocaleString("es-PE");
+    const nombreProy = r => String(r.descripcion||"").replace(/^\d{7}:\s*/,"");
+    tb.innerHTML = proyectos.map((r,i)=>{
+      const pim=r.pim||0, cert=r.certificacion||0, comp=r.compromiso||0, dev=r.devengado||0;
+      const av = r.avance!=null ? r.avance : (pim?dev/pim*100:0);
+      const certP = pim?cert/pim*100:0, compP = pim?comp/pim*100:0;
+      const col = av<=20.9?"#ef4444":(av<=49.99?"#e8a020":"#22c55e");
+      return `<tr>
+        <td class="center" style="font-weight:700">${i+1}</td>
+        <td style="text-align:left;white-space:normal;line-height:1.3;font-size:11px">${nombreProy(r)}</td>
+        <td class="num">${f(pim)}</td>
+        <td class="num">${f(cert)}</td>
+        <td class="num">${certP.toFixed(1)}%</td>
+        <td class="num" style="background:#fff0f0">${f(pim-cert)}</td>
+        <td class="num">${f(comp)}</td>
+        <td class="num">${compP.toFixed(1)}%</td>
+        <td class="num" style="color:var(--naranja-h);font-weight:800">${f(dev)}</td>
+        <td class="num" style="background:#fff0f0">${f(pim-dev)}</td>
+        <td><div class="av-wrap">
+          <div class="av-bar" style="width:50px;background:#e0e0e0"><span style="width:${Math.min(100,av).toFixed(1)}%;background:${col}"></span></div>
+          <span class="av-pct" style="color:${col}">${av.toFixed(1)}%</span>
+        </div></td>
+      </tr>`;
+    }).join("");
+    const tp=proyectos.reduce((s,r)=>s+(r.pim||0),0), tc=proyectos.reduce((s,r)=>s+(r.certificacion||0),0),
+          tco=proyectos.reduce((s,r)=>s+(r.compromiso||0),0), td=proyectos.reduce((s,r)=>s+(r.devengado||0),0);
+    const prom = tp?(td/tp*100):0;
+    const elP=$("#b3tProm"); if(elP) elP.textContent=prom.toFixed(1)+"%";
+    const tf=$("#b3tFoot");
+    if(tf){
+      const s=`style="background:#3a3a3a;color:#FFD166;border:1px solid #555;font-family:'Barlow Condensed';font-weight:800"`;
+      const so=`style="background:#3a3a3a;color:var(--naranja-h);border:1px solid #555;font-family:'Barlow Condensed';font-weight:800"`;
+      tf.innerHTML=`<tr>
+        <td colspan="2" ${s}>TOTAL TOP ${proyectos.length}</td>
+        <td class="num" ${s}>S/ ${f(tp)}</td>
+        <td class="num" ${s}>S/ ${f(tc)}</td><td class="num" ${s}>${tp?(tc/tp*100).toFixed(1)+"%":"—"}</td>
+        <td class="num" ${s}>S/ ${f(tp-tc)}</td>
+        <td class="num" ${s}>S/ ${f(tco)}</td><td class="num" ${s}>${tp?(tco/tp*100).toFixed(1)+"%":"—"}</td>
+        <td class="num" ${so}>S/ ${f(td)}</td>
+        <td class="num" ${s}>S/ ${f(tp-td)}</td>
+        <td class="num" ${so}>${prom.toFixed(1)}%</td>
+      </tr>`;
+    }
+  }
+
   const ORDINAL2=["","1ero","2do","3ro","4to","5to","6to","7mo","8vo","9no","10mo","11mo"];
 
   // -------- Bloque 2: tres rankings estilo PDF --------
@@ -2784,6 +2946,7 @@
   $("#dropzone").addEventListener("click",()=>$("#file").click());
   $("#dropzone").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();$("#file").click();}});
   $("#file").addEventListener("change",e=>{ agregar(e.target.files); e.target.value=""; });
+  autoCargarDesdeRepo();
   $("#clear").addEventListener("click",()=>{ archivos=[]; render(); });
   $("#soloInv").addEventListener("change",render);
   const dz=$("#dropzone");
@@ -3518,6 +3681,7 @@
     { query:"#b2secCert",           titulo:"GR por Certificación %" },
     { query:"#b3secTabla",          titulo:"Ejecución Presupuestal de Inversiones a Nivel UE" },
     { query:"#b3secGrafico",        titulo:"PIM Asignado según Unidad Ejecutora" },
+    { query:"#b3secTop",            titulo:"Top Proyectos por Devengado" },
     { query:"#b6secPliego",         titulo:"Ejecución Presupuestal por Rubro — Pliego" },
     { query:"#b6rubro1",            titulo:"Ejecución por Rubro — Sede Central" },
     { query:"#b6rubro2",            titulo:"Ejecución por Rubro — PEOT / Agricultura / Transporte / GERESA" },

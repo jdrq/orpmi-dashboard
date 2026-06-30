@@ -1,8 +1,3 @@
-# Archivos XLS del MEF (fuentes originales — no se suben a GitHub)
-xls/
-*.xls
-*.xlsx
-
 # Python
 __pycache__/
 *.pyc
@@ -24,5 +19,8 @@ desktop.ini
 # Logs
 *.log
 
-# El JSON SÍ se sube (es el que alimenta el dashboard)
-# data/ejecucion.json  ← NO ignorar esto
+# IMPORTANTE: la carpeta xls/ SÍ se sube — el dashboard la lee directo
+# con fetch() para la auto-carga diaria. NO la ignores.
+# Si descargas .xls sueltos en otras carpetas del repo (fuera de xls/)
+# y no quieres subirlos por error, descomenta la línea de abajo:
+# *.xls
