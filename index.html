@@ -3520,8 +3520,9 @@
       if (!canvas || !STATE.historico) return;
       if (STATE.chartTendencia) STATE.chartTendencia.destroy();
       const años  = ["2022","2023","2024","2025","2026"];
-      const devs  = años.map(a => STATE.historico.semestres[a]?.lambayeque?.dev || null);
-      const labels = años.map(a => STATE.historico.semestres[a]?.label || `Ene–Jun ${a}`);
+      const fuenteDe = a => a === "2026" ? STATE.historico : fuenteHistorica();
+      const devs  = años.map(a => fuenteDe(a)?.semestres[a]?.lambayeque?.dev || null);
+      const labels = años.map(a => fuenteDe(a)?.semestres[a]?.label || `Ene–Jun ${a}`);
 
       STATE.chartTendencia = new Chart(canvas, {
         type: "line",
