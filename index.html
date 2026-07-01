@@ -767,6 +767,39 @@
         </div>
       </div>
 
+      <!-- ═══════════════ BLOQUE 3R: Proyectos con Ejecución en Riesgo (PIM alto, 0% devengado) ═══════════════ -->
+      <div class="pdf-section" id="b3rsecRiesgo">
+        <div class="pdf-header"><div class="pdf-header-left"><h2>Proyectos con Ejecución en Riesgo</h2>
+          <div class="sub">Mayor PIM asignado sin devengar aún — Detalle de Inversiones — SEDE CENTRAL</div></div><div class="orad-stamp"><div class="os-sigla">ORAD</div><div class="os-texto">Oficina Regional de Administración</div></div></div>
+        <div class="pdf-body">
+          <div class="pdf-date-row">
+            <span id="b3rFecha">—</span>
+            <span>PROYECTOS IDENTIFICADOS (TOP <span id="b3rN">10</span>): <span class="prom" id="b3rTotalPim" style="color:var(--vino)">—</span></span>
+          </div>
+          <table class="pdf-table" id="b3rTable">
+            <thead><tr>
+              <th style="width:44px">N°</th>
+              <th class="left">PROYECTO</th>
+              <th class="num">PIM</th>
+              <th class="num">CERTIFICACIÓN</th>
+              <th class="num">% CERT</th>
+              <th class="num">COMPROMISO</th>
+              <th class="num">% COMP.</th>
+              <th class="num" style="color:var(--naranja-h)">DEVENGADO</th>
+              <th class="num" style="background:#f4c8c8;color:var(--vino);width:130px">PIM SIN EJECUTAR</th>
+            </tr></thead>
+            <tbody id="b3rRows">
+              <tr><td colspan="9" style="padding:32px;text-align:center;color:#888">Carga el archivo de proyectos (Consulta Amigable filtrada por UE) para ver la alerta.</td></tr>
+            </tbody>
+            <tfoot id="b3rFoot"></tfoot>
+          </table>
+          <div class="pdf-legend">
+            <span style="font-weight:700;color:var(--vino);font-size:12px">⚠ ALERTA DE GESTIÓN:</span>
+            <span class="litem" style="color:#555">Proyectos con presupuesto (PIM) asignado y 0% de devengado a la fecha. Requieren seguimiento prioritario.</span>
+          </div>
+        </div>
+      </div>
+
       <!-- ═══════════════ BLOQUE 6A: Rubro / Fuente — Pliego ═══════════════ -->
       <div class="pdf-section" id="b6secPliego">
         <div class="pdf-header"><div class="pdf-header-left"><h2>Ejecución Presupuestal por Rubro</h2>
@@ -1679,6 +1712,7 @@
     try { renderBloque2(sel); }           catch(e){ console.error("Bloque 2:", e); }
     try { renderBloque3(selUE, soloInv); } catch(e){ console.error("Bloque 3:", e); }
     try { renderBloque3B(sel); }           catch(e){ console.error("Bloque 3B (Top Proyectos):", e); }
+    try { renderBloque3R(sel); }           catch(e){ console.error("Bloque 3R (Ejecución en Riesgo):", e); }
     try { renderBloque6(sel); }            catch(e){ console.error("Bloque 6 Pliego:", e); }
     try { renderBloque6Rubros(sel); }      catch(e){ console.error("Bloque 6 Rubros:", e); }
     // Si el año activo en Rubro 1 NO es 2026, restaurar la vista histórica
@@ -2816,6 +2850,68 @@
 
   const ORDINAL2=["","1ero","2do","3ro","4to","5to","6to","7mo","8vo","9no","10mo","11mo"];
 
+  // -------- Bloque 3R: Proyectos con Ejecución en Riesgo (SEDE CENTRAL) --------
+  // Alerta de gestión: proyectos con PIM asignado (>0) y devengado en 0 a la
+  // fecha, ordenados de mayor a menor PIM. Usa el mismo archivo de proyectos
+  // (esProyectos) que Bloque 3B — en la práctica siempre es Sede Central,
+  // porque es el único archivo de este tipo en XLS_AUTOLOAD.
+  const TOP_N_RIESGO = 10;
+  function renderBloque3R(sel){
+    const tb=$("#b3rRows"); if(!tb) return;
+    const aProy = sel.find(a=>a.esProyectos);
+    const fecha = new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const elF=$("#b3rFecha"); if(elF) elF.textContent=fecha;
+    if(!aProy){
+      tb.innerHTML='<tr><td colspan="9" style="padding:32px;text-align:center;color:#888">Carga el archivo de proyectos (Consulta Amigable filtrada por UE) para ver la alerta.</td></tr>';
+      const tf=$("#b3rFoot"); if(tf) tf.innerHTML="";
+      const elT=$("#b3rTotalPim"); if(elT) elT.textContent="—";
+      return;
+    }
+    const proyectos = aProy.res.registros
+      .filter(r=>esInversion(r) && (r.pim||0)>0 && (r.devengado||0)<1)
+      .sort((a,b)=>(b.pim||0)-(a.pim||0))
+      .slice(0, TOP_N_RIESGO);
+    const elN=$("#b3rN"); if(elN) elN.textContent=proyectos.length;
+    const f=n=>Math.round(n||0).toLocaleString("es-PE");
+    if(!proyectos.length){
+      tb.innerHTML='<tr><td colspan="9" style="padding:32px;text-align:center;color:#2a7d46;font-weight:700">✓ No se identificaron proyectos con PIM asignado y 0% de devengado.</td></tr>';
+      const tf=$("#b3rFoot"); if(tf) tf.innerHTML="";
+      const elT=$("#b3rTotalPim"); if(elT) elT.textContent="—";
+      return;
+    }
+    const nombreProy = r => String(r.descripcion||"").replace(/^\d{7}:\s*/,"");
+    tb.innerHTML = proyectos.map((r,i)=>{
+      const pim=r.pim||0, cert=r.certificacion||0, comp=r.compromiso||0, dev=r.devengado||0;
+      const certP = pim?cert/pim*100:0, compP = pim?comp/pim*100:0;
+      return `<tr>
+        <td class="center" style="font-weight:700">${i+1}</td>
+        <td style="text-align:left;white-space:normal;line-height:1.3;font-size:11px">${nombreProy(r)}</td>
+        <td class="num" style="font-weight:700">${f(pim)}</td>
+        <td class="num">${f(cert)}</td>
+        <td class="num">${certP.toFixed(1)}%</td>
+        <td class="num">${f(comp)}</td>
+        <td class="num">${compP.toFixed(1)}%</td>
+        <td class="num" style="color:var(--naranja-h);font-weight:800">${f(dev)}</td>
+        <td class="num" style="background:#fce8e8;color:var(--vino);font-weight:700">${f(pim-dev)}</td>
+      </tr>`;
+    }).join("");
+    const tp=proyectos.reduce((s,r)=>s+(r.pim||0),0);
+    const elT=$("#b3rTotalPim"); if(elT) elT.textContent="S/ "+f(tp)+" en riesgo";
+    const tc=proyectos.reduce((s,r)=>s+(r.certificacion||0),0), tco=proyectos.reduce((s,r)=>s+(r.compromiso||0),0);
+    const tf=$("#b3rFoot");
+    if(tf){
+      const s=`style="background:#3a3a3a;color:#FFD166;border:1px solid #555;font-family:'Barlow Condensed';font-weight:800"`;
+      tf.innerHTML=`<tr>
+        <td colspan="2" ${s}>TOTAL TOP ${proyectos.length}</td>
+        <td class="num" ${s}>S/ ${f(tp)}</td>
+        <td class="num" ${s}>S/ ${f(tc)}</td><td class="num" ${s}>${tp?(tc/tp*100).toFixed(1)+"%":"—"}</td>
+        <td class="num" ${s}>S/ ${f(tco)}</td><td class="num" ${s}>${tp?(tco/tp*100).toFixed(1)+"%":"—"}</td>
+        <td class="num" ${s}>S/ 0</td>
+        <td class="num" ${s}>S/ ${f(tp)}</td>
+      </tr>`;
+    }
+  }
+
   // -------- Bloque 2: tres rankings estilo PDF --------
   const ORDINAL = ["","1ero","2do","3ro","4to","5to","6to","7mo","8vo","9no","10mo","11mo","12mo","13ro","14to","15to","16to","17mo","18vo","19no","20mo","21ro","22do","23ro","24to","25to","26to","27mo"];
   const fechaHoy = ()=>new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
@@ -3414,6 +3510,7 @@
     { query:"#b3secTabla",          titulo:"Ejecución Presupuestal de Inversiones a Nivel UE" },
     { query:"#b3secGrafico",        titulo:"PIM Asignado según Unidad Ejecutora" },
     { query:"#b3secTop",            titulo:"Top Proyectos por Devengado" },
+    { query:"#b3rsecRiesgo",        titulo:"Proyectos con Ejecución en Riesgo" },
     { query:"#b6secPliego",         titulo:"Ejecución Presupuestal por Rubro — Pliego" },
     { query:"#b6rubro1",            titulo:"Ejecución por Rubro — Sede Central" },
     { query:"#b6rubro2",            titulo:"Ejecución por Rubro — PEOT / Agricultura / Transporte / GERESA" },
