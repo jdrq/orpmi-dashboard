@@ -599,7 +599,7 @@
 
           <!-- Gráfico de tendencia histórica semestral -->
           <div class="tendencia-wrap" id="tendenciaWrap">
-            <div class="tendencia-titulo">Gráfico Lineal — Devengado en Monto · Primer Semestre (Ene–Jun)</div>
+            <div class="tendencia-titulo" id="tendenciaTitulo">Gráfico Lineal — Devengado en Monto · Primer Semestre (Ene–Jun)</div>
             <div class="tendencia-canvas-wrap">
               <canvas id="chartTendenciaSem"></canvas>
             </div>
@@ -872,7 +872,7 @@
           </div>
           <!-- Gráfico lineal semestral Sede Central -->
           <div class="rubro-chart-wrap" id="b6rb1ChartWrap" style="display:none">
-            <div class="rubro-chart-titulo">Gráfico Lineal &nbsp;·&nbsp; Avance % Semestral (Ene–Jun) — Sede Central</div>
+            <div class="rubro-chart-titulo" id="rubroChartTitulo">Gráfico Lineal &nbsp;·&nbsp; Avance % Semestral (Ene–Jun) — Sede Central</div>
             <div class="rubro-chart-canvas-wrap">
               <canvas id="chartRubroSC"></canvas>
             </div>
@@ -2560,6 +2560,10 @@
     const canvas = document.getElementById("chartRubroSC");
     if (!canvas) return;
     if (chartRubroSC) { chartRubroSC.destroy(); chartRubroSC = null; }
+    const rcTituloEl = document.getElementById("rubroChartTitulo");
+    if (rcTituloEl) rcTituloEl.innerHTML = MODO_SEMESTRAL
+      ? "Gráfico Lineal &nbsp;·&nbsp; Avance % Semestral (Ene–Jun) — Sede Central"
+      : "Gráfico Lineal &nbsp;·&nbsp; Avance % Enero a Julio — Sede Central";
 
     const años  = ["2022","2023","2024","2025","2026"];
     const data2026 = RB_HIST_SC["2026"]; // puede no existir aún
@@ -3316,7 +3320,7 @@
       const prom    = sem.prom_dev_pct || 0;
 
       if (nota)   nota.textContent   = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `Primer semestre ${anio} (Ene–Jul)`);
-      if (fechaEl) fechaEl.textContent = anio==="2026" ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaHoy()) : (MODO_SEMESTRAL ? `Primer Semestre ${anio} — Enero a Junio` : `Primer Semestre ${anio} — Enero a Julio`);
+      if (fechaEl) fechaEl.textContent = anio==="2026" ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaHoy()) : (MODO_SEMESTRAL ? `Primer Semestre ${anio} — Enero a Junio` : `${anio} — Enero a Julio`);
       if (promEl) promEl.textContent = prom.toFixed(1)+"%";
       if (metaEl) metaEl.textContent = `Ámbito: inversiones · ${ranking.length} pliegos`;
 
@@ -3392,7 +3396,7 @@
       const maxDev  = ranking.reduce((m,g)=>Math.max(m,g.dev||0),1);
 
       if (nota)    nota.textContent    = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `Primer semestre ${anio} (Ene–Jul)`);
-      if (fechaEl) fechaEl.textContent = anio==="2026" ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaHoy()) : (MODO_SEMESTRAL ? `Primer Semestre ${anio} — Enero a Junio` : `Primer Semestre ${anio} — Enero a Julio`);
+      if (fechaEl) fechaEl.textContent = anio==="2026" ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaHoy()) : (MODO_SEMESTRAL ? `Primer Semestre ${anio} — Enero a Junio` : `${anio} — Enero a Julio`);
       if (metaEl)  metaEl.textContent  = `Ámbito: inversiones · ${ranking.length} pliegos`;
 
       if (tbody) tbody.innerHTML = ranking.map((g,i) => {
@@ -3461,7 +3465,7 @@
       const prom    = sem.prom_cert_pct || 0;
 
       if (nota)    nota.textContent    = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `Primer semestre ${anio} (Ene–Jul)`);
-      if (fechaEl) fechaEl.textContent = anio==="2026" ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaHoy()) : (MODO_SEMESTRAL ? `Primer Semestre ${anio} — Enero a Junio` : `Primer Semestre ${anio} — Enero a Julio`);
+      if (fechaEl) fechaEl.textContent = anio==="2026" ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaHoy()) : (MODO_SEMESTRAL ? `Primer Semestre ${anio} — Enero a Junio` : `${anio} — Enero a Julio`);
       if (promEl)  promEl.textContent  = prom.toFixed(1)+"%";
 
       if (tbody) tbody.innerHTML = ranking.map((g,i) => {
@@ -3519,6 +3523,10 @@
       const canvas = document.getElementById("chartTendenciaSem");
       if (!canvas || !STATE.historico) return;
       if (STATE.chartTendencia) STATE.chartTendencia.destroy();
+      const tituloEl = document.getElementById("tendenciaTitulo");
+      if (tituloEl) tituloEl.textContent = MODO_SEMESTRAL
+        ? "Gráfico Lineal — Devengado en Monto · Primer Semestre (Ene–Jun)"
+        : "Gráfico Lineal — Devengado en Monto · Enero a Julio";
       const años  = ["2022","2023","2024","2025","2026"];
       const fuenteDe = a => a === "2026" ? STATE.historico : fuenteHistorica();
       const devs  = años.map(a => fuenteDe(a)?.semestres[a]?.lambayeque?.dev || null);
