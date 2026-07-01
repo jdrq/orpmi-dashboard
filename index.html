@@ -531,7 +531,7 @@
             <button class="yr-btn-a" data-yr="2024">2024</button>
             <button class="yr-btn-a" data-yr="2025">2025</button>
             <button class="yr-btn-a activo" data-yr="2026">2026</button>
-            <span class="yr-nota" id="b2ayrNota">Primer semestre 2026 (Ene–Jun)</span>
+            <span class="yr-nota" id="b2ayrNota">Dato diario acumulado</span>
           </div>
 
           <div class="pdf-date-row">
@@ -574,7 +574,7 @@
             <button class="yr-btn" data-yr="2024">2024</button>
             <button class="yr-btn" data-yr="2025">2025</button>
             <button class="yr-btn activo" data-yr="2026">2026</button>
-            <span class="yr-nota" id="b2yrNota">Primer semestre 2026 (Ene–Jun)</span>
+            <span class="yr-nota" id="b2yrNota">Dato diario acumulado</span>
           </div>
 
           <div class="pdf-date-row">
@@ -626,7 +626,7 @@
             <button class="yr-btn-c" data-yr="2024">2024</button>
             <button class="yr-btn-c" data-yr="2025">2025</button>
             <button class="yr-btn-c activo" data-yr="2026">2026</button>
-            <span class="yr-nota" id="b2cyrNota">Primer semestre 2026 (Ene–Jun)</span>
+            <span class="yr-nota" id="b2cyrNota">Dato diario acumulado</span>
           </div>
 
           <div class="pdf-date-row">
@@ -862,7 +862,7 @@
             <button class="yr-btn-rb" data-rbyr="2024" data-grupo="1">2024</button>
             <button class="yr-btn-rb" data-rbyr="2025" data-grupo="1">2025</button>
             <button class="yr-btn-rb activo" data-rbyr="2026" data-grupo="1">2026</button>
-            <span class="rubro-yr-nota" id="b6rb1nota">Primer semestre 2026 (Ene–Jun)</span>
+            <span class="rubro-yr-nota" id="b6rb1nota">Dato diario acumulado</span>
           </div>
           <!-- Paneles de tabla -->
           <div id="b6rubro1Paneles">
@@ -1805,6 +1805,10 @@
         renderRubro1(RB1_ANIO, sel); // restaura el panel histórico que renderBloque6Rubros acaba de pisar
       } else {
         actualizarGraficoRubroSC("2026", sel);
+        const nota26 = document.getElementById("b6rb1nota");
+        if (nota26) nota26.textContent = MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado";
+        const fecha26 = document.getElementById("b6rubro1fecha");
+        if (fecha26) fecha26.textContent = MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaMostrada();
       }
     } catch(e){ console.warn("Gráfico/Rubro SC:", e); }
     try { renderBloque7(sel); }            catch(e){ console.error("Bloque 7:", e); }
