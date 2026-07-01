@@ -2416,10 +2416,21 @@
   // Estado del año activo en el bloque rubro1
   let RB1_ANIO = "2026";
   let chartRubroSC = null;
+  let RB_HIST_SC_ENEJUL = null; // se carga desde data/rb_hist_sc_enejul.json (ver fetch más abajo)
+
+  // Para años 2022-2025: vista principal usa Ene-Jul (RB_HIST_SC_ENEJUL),
+  // "Ver Primer Semestre" usa Ene-Jun (RB_HIST_SC, el de siempre). "2026" no
+  // pasa por aquí — sigue su propio mecanismo de inyección en vivo.
+  function rubroSCPara(anio){
+    if (anio !== "2026" && !MODO_SEMESTRAL && RB_HIST_SC_ENEJUL && RB_HIST_SC_ENEJUL[anio]) {
+      return RB_HIST_SC_ENEJUL[anio];
+    }
+    return RB_HIST_SC[anio];
+  }
 
   // Construye el HTML de la tabla histórica para un año dado de Sede Central
   function ueRubrosHistoricoPanel(anioKey) {
-    const d = RB_HIST_SC[anioKey];
+    const d = rubroSCPara(anioKey);
     if (!d) return "";
     const fmt  = n => Math.round(n||0).toLocaleString("es-PE"); // scope local — no depende del IIFE externo
     const tp   = d.pim || 1;          // PIM total de la UE para ese año
@@ -2516,13 +2527,13 @@
 
     // Nota
     const nota = document.getElementById("b6rb1nota");
-    if (nota) nota.textContent = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : `Primer semestre ${anio} (Ene–Jun)`; // Rubro Sede Central: pendiente extender a Ene-Jul (ver nota en memoria)
+    if (nota) nota.textContent = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `Primer semestre ${anio} (Ene–Jul)`);
 
     // Fecha en header
     const fechaEl = document.getElementById("b6rubro1fecha");
     if (fechaEl) fechaEl.textContent = anio === "2026"
       ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaMostrada())
-      : RB_HIST_SC[anio]?.label || anio;
+      : (rubroSCPara(anio)?.label || anio);
 
     const paneles = document.getElementById("b6rubro1Paneles");
     if (!paneles) return;
@@ -2552,8 +2563,8 @@
 
     const años  = ["2022","2023","2024","2025","2026"];
     const data2026 = RB_HIST_SC["2026"]; // puede no existir aún
-    const pcts  = años.map(a => a==="2026" ? (data2026?.av_pct ?? null) : (RB_HIST_SC[a]?.av_pct ?? null));
-    const labels= años.map(a => a==="2026" ? (data2026?.label || "Ene–Jun 2026") : (RB_HIST_SC[a]?.label || `Ene–Jun ${a}`));
+    const pcts  = años.map(a => a==="2026" ? (data2026?.av_pct ?? null) : (rubroSCPara(a)?.av_pct ?? null));
+    const labels= años.map(a => a==="2026" ? (data2026?.label || "Ene–Jun 2026") : (rubroSCPara(a)?.label || `Ene–Jun ${a}`));
 
     // Solo mostrar si hay al menos un dato
     if (pcts.every(v => v === null)) { if(wrap) wrap.style.display="none"; return; }
@@ -3196,12 +3207,14 @@
     // y historico_enejul.json (Ene-Jul, para la vista principal) en paralelo ──
     Promise.all([
       fetch("data/historico_semestral.json?" + Date.now()).then(r => { if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }),
-      fetch("data/historico_enejul.json?" + Date.now()).then(r => { if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }).catch(e => { console.warn("[ORPMI-Hist] historico_enejul.json no disponible, uso Ene-Jun también en vista principal:", e.message); return null; })
+      fetch("data/historico_enejul.json?" + Date.now()).then(r => { if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }).catch(e => { console.warn("[ORPMI-Hist] historico_enejul.json no disponible, uso Ene-Jun también en vista principal:", e.message); return null; }),
+      fetch("data/rb_hist_sc_enejul.json?" + Date.now()).then(r => { if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }).catch(e => { console.warn("[ORPMI-Hist] rb_hist_sc_enejul.json no disponible, Rubro Sede Central sigue en Ene-Jun:", e.message); return null; })
     ])
-      .then(([dataJun, dataJul]) => {
+      .then(([dataJun, dataJul, rubroScJul]) => {
         STATE.historico = dataJun;
         STATE.historicoJul = dataJul; // null si aún no existe el archivo -> fallback a Ene-Jun
-        console.log("[ORPMI-Hist] Cargado Ene-Jun:", Object.keys(dataJun.semestres), "| Ene-Jul:", dataJul ? Object.keys(dataJul.semestres) : "(no disponible)");
+        RB_HIST_SC_ENEJUL = rubroScJul; // null si aún no existe -> fallback a Ene-Jun
+        console.log("[ORPMI-Hist] Cargado Ene-Jun:", Object.keys(dataJun.semestres), "| Ene-Jul:", dataJul ? Object.keys(dataJul.semestres) : "(no disponible)", "| Rubro SC Ene-Jul:", rubroScJul ? Object.keys(rubroScJul) : "(no disponible)");
         inyectar2026();
         renderA("2026"); renderB("2026"); renderC("2026");
         iniciarTendencia();
@@ -3615,6 +3628,7 @@
       try {
         const selNow = (typeof archivos !== "undefined") ? archivos.filter(a=>a.incluir && !a.error) : null;
         actualizarGraficoRubroSC(RB1_ANIO, selNow);
+        if (RB1_ANIO !== "2026" && typeof renderRubro1 === "function") renderRubro1(RB1_ANIO, selNow);
       } catch(e){ console.warn("[ORPMI-Hist] refrescarModuloHistorico:", e.message); }
     };
 
