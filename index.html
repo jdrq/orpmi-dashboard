@@ -2527,7 +2527,7 @@
 
     // Nota
     const nota = document.getElementById("b6rb1nota");
-    if (nota) nota.textContent = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `Primer semestre ${anio} (Ene–Jul)`);
+    if (nota) nota.textContent = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `${anio} (Ene–Jul)`);
 
     // Fecha en header
     const fechaEl = document.getElementById("b6rubro1fecha");
@@ -3319,7 +3319,7 @@
       const ranking = sem.ranking_dev_pct || [];
       const prom    = sem.prom_dev_pct || 0;
 
-      if (nota)   nota.textContent   = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `Primer semestre ${anio} (Ene–Jul)`);
+      if (nota)   nota.textContent   = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `${anio} (Ene–Jul)`);
       if (fechaEl) fechaEl.textContent = anio==="2026" ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaHoy()) : (MODO_SEMESTRAL ? `Primer Semestre ${anio} — Enero a Junio` : `${anio} — Enero a Julio`);
       if (promEl) promEl.textContent = prom.toFixed(1)+"%";
       if (metaEl) metaEl.textContent = `Ámbito: inversiones · ${ranking.length} pliegos`;
@@ -3395,7 +3395,7 @@
       const ranking = sem.ranking_dev_sol || [];
       const maxDev  = ranking.reduce((m,g)=>Math.max(m,g.dev||0),1);
 
-      if (nota)    nota.textContent    = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `Primer semestre ${anio} (Ene–Jul)`);
+      if (nota)    nota.textContent    = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `${anio} (Ene–Jul)`);
       if (fechaEl) fechaEl.textContent = anio==="2026" ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaHoy()) : (MODO_SEMESTRAL ? `Primer Semestre ${anio} — Enero a Junio` : `${anio} — Enero a Julio`);
       if (metaEl)  metaEl.textContent  = `Ámbito: inversiones · ${ranking.length} pliegos`;
 
@@ -3464,7 +3464,7 @@
       const ranking = sem.ranking_cert_pct || [];
       const prom    = sem.prom_cert_pct || 0;
 
-      if (nota)    nota.textContent    = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `Primer semestre ${anio} (Ene–Jul)`);
+      if (nota)    nota.textContent    = anio === "2026" ? (MODO_SEMESTRAL ? "Primer semestre 2026 (Ene–Jun)" : "Dato diario acumulado") : (MODO_SEMESTRAL ? `Primer semestre ${anio} (Ene–Jun)` : `${anio} (Ene–Jul)`);
       if (fechaEl) fechaEl.textContent = anio==="2026" ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaHoy()) : (MODO_SEMESTRAL ? `Primer Semestre ${anio} — Enero a Junio` : `${anio} — Enero a Julio`);
       if (promEl)  promEl.textContent  = prom.toFixed(1)+"%";
 
