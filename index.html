@@ -1446,6 +1446,17 @@
     if(banner) banner.style.display = MODO_SEMESTRAL ? "block" : "none";
   }
 
+  // Fecha "larga" (con día de la semana) que respeta el modo congelado.
+  // Todas las funciones renderBloqueX que muestran una fecha de cabecera
+  // deben usar ESTA función en vez de `new Date()` directo — de lo
+  // contrario, al correr después de actualizarFechasTodos(), pisan la
+  // fecha correcta con la de hoy incluso estando en modo semestral.
+  function fechaMostrada(){
+    const ref = MODO_SEMESTRAL ? FECHA_CIERRE_SEMESTRE : new Date();
+    const sufijo = MODO_SEMESTRAL ? " (cierre 1er semestre)" : "";
+    return ref.toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"}) + sufijo;
+  }
+
   // alcance legible desde el contexto del archivo
   function alcanceDe(res){
     if(!res.contexto || !res.contexto.length){
@@ -1860,7 +1871,7 @@
   }
 
   function renderBloque6(sel){
-    const fecha=new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const fecha=fechaMostrada();
     const rubroArchivos = sel.filter(x=>x.esRubro);
     const aPliego = rubroArchivos.find(x=>rubroNivel(x.res)==="PLIEGO") || rubroArchivos.find(x=>!x.esPorUE && rubroNivel(x.res)!=="UNIDAD");
     const aSede   = rubroArchivos.find(x=>x!==aPliego && rubroNivel(x.res)==="UNIDAD");
@@ -1955,7 +1966,7 @@
     </tr>`;
   }
   function renderBloque7(sel){
-    const fecha=new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const fecha=fechaMostrada();
     const aFunc = sel.find(x=>x.esFuncion);
     const fEl=$("#b7fecha"); if(fEl) fEl.textContent=fecha;
     const tBody=$("#funcionRows"), tFoot=$("#funcionFoot");
@@ -2293,7 +2304,7 @@
   }
 
   function renderBloque6Rubros(sel){
-    const fecha = new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const fecha = fechaMostrada();
 
     // ── Detectar Sede Central — igual que en renderBloque6 ──
     const rubroArchivos = sel.filter(x=>x.esRubro);
@@ -2510,7 +2521,7 @@
     // Fecha en header
     const fechaEl = document.getElementById("b6rubro1fecha");
     if (fechaEl) fechaEl.textContent = anio === "2026"
-      ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"}))
+      ? (MODO_SEMESTRAL ? "martes, 30 de junio de 2026 (cierre 1er semestre)" : fechaMostrada())
       : RB_HIST_SC[anio]?.label || anio;
 
     const paneles = document.getElementById("b6rubro1Paneles");
@@ -2746,7 +2757,7 @@
 
   // -------- Bloque 3: tabla detallada + gráfico agrupado estilo PDF --------
   function renderBloque3(sel, soloInv){
-    const fecha = new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const fecha = fechaMostrada();
     const el=$("#b3fecha"); if(el) el.textContent=fecha;
     const ues = [];
     for(const a of sel){
@@ -2861,7 +2872,7 @@
   function renderBloque3B(sel){
     const tb=$("#b3tRows"); if(!tb) return;
     const aProy = sel.find(a=>a.esProyectos);
-    const fecha = new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const fecha = fechaMostrada();
     const elF=$("#b3tFecha"); if(elF) elF.textContent=fecha;
     if(!aProy){
       tb.innerHTML='<tr><td colspan="11" style="padding:32px;text-align:center;color:#888">Carga el archivo de proyectos (Consulta Amigable filtrada por UE) para ver el ranking.</td></tr>';
@@ -2936,7 +2947,7 @@
   function renderBloque3R(sel){
     const tb=$("#b3rRows"); if(!tb) return;
     const aProy = sel.find(a=>a.esProyectos);
-    const fecha = new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+    const fecha = fechaMostrada();
     const elF=$("#b3rFecha"); if(elF) elF.textContent=fecha;
     if(!aProy){
       tb.innerHTML='<tr><td colspan="9" style="padding:32px;text-align:center;color:#888">Carga el archivo de proyectos (Consulta Amigable filtrada por UE) para ver la alerta.</td></tr>';
@@ -2991,7 +3002,7 @@
 
   // -------- Bloque 2: tres rankings estilo PDF --------
   const ORDINAL = ["","1ero","2do","3ro","4to","5to","6to","7mo","8vo","9no","10mo","11mo","12mo","13ro","14to","15to","16to","17mo","18vo","19no","20mo","21ro","22do","23ro","24to","25to","26to","27mo"];
-  const fechaHoy = ()=>new Date().toLocaleDateString("es-PE",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  const fechaHoy = ()=>fechaMostrada();
 
   function semB2(av,prom){ return av<prom*0.75?"#ef4444":(av<prom?"#e8a020":"#22c55e"); }
 
